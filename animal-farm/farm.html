@@ -285,6 +285,16 @@ svg{display:block;overflow:visible}
 #ov-time{background:rgba(20,24,60,.82)}
 #tleft{position:absolute;left:50%;top:max(8px,env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:250;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:2px 12px;font-weight:900;font-size:16px;box-shadow:3px 3px 0 var(--ink);pointer-events:none}
 #tleft.low{background:var(--hot)}
+#kmenu{position:fixed;z-index:1090;background:#fffaf0;border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px;transform:translate(-50%,-100%)}
+#kmenu[hidden]{display:none}.kmf svg{width:44px;height:44px}.kmb{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:300px}
+.kmb button{display:flex;flex-direction:column;align-items:center;gap:2px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font:inherit;font-size:15px;font-weight:800;padding:6px 8px;cursor:pointer;min-width:74px}
+.kmb button svg{width:34px;height:34px}
+.alsec{margin:6px 0 16px}.alsec h3{margin:0 0 6px;font-size:21px}
+.stamps{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:640px}
+.stday{border:3px solid var(--ink);border-radius:10px;background:#fff;min-height:84px;padding:4px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink)}
+.stday b{font-size:15px}.stday.now{background:#ffe9a8}.stday .fc{display:flex;flex-wrap:wrap;justify-content:center}.stday svg{width:28px;height:28px}
+.alist{display:flex;flex-wrap:wrap;gap:8px}.aitem{border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);padding:6px 10px;display:flex;align-items:center;gap:4px;font-size:16px}.aitem svg{width:30px;height:30px}
+.hold-on .say{}
 .gbody{display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px}
 .gseats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .gseat{display:flex;align-items:center;gap:6px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);padding:4px 10px;font:inherit;font-size:18px;font-weight:800;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
@@ -413,6 +423,7 @@ svg{display:block;overflow:visible}
   <div id="counts"></div>
   <div id="friends" aria-label="지금 같이 있는 친구"></div>
   <div id="tleft" hidden></div>
+  <div id="kmenu" hidden><div class="kmf" id="kmf"></div><div class="kmb" id="kmb"></div></div>
   <div id="invite" hidden><div class="ivf" id="ivf"></div><p id="ivt"></p><div class="ivb"><button class="txtbtn primary" id="ivyes">같이 그릴래!</button><button class="txtbtn" id="ivno">다음에</button></div></div>
   <div id="mini" aria-label="농장 지도 (누르면 그곳으로 가요)"><canvas id="minic"></canvas></div>
   <div id="momzone" aria-hidden="true"><svg viewBox="0 0 40 40"><rect x="13" y="18" width="14" height="12" fill="#fff" stroke="#2b2118" stroke-width="2"/><path d="M16 18v-4q4 -6 8 0v4" fill="none" stroke="#fff" stroke-width="2.5"/><circle class="ring" cx="20" cy="20" r="17" fill="none" stroke="#ffd23f" stroke-width="4" stroke-dasharray="106.8" stroke-dashoffset="106.8"/></svg></div>
@@ -468,6 +479,10 @@ svg{display:block;overflow:visible}
 <div id="ov-games" class="ov" hidden>
   <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><span class="mrow" id="gtabs" style="flex:1;gap:6px"></span></div>
   <div class="ovbody gbody"><div class="gseats" id="gseats"></div><div class="gmsg" id="gmsg"></div><div class="gboard" id="gboard"></div><div class="mrow" style="justify-content:center"><button class="txtbtn" id="gnew">새 판</button></div></div>
+</div>
+<div id="ov-album" class="ov" hidden>
+  <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><h2 style="flex:1;margin:0 8px">우리 앨범</h2></div>
+  <div class="ovbody" id="albody"></div>
 </div>
 <div id="ov-learn" class="ov" hidden>
   <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><span class="mrow" id="ltabs" style="flex:1;gap:6px"></span><span class="qstars" id="lstars"></span></div>
@@ -624,7 +639,8 @@ const easel=place(EASEL,104,106,'clamp(54px,10.5vmin,98px)','tap',106);easel.id=
 /* 꽃과 풀 */
 const FL=[['#ff8fab',6,58],['#ffd23f',25,62],['#c39bff',97,72],['#fff',68,79],['#ff8fab',28,79],['#ffd23f',95,96],['#c39bff',50,97],['#fff',79,72],['#ff6b6b',8,77],['#4cc9f0',62,92],['#ff8fab',104,66],['#ffd23f',112,90],['#fff',134,78],['#c39bff',146,96],['#ff6b6b',176,92],['#ffd23f',196,64],['#ff8fab',202,74],['#c39bff',208,66],['#fff',214,76],['#ffd23f',220,68],['#4cc9f0',232,94],['#ff8fab',190,96],['#ff8fab',14,108],['#ffd23f',36,142],['#c39bff',60,112],['#fff',84,150],['#ff6b6b',112,142],['#4cc9f0',130,120],['#ffd23f',152,154],['#ff8fab',170,124],['#c39bff',194,138],['#fff',206,110],['#ff6b6b',236,146],['#ffd23f',72,130],['#ff8fab',122,104],['#4cc9f0',200,152],['#c39bff',20,150],['#ffd23f',160,104],['#c39bff',42,214],['#4cc9f0',16,173],['#ff6b6b',28,210],['#ff6b6b',18,228],['#ffd23f',13,175],['#fff',111,172],['#ffd23f',27,234],['#fff',19,179],['#ffd23f',165,171],['#ff6b6b',153,214],['#ff8fab',60,169],['#ff6b6b',223,181],['#c39bff',111,182],['#ff6b6b',34,203],['#ff6b6b',212,187],['#ff8fab',152,188],['#c39bff',28,234],['#4cc9f0',20,171],['#ff6b6b',56,227],['#4cc9f0',140,218],['#c39bff',123,222],['#c39bff',80,195],['#ffd23f',182,195],['#ff8fab',151,202],['#ff6b6b',130,207],['#4cc9f0',118,200]];
 const flower=c=>`<svg viewBox="0 0 30 40"><path d="M15 40V18" stroke="#3f9b3a" stroke-width="3"/><path d="M15 32q-8 -2 -9 -8q7 0 9 6" fill="#5fb043"/>${[0,72,144,216,288].map(r=>`<ellipse cx="15" cy="7" rx="5" ry="7" fill="${c}" stroke="${ink}" stroke-width="1.5" transform="rotate(${r} 15 14)"/>`).join('')}<circle cx="15" cy="14" r="4" fill="#ffb703" stroke="${ink}" stroke-width="1.5"/></svg>`;
-FL.forEach(([c,x,y])=>{const f=place(flower(c),x,y,'clamp(22px,4.6vmin,40px)','tap',Math.round(y));f.addEventListener('click',e=>{e.stopPropagation();f.classList.remove('spinf');void f.offsetWidth;f.classList.add('spinf');note();sparkle(f)})});
+const BUSY=[[38,198,16,8],[84,154,16,12],[156,154,12,10],[104,206,14,10],[182,172,16,8],[126,112,10,6],[104,106,8,6],[66,106,8,6]];
+FL.forEach(([c,x,y])=>{if(BUSY.some(([bx,by,rx,ry])=>Math.abs(x-bx)<rx&&Math.abs(y-by)<ry))return;const f=place(flower(c),x,y,'clamp(22px,4.6vmin,40px)','tap',Math.round(y));f.addEventListener('click',e=>{e.stopPropagation();f.classList.remove('spinf');void f.offsetWidth;f.classList.add('spinf');note();sparkle(f)})});
 [[12,62],[40,66],[58,82],[86,68],[18,84],[72,97],[34,95],[90,90],[4,95],[48,76],[102,80],[118,96],[138,70],[158,94],[168,66],[186,84],[226,62],[236,82],[198,92],[144,86],[10,104],[30,134],[52,148],[78,110],[96,152],[116,128],[134,146],[150,110],[166,132],[186,112],[204,128],[222,140],[238,108],[60,124],[88,138]].forEach(([x,y])=>place(`<svg viewBox="0 0 30 14"><path d="M2 14q2 -10 6 -12q-1 8 2 12q1 -10 6 -14q0 9 3 14q2 -8 6 -10q-1 6 0 10z" fill="#4c9e37"/></svg>`,x,y,'clamp(20px,4vmin,34px)','deco',1));
 
 /* ===== 동물 6마리: 큰 머리(지름 56) + 짧은 몸 = 약 2등신 ===== */
@@ -725,6 +741,7 @@ const ICON={
  rec:`<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="20" fill="#e8453c" ${S}/><rect x="25" y="16" width="10" height="18" fill="#fff"/><path d="M20 30q0 10 10 10t10 -10M30 40v6" fill="none" stroke="#fff" stroke-width="3"/></svg>`,
  stop:`<svg viewBox="0 0 60 60"><rect x="14" y="14" width="32" height="32" fill="#e8453c" ${S}/></svg>`,
  newpage:`<svg viewBox="0 0 60 60"><path d="M12 6h26l10 10v38H12z" fill="#fff" ${S}/><path d="M38 6v10h10" fill="none" ${S2}/><path d="M30 24v20M20 34h20" stroke="#3f9b3a" stroke-width="6"/></svg>`,
+ album:`<svg viewBox="0 0 60 60"><rect x="8" y="8" width="44" height="46" rx="4" fill="#8fd6f7" ${S}/><rect x="14" y="14" width="32" height="24" fill="#fff" ${S2}/><circle cx="24" cy="26" r="5" fill="#ffd23f"/><path d="M16 36l10-8l8 6l6-4l6 6" fill="none" stroke="#3f9b3a" stroke-width="3"/><path d="M24 46q6-6 12 0q-6 6-12 0z" fill="#ff4d6d" ${S2}/></svg>`,
  games:`<svg viewBox="0 0 60 60"><rect x="6" y="6" width="48" height="48" rx="6" fill="#f3d9a4" ${S}/><path d="M22 8v44M38 8v44M8 22h44M8 38h44" stroke="#b98a52" stroke-width="2.5"/><circle cx="15" cy="15" r="5.5" fill="#2b2118"/><circle cx="30" cy="30" r="5.5" fill="#fff" stroke="#2b2118" stroke-width="2"/><circle cx="45" cy="45" r="5.5" fill="#2b2118"/><circle cx="45" cy="15" r="5.5" fill="#fff" stroke="#2b2118" stroke-width="2"/></svg>`,
  goU:`<svg viewBox="0 0 60 60"><path d="M8 44L30 14l22 30z" fill="#ffd23f" ${S}/></svg>`,
  goD:`<svg viewBox="0 0 60 60"><path d="M8 16L30 46l22 -30z" fill="#ffd23f" ${S}/></svg>`,
@@ -797,9 +814,9 @@ let myKid=LS.get('farmKid',null);if(!KN[myKid])myKid=null;
 const me=()=>KIDS.find(k=>k.id===myKid)||KIDS[0],kidOf=id=>KIDS.find(k=>k.id===id);
 /* 하트·달걀·사과는 캐릭터마다 따로. 이 기기(farmW)와 공유 저장소(wallet/<캐릭터>)에 같이 저장해요 */
 const okN=v=>Number.isFinite(+v)&&+v>=0&&+v<=99999?Math.floor(+v):0;
-let WAL=LS.get('farmW',null),walKid=null,walT=0,walUnsub=null;const walSeeded={};
+const FAM='family';let WAL=LS.get('farmW',null),walKid=null,walT=0,walUnsub=null;const walSeeded={};
 const legacyW=WAL?null:{h:okN(saved.hearts),e:okN(saved.eggs),a:saved.apples==null?1:okN(saved.apples),at:0};if(!WAL||typeof WAL!=='object')WAL={};
-function loadWallet(id){walKid=id;let w=WAL[id];if(!w&&legacyW&&!legacyW.used){w={...legacyW,at:Date.now()};legacyW.used=true;WAL[id]=w;LS.set('farmW',WAL)}w=w||{h:0,e:0,a:1,at:0};hearts=okN(w.h);eggs=okN(w.e);apples=okN(w.a)}
+function loadWallet(id){walKid=id;if(id===FAM&&!WAL[FAM]){let h=0,e=0,a=0;Object.keys(WAL).forEach(k=>{if(KN[k]){h+=okN(WAL[k].h);e+=okN(WAL[k].e);a+=okN(WAL[k].a)}});if(legacyW&&!legacyW.used){h+=legacyW.h;e+=legacyW.e;legacyW.used=true}WAL[FAM]={h,e,a:Math.max(1,a),at:1};LS.set('farmW',WAL)}let w=WAL[id];if(!w&&legacyW&&!legacyW.used){w={...legacyW,at:Date.now()};legacyW.used=true;WAL[id]=w;LS.set('farmW',WAL)}w=w||{h:0,e:0,a:1,at:0};hearts=okN(w.h);eggs=okN(w.e);apples=okN(w.a)}
 function storeWallet(){if(!walKid)return;WAL[walKid]={h:hearts,e:eggs,a:apples,at:Date.now()};LS.set('farmW',WAL);clearTimeout(walT);const id=walKid,w=WAL[id];walT=setTimeout(()=>{if(db)db.doc('wallet/'+id).set(w).catch(()=>{})},1200)}
 function watchWallet(id){if(walUnsub){try{walUnsub()}catch(e){}walUnsub=null}if(!db||!id)return;
  walUnsub=db.doc('wallet/'+id).onSnapshot(sn=>{const d=sn&&sn.exists&&(typeof sn.data==='function'?sn.data():null);const L=WAL[id];
@@ -846,7 +863,7 @@ let owned=new Set((LS.get('farmOwned',[])||[]).filter(x=>typeof x==='string'));
 const hasFriend=id=>owned.has('a:'+id);
 FRIENDS.forEach((a,i)=>{if(hasFriend(a.id)){ANIMALS.push(a);addAnimal(a,i+6)}});
 KIDS.forEach(k=>{const d=document.createElement('div');d.className='thing kid'+(k.baby?' baby':'');d.style.left=wx(k.x);d.style.top=wy(k.y);d.style.zIndex=Math.round(k.y)+1;d.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`;d.hidden=true;d.setAttribute('role','button');d.setAttribute('aria-label',k.name);k.el=d;world.appendChild(d);
- d.addEventListener('click',e=>{e.stopPropagation();if(food){feedKid(k);return}if(k.id!==myKid&&online.has(k.id)){giftHeart(k);return}hop(d);speak(k.id===myKid?'나는 '+k.name+'!':k.name+' 안녕!')})});
+ d.addEventListener('click',e=>{e.stopPropagation();if(food){feedKid(k);return}if(k.id!==myKid&&online.has(k.id)){openKMenu(k);return}hop(d);speak(k.id===myKid?'나는 '+k.name+'!':k.name+' 안녕!')})});
 const redrawKid=k=>{k.el.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`};
 /* 이 기기에서 고른 캐릭터와 지금 접속해 있는 캐릭터만 농장에 보여요 */
 let online=new Set();
@@ -855,7 +872,7 @@ function showKids(){KIDS.forEach(k=>{k.el.hidden=!(k.id===myKid||online.has(k.id
 function renderBar(){const k=me(),n=letters.length,tk=!$('talk').hidden;
  bar.innerHTML=`<button class="btn on" data-act="me" aria-label="캐릭터 바꾸기">${faceSvg(k)}</button><span class="sep"></span>`
  +FOODS.map(f=>`<button class="btn${food===f.id?' on':''}${f.id==='apple'&&!apples?' off':''}" data-food="${f.id}" aria-label="먹이">${f.svg}${f.id==='apple'?`<span class="badge">${apples}</span>`:''}</button>`).join('')
- +`<span class="sep"></span><button class="btn${tk?' on':''}" data-act="chat" aria-label="말하기">${ICON.chat}</button><button class="btn" data-act="learn" aria-label="배움 놀이">${ICON.learn}</button><button class="btn" data-act="wardrobe" aria-label="옷장">${ICON.shirt}</button><button class="btn" data-act="easel" aria-label="그림판">${ICON.easel}</button><button class="btn" data-act="games" aria-label="같이 놀이">${ICON.games}</button><button class="btn" data-act="mail" aria-label="우체통">${ICON.mail}${n?`<span class="badge">${n}</span>`:''}</button><button class="btn" data-act="shop" aria-label="가게">${ICON.shop}</button><span class="sep"></span><button class="btn" data-act="music" aria-label="음악">${musicIcon(musicLv)}</button>`;
+ +`<span class="sep"></span><button class="btn${tk?' on':''}" data-act="chat" aria-label="말하기">${ICON.chat}</button><button class="btn" data-act="learn" aria-label="배움 놀이">${ICON.learn}</button><button class="btn" data-act="wardrobe" aria-label="옷장">${ICON.shirt}</button><button class="btn" data-act="easel" aria-label="그림판">${ICON.easel}</button><button class="btn" data-act="games" aria-label="같이 놀이">${ICON.games}</button><button class="btn" data-act="mail" aria-label="우체통">${ICON.mail}${n?`<span class="badge">${n}</span>`:''}</button><button class="btn" data-act="shop" aria-label="가게">${ICON.shop}</button><button class="btn" data-act="album" aria-label="우리 앨범">${ICON.album}</button><span class="sep"></span><button class="btn" data-act="music" aria-label="음악">${musicIcon(musicLv)}</button>`;
  $('counts').innerHTML=`<span class="count" id="hc">${HEART}<b>${hearts}</b></span><span class="count" id="ec">${BASKET}<b>${eggs}</b></span>`;
 }
 bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sfx('tap',.5);const act=b.dataset.act;
@@ -867,13 +884,14 @@ bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return
  else if(act==='wardrobe')openWardrobe();
  else if(act==='easel')openEasel();
  else if(act==='games')openGames();
+ else if(act==='album')openAlbum();
  else if(act==='mail')openMail();
  else if(b.dataset.food){if(b.dataset.food==='apple'&&!apples){tree.classList.remove('shake');void tree.offsetWidth;tree.classList.add('shake');return}food=food===b.dataset.food?null:b.dataset.food;renderBar()}});
 
 const XMAX=100*W-4;
 function walk(k,x,y){const dx=x-k.x;if(Math.abs(dx)>.3)k.el.classList.toggle('left',dx<0);k.el.classList.add('walk');k.el.style.left=wx(x);k.el.style.top=wy(y);k.el.style.zIndex=Math.round(y)+1;k.x=x;k.y=y;clearTimeout(k.t);k.t=setTimeout(()=>k.el.classList.remove('walk'),k.baby?2200:1100);if(k.id===myKid){pushPresence();camera()}}
 const pct=e=>{const r=world.getBoundingClientRect();return[(e.clientX-r.left)/r.width*100*W,(e.clientY-r.top)/r.height*100*H]};
-stage.addEventListener('click',e=>{if(e.target.closest('#counts,#momzone,.edge,#friends,#mini,#invite'))return;const[x,y]=pct(e);if(y<50)return;walk(me(),Math.min(XMAX,Math.max(4,x)),Math.min(YMAX,y))});
+stage.addEventListener('click',e=>{if(e.target.closest('#counts,#momzone,.edge,#friends,#mini,#invite,#kmenu'))return;$('kmenu').hidden=true;const[x,y]=pct(e);if(y<50)return;walk(me(),Math.min(XMAX,Math.max(4,x)),Math.min(YMAX,y))});
 let camX=0,camY=0;
 /* ===== 미니맵 ===== */
 const minic=$('minic'),mctx=minic.getContext('2d');let miniW=0,miniH=0;
@@ -926,7 +944,8 @@ function tapAnimal(a){
   setTimeout(()=>{a.el.classList.remove('munch');void a.el.offsetWidth;a.el.classList.add('munch');const n=1;
    for(let i=0;i<n;i++)setTimeout(()=>fxOn(a.el,HEART,'heart'),i*160);hearts+=n;save();bumpCount('hc',hearts);sayAt(a.el,f===a.fav?'냠냠 최고!':'냠냠!');chomp();shareAct('ani',a.id,f);setTimeout(()=>sfx('heart',.45),350);
    if(food==='apple'&&!apples){food=null;renderBar()}},900)}
- else{hop(a.el);const real=animalSound(a.id);sayAt(a.el,a.say,0,!real)}
+ else{hop(a.el);const real=animalSound(a.id);sayAt(a.el,a.say,0,!real);const nm=myKid?me().name:'';const W=['사랑해!','보고 싶었어!','오늘도 고마워!','같이 놀자!','너는 최고야!','쓰담쓰담 좋아~','네가 와서 기뻐!'];
+  setTimeout(()=>sayAt(a.el,(nm?nmP(nm,'아','야')+', ':'')+W[Math.floor(Math.random()*W.length)],0,false),1300)}
 }
 /* 사람도 냠냠 */
 const KID_EAT={carrot:'아삭아삭!',corn:'옥수수 맛있다!',apple:'사과 달콤해!'};
@@ -940,19 +959,20 @@ function feedKid(k){const f=food;if(!f)return;
 /* 먹이 주기를 다른 화면에도 보여주기 (db acts) */
 const actBoot=Date.now(),actSeen=new Set();
 let giftAt=0;function giftHeart(k){const m=me();hop(k.el);if(Date.now()-giftAt<4000)return;
- if(hearts<1){sayAt(m.el,'하트를 모으면 '+k.name+'에게 선물할 수 있어요');return}giftAt=Date.now();hearts-=1;save();bumpCount('hc',hearts);
+ giftAt=Date.now();
  fxOn(m.el,HEART,'heart');setTimeout(()=>fxOn(k.el,HEART,'heart'),400);sfx('heart',.35);sayAt(m.el,k.name+'에게 하트 선물!');shareAct('gift',k.id,'h')}
 let invT=0,invG=null;function showInvite(k,g){if(!k||!myKid)return;if(!g&&!$('ov-easel').hidden&&!solo)return;if(g&&!$('ov-games').hidden&&gCur===g)return;invG=g||null;$('ivf').innerHTML=faceSvg(k);$('ivt').textContent=iga(k.name)+(g?' '+GAMES[g].name+' 하자고 해요. 같이 할래?':' 같이 그림 그리자고 해요. 같이 그릴래?');$('ivyes').textContent=g?'같이 할래!':'같이 그릴래!';$('invite').hidden=false;sfx('ding',.3);clearTimeout(invT);invT=setTimeout(()=>{$('invite').hidden=true},45000)}
 $('ivyes').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;if(invG){openGames(invG);return}if($('ov-easel').hidden)openEasel();setSolo(false)});
 $('ivno').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;sfx('pop2',.4)});
 function shareAct(t,id,f){if(!db||!myKid)return;db.collection('acts').add({by:myKid,t,id,f,at:Date.now()}).catch(()=>{})}
 function gotActs(list){const now=Date.now();list.forEach(a=>{if(actSeen.has(a.id))return;actSeen.add(a.id);const v=a.v;if(v&&v.t==='gift'&&v.by!==myKid&&KN[v.by]&&KN[v.id]){const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const to=kidOf(v.id),fr=kidOf(v.by);fxOn(fr.el,HEART,'heart');setTimeout(()=>fxOn(to.el,HEART,'heart'),400);
-   if(v.id===myKid){hearts+=1;save();bumpCount('hc',hearts);sfx('heart',.35);sayAt(to.el,iga(fr.name)+' 하트를 선물했어요!')}return}
+   if(v.id===myKid){sfx('heart',.35);sayAt(to.el,iga(fr.name)+' 하트를 선물했어요!')}return}
+  if(v&&v.t==='hand'&&v.by!==myKid&&KN[v.by]&&v.id===myKid){const at=+v.at||0;if(at>actBoot-5000&&now-at<30000)gotHand(kidOf(v.by),v.f);return}
   if(v&&(v.t==='draw'||v.t==='play')&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<60000)showInvite(kidOf(v.by),v.t==='play'&&GAMES[v.id]?v.id:null);return}
   if(!v||v.by===myKid||!KN[v.by]||!['kid','ani'].includes(v.t)||!['carrot','corn','apple','hay'].includes(v.f))return;
   const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const giver=kidOf(v.by);
   if(v.t==='kid'){const k=kidOf(v.id);if(!k)return;k.el.classList.remove('munch');void k.el.offsetWidth;k.el.classList.add('munch');chomp();fxOn(k.el,HEART,'heart');sayAt(k.el,KID_EAT[v.f]||'냠냠!');
-   if(v.id===myKid){hearts+=1;save();bumpCount('hc',hearts);setTimeout(()=>sayAt(k.el,iga(giver.name)+' 줬어요! 고마워!'),1600);setTimeout(()=>sfx('heart',.4),400)}}
+   if(v.id===myKid){setTimeout(()=>sayAt(k.el,iga(giver.name)+' 줬어요! 고마워!'),1600);setTimeout(()=>sfx('heart',.4),400)}}
   else{const an=ANIMALS.find(x=>x.id===v.id);if(!an||!an.el)return;an.el.classList.remove('munch');void an.el.offsetWidth;an.el.classList.add('munch');chomp();fxOn(an.el,HEART,'heart');sayAt(an.el,v.f===an.fav?'냠냠 최고!':'냠냠!')}})}
 function hop(el){if(!el)return;el.classList.remove('hop');void el.offsetWidth;el.classList.add('hop')}
 function sayAt(el,t,yf=0,talk=true){const b=document.createElement('div');b.className='bubble';b.textContent=t;const r=el.getBoundingClientRect(),s=stage.getBoundingClientRect();b.style.left=Math.max(70,Math.min(s.width-70,r.left-s.left+r.width/2))+'px';b.style.top=Math.max(50,r.top-s.top-4+r.height*yf)+'px';stage.appendChild(b);setTimeout(()=>b.remove(),1600);if(talk)speak(t)}
@@ -1011,7 +1031,7 @@ function chomp(){sfx('plop',.5,1.1);setTimeout(()=>sfx('plop',.45,.9),200)}
 function speak(){}
 
 /* ===== 오버레이 공통 ===== */
-const OVS=['ov-games','ov-pin','ov-pick','ov-wardrobe','ov-easel','ov-gallery','ov-letter','ov-mail','ov-view','ov-gate','ov-mom','ov-prev','ov-learn'];
+const OVS=['ov-album','ov-games','ov-pin','ov-pick','ov-wardrobe','ov-easel','ov-gallery','ov-letter','ov-mail','ov-view','ov-gate','ov-mom','ov-prev','ov-learn'];
 document.querySelectorAll('[data-close]').forEach(b=>{b.innerHTML=b.closest('#ov-gallery,#ov-letter')?ICON.back:b.closest('#ov-view')?ICON.close:ICON.home;b.addEventListener('click',()=>{sfx('pop2',.45);b.closest('.ov').hidden=true;if(b.closest('#ov-easel'))presenceEasel(false)})});
 const show=id=>{$(id).hidden=false};const hide=id=>{$(id).hidden=true};
 
@@ -1035,7 +1055,7 @@ $('pkeys').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(
   pinFails++;pinIn='';const bx=$('pbox');bx.classList.remove('shakex');void bx.offsetWidth;bx.classList.add('shakex');sfx('oops',.45);if(pinFails>=3){hide('ov-pin');return}}
  pinDots()});
 $('px').addEventListener('click',()=>hide('ov-pin'));
-function setKid(id){if(!KN[id])return;if(walKid&&walKid!==id)storeWallet();myKid=id;loadWallet(id);watchWallet(id);LS.set('farmKid',id);KIDS.forEach(k=>k.el.classList.toggle('mine',k.id===id));showKids();
+function setKid(id){if(!KN[id])return;myKid=id;if(walKid!==FAM){loadWallet(FAM);watchWallet(FAM)}LS.set('farmKid',id);KIDS.forEach(k=>k.el.classList.toggle('mine',k.id===id));showKids();
  Object.keys(layers).forEach(kid=>layers[kid].c.classList.toggle('mine',kid===id));renderBar();pushPresence();presenceEasel(!$('ov-easel').hidden);camera(true)}
 
 /* ===== 옷장 ===== */
@@ -1162,10 +1182,19 @@ async function addDoc(col,d){if(db){await db.collection(col).add(d);return}
  if(!LS.set(LOCAL[col],arr)&&arr.length>1){arr.pop();LS.set(LOCAL[col],arr)}refreshAll();if(col==='drawings'&&!$('ov-gallery').hidden)renderGallery()}
 async function updDoc(col,id,patch){if(db){await db.doc(col+'/'+id).update(patch);return}const arr=col==='letters'?letters:drawings;const L=arr.find(x=>x.id===id);if(L)Object.assign(L,patch);LS.set(LOCAL[col],arr);refreshAll()}
 async function delDoc(col,id){if(db){await db.doc(col+'/'+id).delete();return}const arr=col==='letters'?letters:drawings;const i=arr.findIndex(x=>x.id===id);if(i>=0)arr.splice(i,1);LS.set(LOCAL[col],arr);refreshAll();if(col==='drawings'&&!$('ov-gallery').hidden)renderGallery()}
-use('db').then(d=>{if(!d){netSt.db='이 기기에서는 안 됨';loadLocal();return}db=d;netSt.db='연결됨';if(myKid)watchWallet(myKid);writeHere();
+use('db').then(d=>{if(!d){netSt.db='이 기기에서는 안 됨';loadLocal();return}db=d;netSt.db='연결됨';if(myKid)watchWallet(FAM);
+ d.doc('inv/family').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();const arr=v&&Array.isArray(v.o)?v.o.filter(x=>typeof x==='string'&&SHOPIDS.has(x)):[];const before=owned.size;arr.forEach(x=>owned.add(x));LS.set('farmOwned',[...owned]);
+  arr.forEach(x=>{if(x.startsWith('a:')){const a=FRIENDS.find(f=>f.id===x.slice(2));if(a&&!a.el){ANIMALS.push(a);addAnimal(a,ANIMALS.length)}}});if(owned.size>arr.length)d.doc('inv/family').set({o:[...owned],at:Date.now()}).catch(()=>{});if(owned.size!==before&&!$('ov-shop').hidden)renderShop()},()=>{});writeHere();
  d.collection('here').onSnapshot(s=>{const m={};s.docs.forEach(x=>{if(KN[x.id])m[x.id]=x.data()});HERE=m;gotHere()},e=>{netSt.db='읽기 안 됨 ('+((e&&e.code)||'오류')+')'});
  d.collection('pins').onSnapshot(s=>{const m={};s.docs.forEach(x=>{const v=x.data();if(KN[x.id]&&v&&typeof v.h==='string'&&/^[0-9a-f]{1,8}$/.test(v.h))m[x.id]=v.h});PINS=m;LS.set('farmPins',PINS);if(!$('ov-mom').hidden)renderMom()},()=>{});
  d.collection('letters').orderBy('at','desc').limit(40).onSnapshot(s=>{letters=s.docs.map(x=>clean(x.id,x.data())).filter(Boolean);refreshAll()},()=>{});
+ d.doc('corn/field').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotCorn(v)},()=>{});
+ d.doc('corn/carrots').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotCarrots(v)},()=>{});
+ d.collection('garden').onSnapshot(s=>{s.docs.forEach(x=>{if(/^p[0-5]$/.test(x.id)){const v=x.data();if(v&&(!v.by||KN[v.by])&&(!v.w||KN[v.w])&&(+v.at||0)>=(+(garden[x.id]||{}).at||0)-1){garden[x.id]=v}}});LS.set('farmGarden',garden);drawGarden()},()=>{});
+ d.doc('house/h').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotHouse(v)},()=>{});
+ d.doc('coquiz/q').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotCo(v)},()=>{});
+ d.collection('album').orderBy('at','desc').limit(200).onSnapshot(s=>{gotAlbum(s.docs.map(x=>({id:x.id,...x.data()})))},()=>{});
+ d.collection('night').orderBy('at','desc').limit(20).onSnapshot(s=>{gotNight(s.docs.map(x=>({id:x.id,v:x.data()})))},()=>{});
  d.collection('games').onSnapshot(s=>{gotGames(s.docs.map(x=>[x.id,x.data()]))},()=>{});
  d.collection('board').onSnapshot(s=>{gotBoard(s.docs.map(x=>[x.id,x.data()]))},()=>{});
  d.collection('acts').orderBy('at','desc').limit(12).onSnapshot(s=>{gotActs(s.docs.map(x=>({id:x.id,v:x.data()})).reverse())},()=>{});
@@ -1352,10 +1381,13 @@ swing.addEventListener('click',e=>{e.stopPropagation();swing.classList.remove('s
 const slide=place(`<svg viewBox="0 0 140 120"><ellipse class="sh" cx="74" cy="116" rx="62" ry="5"/><g stroke="#7a5a3a" stroke-width="5"><path d="M24 116V30M46 116V30M24 52h22M24 74h22M24 96h22"/></g><rect x="18" y="22" width="34" height="9" fill="#3f9b3a" ${S}/><path d="M46 26L134 106L124 116L44 42Z" fill="#ff9f1c" ${S}/><path d="M50 34L128 106" stroke="#ffd27a" stroke-width="3"/></svg>`,162,66,'clamp(90px,19vmin,170px)','tap',66);
 slide.addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,Math.min(XMAX,142+6),Math.min(99,70));beep(300,.7,'sine',1200);setTimeout(()=>{hop(k.el);sayAt(slide,'슈우웅~!',.1)},900)});
 const patch=place(`<svg viewBox="0 0 160 60"><path d="M4 52q76 -30 152 0v6H4z" fill="#8a5a3a" ${S}/>${[0,1,2,3,4].map(i=>{const x=24+i*28;return`<g data-cr="${i}"><path d="M${x-5} 38l5 9l5 -9z" fill="#f48c06" ${S2}/><path d="M${x} 38l-7 -14M${x} 38v-17M${x} 38l7 -14" stroke="#3f9b3a" stroke-width="5" stroke-linecap="round"/></g>`}).join('')}</svg>`,182,172,'clamp(110px,24vmin,210px)','tap',172);
+let crP=LS.get('farmCarrots',[0,0,0,0,0]);if(!Array.isArray(crP)||crP.length!==5)crP=[0,0,0,0,0];let crAt=0;
+function drawCarrots(){const now=Date.now();patch.querySelectorAll('[data-cr]').forEach(g=>{g.style.visibility=now-(+crP[+g.dataset.cr]||0)<10*60*1000?'hidden':''})}
+function gotCarrots(v){if(!v||!Array.isArray(v.p)||v.p.length!==5||(+v.at||0)<crAt)return;crAt=+v.at||0;crP=v.p.map(x=>+x||0);LS.set('farmCarrots',crP);drawCarrots()}
 patch.addEventListener('click',e=>{e.stopPropagation();const left=[...patch.querySelectorAll('[data-cr]')].filter(g=>g.style.visibility!=='hidden');if(!left.length){sayAt(patch,'쑥쑥 자라는 중',.1);return}
- const g=left[Math.floor(Math.random()*left.length)];g.style.visibility='hidden';sparkle(patch);beep(400,.15,'triangle',900);sayAt(patch,'쑥! 당근이다',.1);food='carrot';renderBar();hop(bar.querySelector('[data-food=carrot]'));
+ const g=left[Math.floor(Math.random()*left.length)];crP[+g.dataset.cr]=Date.now();crAt=Date.now();LS.set('farmCarrots',crP);if(db)db.doc('corn/carrots').set({p:crP,at:crAt}).catch(()=>{});drawCarrots();sparkle(patch);beep(400,.15,'triangle',900);sayAt(patch,'쑥! 당근이다',.1);food='carrot';renderBar();hop(bar.querySelector('[data-food=carrot]'));
  });
-setInterval(()=>{const g=[...patch.querySelectorAll('[data-cr]')].find(q=>q.style.visibility==='hidden');if(g)g.style.visibility=''},10*60*1000);
+setInterval(drawCarrots,30000);drawCarrots();
 const mush=place(`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="126" rx="44" ry="5"/><rect x="28" y="58" width="64" height="66" fill="#fff6e0" ${S}/><rect x="74" y="72" width="12" height="12" fill="#8fd6f7" ${S2}/><rect x="46" y="86" width="28" height="38" fill="#3a1a12"/>
 <g id="bunny"><path d="M53 102q-5 -22 3 -22q5 4 2 22zM67 102q5 -22 -3 -22q-5 4 -2 22z" fill="#fff" ${S2}/><circle cx="60" cy="112" r="11" fill="#fff" ${S2}/>${eye(56,111,.55)}${eye(64,111,.55)}<ellipse cx="60" cy="116" rx="1.8" ry="1.3" fill="#ff8fa3"/></g>
 <g class="mdoor"><rect x="46" y="86" width="28" height="38" fill="#c98a4a" ${S}/><circle cx="68" cy="106" r="2.5" fill="${ink}"/></g>
@@ -1392,7 +1424,7 @@ function renderShop(){$('shoptabs').innerHTML=SHOPCAT.map(([c,t])=>`<button clas
   b.innerHTML=shopPreview(it)+(have?`<span class="own">${ICON.sent}</span>`:`<span class="price" style="font-size:18px;font-weight:900">가져가기</span>`);b.setAttribute('aria-label','가져가기');g.appendChild(b)})}
 $('shopgrid').addEventListener('click',e=>{const b=e.target.closest('[data-buy]');if(!b)return;const it=SHOP.find(x=>x.id===b.dataset.buy);if(!it)return;
  if(owned.has(it.id)){hop(b);note();return}
- owned.add(it.id);LS.set('farmOwned',[...owned]);save();renderBar();tune();sparkle(b);
+ owned.add(it.id);LS.set('farmOwned',[...owned]);if(db)db.doc('inv/family').set({o:[...owned],at:Date.now()}).catch(()=>{});save();renderBar();tune();sparkle(b);
  const [kind,v]=it.id.split(':');
  if(kind==='a'){const a=FRIENDS.find(f=>f.id===v);if(a&&!a.el){ANIMALS.push(a);addAnimal(a,ANIMALS.length);speak(a.name+' 친구가 왔어요!')}}
  else{const k=me();if(kind==='o')k.outfit=v;else if(kind==='h')k.hair=v;else k.hc=v;redrawKid(k);save();pushPresence();speak('짠! 새로 생겼어요')}
@@ -1406,7 +1438,7 @@ setInterval(()=>{const now=Date.now(),dt=Math.min(15,(now-togLast)/1000);togLast
  KIDS.forEach(k=>{if(k.id===myKid||!online.has(k.id))return;const near=Math.abs(k.x-m.x)<NEAR_X&&Math.abs(k.y-m.y)<NEAR_Y;
   if(!near){togSec[k.id]=Math.max(0,(togSec[k.id]||0)-dt);return}togSec[k.id]=(togSec[k.id]||0)+dt;
   if(togSec[k.id]%20<dt)fxOn(k.el,HEART,'heart');
-  if(togSec[k.id]>=TOG_NEED){togSec[k.id]=0;hearts+=1;save();bumpCount('hc',hearts);fxOn(m.el,HEART,'heart');fxOn(k.el,HEART,'heart');sfx('heart',.35);sayAt(m.el,(c=>k.name+(c>=0&&c<11172&&c%28?'이랑':'랑'))(k.name.charCodeAt(k.name.length-1)-0xAC00)+' 함께해서 하트 하나!')}})},5000);
+  if(togSec[k.id]>=TOG_NEED){togSec[k.id]=0;if(myKid<k.id){hearts+=1;save();bumpCount('hc',hearts)}fxOn(m.el,HEART,'heart');fxOn(k.el,HEART,'heart');sfx('heart',.35);sayAt(m.el,(c=>k.name+(c>=0&&c<11172&&c%28?'이랑':'랑'))(k.name.charCodeAt(k.name.length-1)-0xAC00)+' 함께해서 하트 하나!')}})},5000);
 
 /* ===== 같이 하는 놀이: 틱택토 · 오목 · 오셀로 (db games/<g>) ===== */
 const GAMES={ttt:{name:'틱택토',n:3,win:3},omok:{name:'오목',n:9,win:5},oth:{name:'오셀로',n:6}};
@@ -1452,7 +1484,7 @@ $('gboard').addEventListener('click',e=>{const c=e.target.closest('[data-i]');if
  if(g==='oth'){const f=othFlips(v.b,n,i,me_);if(!f.length){hop(c);sfx('oops',.3);return}a[i]=me_;f.forEach(j=>a[j]=me_);v.b=a.join('');v.last=i;
   const o=me_==='0'?'1':'0';if(othMoves(v.b,n,o).length)v.t=1-v.t;else if(!othMoves(v.b,n,me_).length){const c0=a.filter(x=>x==='0').length,c1=a.filter(x=>x==='1').length;v.w=c0===c1?2:c0>c1?0:1}}
  else{a[i]=me_;v.b=a.join('');v.last=i;if(lineWin(v.b,n,i,G.win))v.w=v.t;else if(!v.b.includes('.'))v.w=2;else v.t=1-v.t}
- sfx('plop',.45);if(v.w>=0)setTimeout(()=>sfx('yay',.35),300);gSave(g,v)});
+ sfx('plop',.45);if(v.w>=0){setTimeout(()=>sfx('yay',.35),300);if(v.p[0]&&v.p[1]&&v.p[0]!==v.p[1])albumAdd('game_'+(v.r||v.at),{t:'game',g,kids:[...v.p]})}gSave(g,v)});
 function gotGames(docs){docs.forEach(([id,v])=>{if(!GAMES[id]||!gOk(v,id))return;const cur=gState[id];if(cur&&(+cur.at||0)>(+v.at||0))return;v.p=v.p.map(x=>KN[x]?x:null);gState[id]=v;checkWin(id)});if(!$('ov-games').hidden)renderGames()}
 Object.keys(GAMES).forEach(g=>{const v=LS.get('farmGame_'+g,null);if(gOk(v,g))gState[g]=v});
 
@@ -1481,10 +1513,113 @@ function renderTimeMom(){const n=$('momtime');if(!n)return;const r=playRec();con
 document.querySelectorAll('[data-tl]').forEach(b=>b.addEventListener('click',()=>{TLIM=+b.dataset.tl;LS.set('farmTLim',TLIM);renderTimeMom();tickPlay()}));
 $('treset').addEventListener('click',()=>{LS.set('farmPlay',{d:today(),s:{},x:{},w:{}});renderTimeMom();tickPlay()});
 
+/* ===== 함께 기능: 친구 메뉴 · 인사 도장 · 손잡기 · 꽃밭 · 동물 집 · 잠자리 인사 · 같이 퀴즈 · 앨범 ===== */
+const nmP=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?a:b)};
+const isNight=()=>{const d=new Date(),m=d.getHours()*60+d.getMinutes();return m>=21*60+30||m<5*60};
+const HANDI=`<svg viewBox="0 0 60 60"><path d="M10 34q0-10 10-10h8l6 6h12q6 0 6 6t-6 6H20q-10 0-10-8z" fill="#ffd9b8" stroke="#2b2118" stroke-width="3"/><path d="M28 30h10M30 36h12" stroke="#2b2118" stroke-width="2"/></svg>`;
+const MOONI=`<svg viewBox="0 0 60 60"><path d="M38 6a24 24 0 1 0 16 36a20 20 0 1 1 -16 -36z" fill="#fff4c2" stroke="#e6c95a" stroke-width="3"/></svg>`;
+/* 친구 메뉴 */
+let kmFor=null;
+function openKMenu(k){const m=$('kmenu'),r=k.el.getBoundingClientRect();kmFor=k.id;$('kmf').innerHTML=faceSvg(k);
+ const opts=[['gift',HEART,'하트 선물'],['hand',HANDI,holdWith===k.id?'손 놓기':'손잡기'],['draw',ICON.easel,'같이 그리기'],['play',ICON.games,'같이 놀이']];if(isNight())opts.push(['night',MOONI,'잘 자']);
+ $('kmb').innerHTML=opts.map(([a,ic,t])=>`<button data-km="${a}">${ic}<span>${t}</span></button>`).join('');
+ m.style.left=Math.min(innerWidth-120,Math.max(120,r.left+r.width/2))+'px';m.style.top=Math.max(150,r.top)+'px';m.hidden=false;sfx('pop',.35)}
+$('kmb').addEventListener('click',e=>{const b=e.target.closest('[data-km]');if(!b)return;e.stopPropagation();const k=kidOf(kmFor);$('kmenu').hidden=true;if(!k)return;const a=b.dataset.km;
+ if(a==='gift')giftHeart(k);else if(a==='hand')toggleHand(k);else if(a==='draw'){openEasel();setSolo(false);window._invAt=Date.now();shareAct('draw','all','x')}
+ else if(a==='play')openGames();else if(a==='night')sayNight(k)});
+/* 인사 도장: 하루 처음 친구 곁에 가면 서로 안녕 */
+const greeted=new Set();
+setInterval(()=>{if(!myKid||document.hidden)return;const m=me(),d=today();KIDS.forEach(k=>{if(k.id===myKid||!online.has(k.id))return;
+ if(Math.abs(k.x-m.x)<16&&Math.abs(k.y-m.y)<12){const key=d+'|'+k.id;if(greeted.has(key))return;greeted.add(key);const pair=[myKid,k.id].sort();
+  const have=albumList.some(a=>a.t==='meet'&&a.d===d&&a.kids&&a.kids.includes(myKid)&&a.kids.includes(k.id));
+  sayAt(m.el,'안녕, '+k.name+'!');if(!have){albumAdd('meet_'+d+'_'+pair.join('_'),{t:'meet',d,kids:pair});setTimeout(()=>{sayAt(m.el,'오늘의 도장 쾅!');sfx('ding',.25)},1800)}}})},4000);
+/* 손잡기 */
+let holdWith=null;
+function toggleHand(k){if(holdWith===k.id){holdWith=null;sayAt(me().el,'손 놓을게!');shareAct('hand',k.id,'off');return}holdWith=k.id;const m=me();walk(m,Math.min(XMAX,Math.max(4,k.x+(m.x<k.x?-7:7))),k.y);sayAt(m.el,k.name+', 손잡고 걷자!');sfx('pop2',.35);shareAct('hand',k.id,'on')}
+function gotHand(k,f){if(!k)return;if(f==='on'){sayAt(k.el,'손잡고 걷자!');fxOn(k.el,HEART,'heart')}else sayAt(k.el,'손 놓을게!')}
+const PLACE_TALK=[[52,73,'연못에 오리가 헤엄쳐요!'],[104,206,'학교에서 같이 공부할까?'],[150,66,'그네 타고 싶다!'],[182,172,'당근이 쑥쑥 자라요.'],[38,196,'옥수수 밭이다!'],[84,150,'꽃밭에 꽃이 피었나 볼까?']];
+let holdT=0,placeSaid={};
+setInterval(()=>{if(!holdWith)return;const k=kidOf(holdWith);if(!k||!online.has(k.id)){holdWith=null;return}const m=me();const tx=k.x+(m.x<k.x?-7:7);
+ if(Math.abs(tx-m.x)>3||Math.abs(k.y-m.y)>3)walk(m,Math.min(XMAX,Math.max(4,tx)),Math.min(YMAX,k.y));
+ if(Date.now()-holdT>20000){holdT=Date.now();fxOn(m.el,HEART,'heart')}
+ PLACE_TALK.forEach(([x,y,t])=>{if(Math.abs(m.x-x)<18&&Math.abs(m.y-y)<16&&Date.now()-(placeSaid[t]||0)>120000){placeSaid[t]=Date.now();sayAt(m.el,t)}})},1500);
+/* 잠자리 인사 */
+function sayNight(k){const m=me();sayAt(m.el,k.name+', 잘 자!');sfx('bell',.25);if(db)db.collection('night').add({by:myKid,to:k.id,at:Date.now()}).catch(()=>{})}
+let nightSeen=LS.get('farmNightSeen',{})||{};
+function gotNight(list){const now=Date.now();list.forEach(x=>{const v=x.v;if(!v||v.to!==myKid||!KN[v.by]||nightSeen[x.id]||now-(+v.at||0)>36*3600000)return;nightSeen[x.id]=1;LS.set('farmNightSeen',nightSeen);
+ const fr=kidOf(v.by);notice({text:nmP(fr.name,'이가','가')+' 잘 자라고 인사했어요',svg:MOONI.replace('<svg','<svg style="width:30px;height:30px"')})})}
+/* 꽃밭: 한 사람이 심고 다른 친구가 물을 주면 피어요 */
+const GPLOT=[[74,146],[84,150],[94,146],[74,158],[84,162],[94,158]];let garden=LS.get('farmGarden',{})||{};
+function flowerPot(st,v){const soil=`<ellipse cx="20" cy="60" rx="17" ry="5" fill="#8a5a3a" stroke="#2b2118" stroke-width="2"/>`;
+ if(st===0)return`<svg viewBox="0 0 40 66">${soil}<path d="M20 44v8M16 48h8" stroke="#fff" stroke-width="3" opacity=".8"/></svg>`;
+ if(st===1)return`<svg viewBox="0 0 40 66">${soil}<path d="M20 58v-10" stroke="#3f9b3a" stroke-width="3"/><path d="M20 50q-6-1-7-6q5 0 7 4M20 49q6-2 7-6q-5 0-7 4" fill="#6cc44c" stroke="#2b2118" stroke-width="1.2"/><path d="M30 30l2 5M34 28l1 5M26 31l2 4" stroke="#4cc9f0" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+ const c=v&&v.c||'#ff8fab';return`<svg viewBox="0 0 40 66">${soil}<path d="M20 58V28" stroke="#3f9b3a" stroke-width="3"/><path d="M20 46q-9-1-11-8q7 1 11 6" fill="#6cc44c" stroke="#2b2118" stroke-width="1.2"/>${[0,72,144,216,288].map(a=>`<circle cx="${20+7*Math.cos(a*Math.PI/180)}" cy="${22+7*Math.sin(a*Math.PI/180)}" r="6" fill="${c}" stroke="#2b2118" stroke-width="1.2"/>`).join('')}<circle cx="20" cy="22" r="4.5" fill="#ffd23f" stroke="#2b2118" stroke-width="1.2"/></svg>`}
+const gStage=v=>!v||!v.by||Date.now()-(+v.at||0)>36*3600000?0:v.w?2:1;
+place(`<svg viewBox="0 0 70 80"><ellipse class="sh" cx="35" cy="77" rx="14" ry="3"/><rect x="31" y="34" width="8" height="43" fill="#8a5a3a" ${S}/><rect x="6" y="6" width="58" height="32" fill="#ffd6e4" ${S}/><circle cx="35" cy="22" r="9" fill="#ff8fab" ${S2}/><circle cx="35" cy="22" r="4" fill="#ffd23f"/></svg>`,64,140,'clamp(34px,6.6vmin,58px)','deco',140);
+const potEls=GPLOT.map(([x,y],i)=>{const el=place(flowerPot(0),x,y,'clamp(30px,6vmin,52px)','tap',y);el.setAttribute('role','button');el.setAttribute('aria-label','꽃밭');el.addEventListener('click',e=>{e.stopPropagation();tapPot(i)});return el});
+function drawGarden(){potEls.forEach((el,i)=>{const v=garden['p'+i],st=gStage(v),key=st+(v&&v.c||'');if(el.dataset.k!==key){el.dataset.k=key;el.innerHTML=flowerPot(st,v)}})}
+function tapPot(i){const id='p'+i,v=garden[id],st=gStage(v),el=potEls[i];hop(el);if(!myKid)return;
+ if(st===0){const c=['#ff8fab','#ffd23f','#c39bff','#ff6b6b','#4cc9f0','#fff'][Math.floor(Math.random()*6)];garden[id]={by:myKid,at:Date.now(),c,w:null};sfx('plop',.4);sayAt(el,'씨앗 심었어! 친구가 물을 주면 피어요');saveGarden(id)}
+ else if(st===1){if(garden[id].by===myKid&&KIDS.some(k=>k.id!==myKid&&online.has(k.id))){sayAt(el,'친구가 물을 주면 피어요');return}
+  if(garden[id].by===myKid&&Date.now()-(+garden[id].at||0)<10*60000){sayAt(el,'친구에게 물 부탁해 볼까?');return}
+  garden[id]={...garden[id],w:myKid,wat:Date.now()};sfx('splash',.4);sparkle(el);const pk=kidOf(garden[id].by);sayAt(el,(pk&&pk.id!==myKid?nmP(pk.name,'이랑','랑')+' 같이 ':'')+'꽃이 피었어요!');
+  if(pk&&pk.id!==myKid)albumAdd('flower_'+id+'_'+garden[id].at,{t:'flower',c:garden[id].c,kids:[pk.id,myKid]});saveGarden(id)}
+ else{const a=kidOf(v.by),b=kidOf(v.w);sayAt(el,a&&b&&a!==b?nmP(a.name,'이랑','랑')+' '+b.name+'이 같이 키운 꽃':'예쁜 꽃이에요')}
+ drawGarden()}
+function saveGarden(id){LS.set('farmGarden',garden);if(db)db.doc('garden/'+id).set(garden[id]).catch(()=>{})}
+setInterval(drawGarden,30000);drawGarden();
+/* 같이 만드는 동물 집 */
+const HOUSE_ANI=['bunny','dog','chick','duck'],HN=6;let house=LS.get('farmHouse',null)||{n:0,last:null,by:[],a:0,at:0};
+function houseSvg(h){const n=Math.min(HN,h.n||0),bl=[];const pos=[[10,66],[40,66],[70,66],[25,44],[55,44],[40,22]];for(let i=0;i<n;i++){const[x,y]=pos[i];bl.push(i===5?`<path d="M${x-26} ${y+22}L${x+15} ${y-4}L${x+56} ${y+22}z" fill="#e8453c" stroke="#2b2118" stroke-width="2.5"/>`:`<rect x="${x}" y="${y}" width="30" height="22" rx="2" fill="${['#ffd23f','#ff9f1c','#8fd6f7','#c39bff','#7cc95a'][i%5]}" stroke="#2b2118" stroke-width="2.5"/>`)}
+ const done=n>=HN,ani=ANIMALS.concat(FRIENDS).find(a=>a.id===HOUSE_ANI[(h.a||0)%HOUSE_ANI.length]);
+ return`<svg viewBox="0 0 110 100"><ellipse class="sh" cx="55" cy="94" rx="50" ry="5"/><rect x="2" y="88" width="106" height="6" fill="#c9945a" stroke="#2b2118" stroke-width="2"/>${bl.join('')}${done?`<rect x="45" y="70" width="20" height="18" fill="#5a3a22" stroke="#2b2118" stroke-width="2"/>`:''}${!n?'<path d="M55 50v16M47 58h16" stroke="#fff" stroke-width="4" opacity=".85"/>':''}</svg>`+(done&&ani?`<div style="position:absolute;right:-18%;bottom:0;width:45%">${ani.svg}</div>`:'')}
+const houseEl=place(houseSvg(house),156,154,'clamp(70px,14vmin,130px)','tap',154);houseEl.style.position='absolute';houseEl.setAttribute('aria-label','동물 집 짓기');
+houseEl.addEventListener('click',e=>{e.stopPropagation();hop(houseEl);if(!myKid)return;const h={...house,by:[...(house.by||[])]};
+ if(h.n>=HN){if(Date.now()-(+h.at||0)>20*3600000){Object.assign(h,{n:0,last:null,by:[],a:(h.a||0)+1,at:Date.now()});sayAt(houseEl,'새 집을 지어 볼까?');saveHouse(h);return}
+  const names=h.by.map(id=>kidOf(id)).filter(Boolean).map(k=>k.name);sayAt(houseEl,names.length>1?names.join(', ')+'가 같이 지은 집!':'우리가 지은 집!');return}
+ const friend=KIDS.some(k=>k.id!==myKid&&online.has(k.id));if(friend&&h.last===myKid){sayAt(houseEl,'이번엔 친구 차례! 같이 지어요');return}
+ h.n++;h.last=myKid;if(!h.by.includes(myKid))h.by.push(myKid);h.at=Date.now();sfx('plop',.4);
+ if(h.n>=HN){sparkle(houseEl);setTimeout(()=>sfx('yay',.3),300);const a=ANIMALS.concat(FRIENDS).find(x=>x.id===HOUSE_ANI[(h.a||0)%HOUSE_ANI.length]);sayAt(houseEl,(a?a.name:'동물')+' 집 완성! 고마워요!');if(h.by.length>1)albumAdd('house_'+h.at,{t:'house',a:h.a||0,kids:h.by.slice(0,6)})}
+ else sayAt(houseEl,'블록 '+h.n+'개! '+(HN-h.n)+'개 남았어요');saveHouse(h)});
+function saveHouse(h){house=h;LS.set('farmHouse',h);houseEl.innerHTML=houseSvg(h);if(db)db.doc('house/h').set(h).catch(()=>{})}
+function gotHouse(v){if(!v||typeof v.n!=='number'||!Array.isArray(v.by))return;if((+v.at||0)<(+house.at||0))return;house={n:Math.max(0,Math.min(HN,v.n|0)),last:KN[v.last]?v.last:null,by:v.by.filter(x=>KN[x]),a:v.a|0,at:+v.at||0};LS.set('farmHouse',house);houseEl.innerHTML=houseSvg(house)}
+/* 같이 퀴즈: 두 사람이 같은 문제를 맞히면 둘 다 하트 */
+let co=null,coWon=LS.get('farmCoWon',{})||{};
+function coNew(){const plus=Math.random()<.6;let a,b;if(plus){a=rnd(1,8);b=rnd(1,10-a)}else{a=rnd(3,10);b=rnd(1,a-1)}return{r:Math.random().toString(36).slice(2,9),a,b,op:plus?'+':'-',ok:[],at:Date.now()}}
+function coAns(q){return q.op==='+'?q.a+q.b:q.a-q.b}
+function coOk(q){return q&&typeof q.a==='number'&&typeof q.b==='number'&&(q.op==='+'||q.op==='-')&&Array.isArray(q.ok)}
+function renderCo(){if(!coOk(co))co=coNew();const q=co,ans=coAns(q),set=new Set([ans]);let g=0;while(set.size<4&&g++<40)set.add(Math.max(0,Math.min(12,ans+rnd(-3,3))));
+ const faces=q.ok.filter(x=>KN[x]).map(x=>faceSvg(kidOf(x))).join('');
+ $('lbody').innerHTML=`<div class="qwrap"><div class="qtop"><div class="qword">${q.a} ${q.op==='+'?'+':'−'} ${q.b} = ?</div></div><div class="qfb" id="qfb">${q.ok.length?'맞힌 친구: ':'친구랑 같이 맞혀요. 둘 다 맞히면 둘 다 하트!'}<span class="cof">${faces}</span></div><div class="qopts">${pickN([...set],set.size).map(m=>`<button class="qbtn" data-q="${m}"><span class="n">${m}</span><span class="w">${KNUM[m]||''}</span></button>`).join('')}</div><div class="mrow" style="justify-content:center;margin-top:10px"><button class="txtbtn" id="conext">다음 문제</button></div></div>`;
+ $('conext').addEventListener('click',()=>{co=coNew();saveCo();renderCo()});coCheck()}
+function coAnswer(b){const q=co;if(!coOk(q))return;if(+b.dataset.q!==coAns(q)){b.classList.remove('shakex');void b.offsetWidth;b.classList.add('shakex');sfx('oops',.3);$('qfb').textContent='다시 생각해 볼까?';return}
+ b.classList.add('right');sfx('yay',.35);if(!q.ok.includes(myKid)){q.ok=[...q.ok,myKid];q.at=Date.now();saveCo()}renderCo()}
+function coCheck(){const q=co;if(!coOk(q)||!q.ok.includes(myKid)||q.ok.filter(x=>KN[x]).length<2||coWon[q.r])return;coWon[q.r]=1;LS.set('farmCoWon',coWon);if([...q.ok].filter(x=>KN[x]).sort()[0]===myKid){hearts+=1;save();bumpCount('hc',hearts)}setTimeout(()=>sfx('heart',.4),400);const f=$('qfb');if(f)f.append(' 둘 다 맞혔어요! 하트 하나!');
+ setTimeout(()=>{if(co===q&&!$('ov-learn').hidden&&lg==='co'){co=coNew();saveCo();renderCo()}},3000)}
+function saveCo(){if(db)db.doc('coquiz/q').set(co).catch(()=>{})}
+function gotCo(v){if(!coOk(v))return;if(co&&co.r===v.r){const ok=[...new Set([...co.ok,...v.ok])].filter(x=>KN[x]);co={...v,ok}}else if(!co||(+v.at||0)>=(+co.at||0))co={...v,ok:v.ok.filter(x=>KN[x])};if(!$('ov-learn').hidden&&lg==='co')renderCo()}
+/* 우리 앨범 */
+let albumList=[];
+function albumAdd(id,v){const doc={...v,at:Date.now()};albumList=[{id,...doc},...albumList.filter(a=>a.id!==id)];if(db)db.doc('album/'+id.replace(/[^a-zA-Z0-9_\-]/g,'_')).set(doc).catch(()=>{});else LS.set('farmAlbum',albumList.slice(0,80))}
+function gotAlbum(list){albumList=list.filter(a=>a&&Array.isArray(a.kids));if(!$('ov-album').hidden)renderAlbum()}
+function openAlbum(){OVS.forEach(id=>{if(id!=='ov-album')hide(id)});show('ov-album');renderAlbum()}
+function renderAlbum(){const d0=new Date();d0.setHours(0,0,0,0);const days=[];for(let i=6;i>=0;i--){const d=new Date(d0);d.setDate(d.getDate()-i);days.push(d)}
+ const key=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),WD='일월화수목금토';
+ const stamps=days.map(d=>{const k=key(d),met=new Set();albumList.forEach(a=>{if(a.t==='meet'&&a.d===k&&a.kids.includes(myKid))a.kids.forEach(x=>{if(x!==myKid&&KN[x])met.add(x)})});
+  return`<div class="stday${k===today()?' now':''}"><b>${WD[d.getDay()]}</b><div class="fc">${[...met].map(x=>faceSvg(kidOf(x))).join('')}</div></div>`}).join('');
+ const mine=albumList.filter(a=>a.t!=='meet'&&a.kids.includes(myKid)).sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,24);
+ const item=a=>{const others=a.kids.filter(x=>x!==myKid&&KN[x]).map(x=>faceSvg(kidOf(x))).join('');const dt=new Date(a.at||0);const when=(dt.getMonth()+1)+'/'+dt.getDate();
+  const what=a.t==='flower'?flowerPot(2,{c:a.c}).replace('<svg','<svg style="width:30px;height:40px"')+'같이 키운 꽃':a.t==='house'?'🏠 같이 지은 집':a.t==='game'?ICON.games+(GAMES[a.g]?GAMES[a.g].name:'놀이')+' 같이 했어요':'';return`<div class="aitem">${what} ${others} <small>${when}</small></div>`};
+ $('albody').innerHTML=`<div class="alsec"><h3>이번 주에 만난 친구</h3><div class="stamps">${stamps}</div></div>
+  <div class="alsec"><h3>같이 한 일</h3><div class="alist">${mine.length?mine.map(item).join(''):'<p>친구랑 꽃을 키우거나, 집을 짓거나, 놀이를 하면 여기에 모여요.</p>'}</div></div>
+  <div class="alsec"><h3>그림</h3><button class="txtbtn" id="algal">저장한 그림 보기</button></div>`;
+ $('algal').addEventListener('click',()=>{hide('ov-album');openGallery()})}
+if(!db){const L=LS.get('farmAlbum',[]);if(Array.isArray(L))albumList=L}
+
 /* ===== 배움 놀이: 소리 맞히기 · 숫자 세기 · 색깔 · 글자 ===== */
 const KNUM=['영','하나','둘','셋','넷','다섯','여섯','일곱','여덟','아홉','열','열하나','열둘','열셋','열넷','열다섯','열여섯','열일곱','열여덟','열아홉','스물','스물하나','스물둘','스물셋','스물넷','스물다섯','스물여섯','스물일곱','스물여덟','스물아홉','서른'];
 const CNAME=[['#e8453c','빨강'],['#ff9f1c','주황'],['#ffd23f','노랑'],['#3f9b3a','초록'],['#2f80ed','파랑'],['#8a5cf6','보라'],['#ff8fab','분홍'],['#8a5a3a','갈색'],['#2b2118','검정'],['#ffffff','하양']];
-const LGAMES=[['math','더하기 빼기'],['sound','소리 맞히기'],['count','숫자 세기'],['eng','영어'],['word','글자']];
+const LGAMES=[['math','더하기 빼기'],['sound','소리 맞히기'],['count','숫자 세기'],['eng','영어'],['word','글자'],['co','같이 퀴즈']];
 const ENG=[['cow','cow'],['pig','pig'],['chick','chicken'],['sheep','sheep'],['duck','duck'],['horse','horse'],['dog','dog'],['goat','goat'],['bunny','rabbit'],['f:apple','apple'],['f:carrot','carrot'],['f:corn','corn'],['x:egg','egg'],['x:heart','heart'],['x:flower','flower'],['x:sun','sun'],['x:star','star']];
 let lg='math',lAns=null,lLock=false,lStar=0;
 /* 난이도: 세아(2021년 5월생) 2단계, 찌안(2020년 3월생) 3단계, 아기 0단계, 어른 4단계. 정답 20개마다 한 단계씩 올라가요 */
@@ -1521,13 +1656,14 @@ function newQuiz(){lLock=false;$('ltabs').innerHTML=LGAMES.map(([id,t])=>`<butto
  else{const ch=pickN(ANIMALS,Math.min(ANIMALS.length,nOpts()));lAns=ch[0].id;
   top=`<div class="qbig">${ch[0].svg}</div>`;
   opts=pickN(ch,ch.length).map(a=>`<button class="qbtn" data-q="${a.id}" style="min-height:80px"><span class="n" style="font-size:clamp(30px,7vmin,52px)">${a.name}</span></button>`).join('')}
+ if(lg==='co'){renderCo();return}
  $('lbody').innerHTML=`<div class="qwrap"><div class="qtop">${top}</div><div class="qfb" id="qfb"></div><div class="qopts">${opts}</div></div>`;
  const qp=$('qplay');if(qp)qp.addEventListener('click',playQ)}
 function playQ(){animalSound(lAns);hop($('qplay'))}
 const SUNI=`<svg viewBox="0 0 60 60"><g stroke="#f4a300" stroke-width="4" stroke-linecap="round"><path d="M30 4v8M30 48v8M4 30h8M48 30h8M11 11l6 6M43 43l6 6M11 49l6-6M43 17l6-6"/></g><circle cx="30" cy="30" r="14" fill="#ffd23f" ${S}/></svg>`,STARI=`<svg viewBox="0 0 60 60"><path d="M30 4l7.6 16.6 18 2-13.4 12.2 3.8 17.8L30 43.6 14 52.6l3.8-17.8L4.4 22.6l18-2z" fill="#ffd23f" ${S}/></svg>`;
 function engPic(id){if(id.startsWith('f:'))return FOODS.find(f=>f.id===id.slice(2)).svg;if(id==='x:egg')return EGG;if(id==='x:heart')return HEART;if(id==='x:flower')return flower('#ff8fab');if(id==='x:sun')return SUNI;if(id==='x:star')return STARI;return (ANIMALS.find(a=>a.id===id)||FRIENDS.find(a=>a.id===id)).svg}
 $('ltabs').addEventListener('click',e=>{const b=e.target.closest('[data-lg]');if(!b)return;lg=b.dataset.lg;sfx('tap',.5);newQuiz()});
-$('lbody').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b||lLock)return;const ok=String(lAns)===b.dataset.q,fb=$('qfb');
+$('lbody').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b||lLock)return;if(lg==='co'){coAnswer(b);return}const ok=String(lAns)===b.dataset.q,fb=$('qfb');
  if(ok){lLock=true;b.classList.add('right');sfx('yay',.45);
   const nm=lg==='count'||lg==='math'?lAns+', '+(KNUM[lAns]||''):lg==='eng'?lAns:ANIMALS.find(a=>a.id===lAns).name;fb.textContent='딩동댕! '+nm+'!';
   lStar++;LS.set('farmStar_'+myKid,lStar);renderStars();if(lStar%3===0){hearts+=1;save();bumpCount('hc',hearts);fb.textContent+=' 하트 하나!';setTimeout(()=>sfx('heart',.5),500)}
@@ -1550,11 +1686,13 @@ const cStage=t=>!t?0:Date.now()-t>=GROW?3:Date.now()-t>=GROW*.4?2:1;
 place(`<svg viewBox="0 0 70 80"><ellipse class="sh" cx="35" cy="77" rx="14" ry="3"/><rect x="31" y="34" width="8" height="43" fill="#8a5a3a" ${S}/><rect x="6" y="6" width="58" height="32" fill="#f6d77a" ${S}/><g transform="translate(20 7) scale(.5)">${FOODS[1].svg.replace(/<svg[^>]*>|<\/svg>/g,'')}</g></svg>`,18,196,'clamp(36px,7vmin,62px)','deco',196);
 const cornSpots=[0,1,2,3].map(i=>{const x=26+i*8,y=196+(i%2)*4,el=place(cornSvg(cStage(corn[i])),x,y,'clamp(38px,7.4vmin,64px)','tap',Math.round(y));el.setAttribute('role','button');el.setAttribute('aria-label','옥수수 밭');el.addEventListener('click',e=>{e.stopPropagation();tapCorn(i)});return el});
 const watered=[0,0,0,0];
+let cornAt=0;function shareCorn(){cornAt=Date.now();if(db)db.doc('corn/field').set({c:corn,at:cornAt}).catch(()=>{})}
+function gotCorn(v){if(!v||!Array.isArray(v.c)||v.c.length!==4||(+v.at||0)<cornAt)return;cornAt=+v.at||0;corn=v.c.map(x=>+x||0);LS.set('farmCorn',corn);drawCorn()}
 function drawCorn(){cornSpots.forEach((el,i)=>{const s=cStage(corn[i]);if(el.dataset.s!==String(s)){el.dataset.s=s;el.innerHTML=cornSvg(s)}})}
 function tapCorn(i){const el=cornSpots[i],s=cStage(corn[i]);hop(el);
- if(s===0){corn[i]=Date.now();LS.set('farmCorn',corn);sfx('plop',.5);sayAt(el,'씨앗 심었다!');drawCorn();return}
- if(s===3){corn[i]=0;LS.set('farmCorn',corn);sfx('yay',.4);sparkle(el);sayAt(el,'옥수수 수확!');food='corn';renderBar();hop(bar.querySelector('[data-food=corn]'));drawCorn();return}
- if(Date.now()-watered[i]>60000){watered[i]=Date.now();corn[i]-=2*60*1000;LS.set('farmCorn',corn);sfx('splash',.5);for(let j=0;j<3;j++)setTimeout(()=>fxOn(el,DROP,'spark'),j*120);sayAt(el,'물 주기! 쑥쑥');drawCorn()}
+ if(s===0){corn[i]=Date.now();LS.set('farmCorn',corn);shareCorn();sfx('plop',.5);sayAt(el,'씨앗 심었다!');drawCorn();return}
+ if(s===3){corn[i]=0;LS.set('farmCorn',corn);shareCorn();sfx('yay',.4);sparkle(el);sayAt(el,'옥수수 수확!');food='corn';renderBar();hop(bar.querySelector('[data-food=corn]'));drawCorn();return}
+ if(Date.now()-watered[i]>60000){watered[i]=Date.now();corn[i]-=2*60*1000;LS.set('farmCorn',corn);shareCorn();sfx('splash',.5);for(let j=0;j<3;j++)setTimeout(()=>fxOn(el,DROP,'spark'),j*120);sayAt(el,'물 주기! 쑥쑥');drawCorn()}
  else{const m=Math.max(1,Math.ceil((GROW-(Date.now()-corn[i]))/60000));sayAt(el,m+'분 더 자라요')}}
 drawCorn();setInterval(drawCorn,20000);
 
