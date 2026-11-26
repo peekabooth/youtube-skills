@@ -16,15 +16,15 @@
 | rabbit.mp3 | 토끼 | Freesound "A rabbit is eating a cucumber" by davi-sh — https://freesound.org/people/davi-sh/sounds/482732/ | CC0 |
 | chicken.mp3 | 닭 | Wikimedia Commons "Chickens demanding food" — https://commons.wikimedia.org/wiki/File:Chickens_demanding_food.ogg | 퍼블릭 도메인 |
 
-## 배경음악 (음악 버튼으로 1 → 2 → 3 → 끄기)
+## 배경 소리: 자연의 소리 (음악 버튼으로 숲 → 시냇물 → 바람 → 끄기)
 
-| 파일 | 곡 | 출처 | 라이선스 |
+[RinvalAi/brown-noise-library](https://github.com/RinvalAi/brown-noise-library)에서 고른 루프예요. 모노 64kbps MP3로만 바꿨어요.
+
+| 파일 | 소리 | 원본 녹음 | 라이선스 |
 |---|---|---|---|
-| bgm1.mp3 | "Sunny Afternoon" — HoliznaCC0 | [Alvana Audio](https://github.com/seyedpouramir/alvana-audio) `music/chiptune/sunny-afternoon.mp3` | CC0 1.0 |
-| bgm2.mp3 | "Adventure Begins Loop" — HoliznaCC0 | Alvana Audio `music/chiptune/adventure-begins-loop.mp3` | CC0 1.0 |
-| bgm3.mp3 | "Bouncing" — HoliznaCC0 | Alvana Audio `music/upbeat/bouncing.mp3` | CC0 1.0 |
-
-원곡 작가: HoliznaCC0 (https://opengameart.org/users/holizna). 아이들 귀에 편하도록 고음을 살짝 깎고(6~7kHz 로우패스) 소리 크기를 맞춘 뒤 모노 64kbps로 다시 인코딩했어요.
+| nature-quiet-forest.mp3 | 조용한 숲 | "20090610 0 ambience.ogg" by nille — https://commons.wikimedia.org/wiki/File:20090610_0_ambience.ogg | 퍼블릭 도메인 |
+| nature-mountain-stream.mp3 | 시냇물 | "Snowmelt flowing into lake at Okanagan Mountain Provincial Park.flac" by Extemporalist — https://commons.wikimedia.org/wiki/File:Snowmelt_flowing_into_lake_at_Okanagan_Mountain_Provincial_Park.flac | CC0 1.0 |
+| nature-wind-in-trees.mp3 | 나무 사이 바람 | "245286 dbspin grunewald.wav" by dbspin — https://commons.wikimedia.org/wiki/File:245286_dbspin_grunewald.wav | CC0 1.0 |
 
 ## 효과음
 
