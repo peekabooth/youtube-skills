@@ -27,9 +27,9 @@ svg{display:block;overflow:visible}
 #sun .rays{transform-origin:50px 50px}
 #sun.spin{animation:hop .6s}
 @keyframes turn{to{transform:rotate(360deg)}}
-.cloud{position:absolute;width:clamp(80px,17vmin,160px);pointer-events:none;animation:drift 70s linear infinite}
+.cloud{position:absolute;width:clamp(80px,17vmin,160px);pointer-events:none;animation:drift 180s linear infinite}
 @keyframes drift{from{transform:translateX(-35vw)}to{transform:translateX(135vw)}}
-.bird{position:absolute;width:26px;pointer-events:none;animation:drift 40s linear infinite}
+.bird{position:absolute;width:26px;pointer-events:none;animation:drift 110s linear infinite}
 .bird path{animation:flap 1.4s ease-in-out infinite alternate;transform-origin:center;transform-box:fill-box}
 @keyframes flap{to{transform:scaleY(.4)}}
 #blades{transform-origin:60px 52px;animation:turn 40s linear infinite}
@@ -44,7 +44,7 @@ svg{display:block;overflow:visible}
 #barn.open #cat{transform:translateY(0)}
 #flag{transition:transform .5s cubic-bezier(.5,1.8,.5,1);transform-origin:63px 42px;transform:rotate(90deg)}
 #mailbox.up #flag{transform:rotate(0)}
-.thing{position:absolute;transform:translate(-50%,-100%);cursor:pointer;transition:left 1.1s ease-in-out,top 1.1s ease-in-out}
+.thing{position:absolute;transform:translate(-50%,-100%);cursor:pointer;transition:left 1.8s ease-in-out,top 1.8s ease-in-out}
 .animal{width:clamp(70px,16vmin,148px)}
 .kid{width:clamp(54px,12vmin,104px)}
 .sh{fill:rgba(30,40,10,.18)}
@@ -212,7 +212,7 @@ svg{display:block;overflow:visible}
 .nametag{position:absolute;left:50%;top:100%;transform:translate(-50%,-3px);background:#fff;color:var(--ink);border:2px solid var(--ink);font-size:clamp(12px,2.6vmin,18px);line-height:1.25;padding:0 6px;white-space:nowrap;pointer-events:none}
 .kid.mine .nametag{background:var(--hot)}
 /* 아기 */
-.kid.baby{width:clamp(50px,11vmin,96px);transition:left 2.2s ease-in-out,top 2.2s ease-in-out}
+.kid.baby{width:clamp(50px,11vmin,96px);transition:left 3.2s ease-in-out,top 3.2s ease-in-out}
 .kid.baby.walk svg{animation:crawl .6s ease-in-out infinite alternate}
 @keyframes crawl{from{transform:rotate(-3deg) translateY(0)}to{transform:rotate(3deg) translateY(-3%)}}
 .kid.baby.mine::after{top:-12px}
@@ -234,7 +234,7 @@ svg{display:block;overflow:visible}
 .card .vmark{position:absolute;right:-8px;bottom:-10px;width:36px;height:36px;background:#fff;border:3px solid var(--ink)}
 #lvoice{font-size:20px;color:var(--muted)}
 /* 넓은 지도 */
-#world{position:absolute;left:0;top:0;bottom:0;width:240%;transition:transform .9s ease-in-out;will-change:transform;pointer-events:none}
+#world{position:absolute;left:0;top:0;bottom:0;width:240%;transition:transform 1.6s ease-in-out;will-change:transform;pointer-events:none}
 #world>.thing,#world>.tap,#world>.pick,#world>.fly{pointer-events:auto}
 .edge{position:absolute;top:58%;width:40px;height:50px;border:2px solid rgba(43,33,24,.5);background:rgba(255,255,255,.35);z-index:240;display:grid;place-items:center;cursor:pointer;padding:5px;opacity:0;pointer-events:none;transition:opacity .5s}
 #stage.arrows .edge{opacity:.7;pointer-events:auto}
@@ -409,26 +409,26 @@ svg{display:block;overflow:visible}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<linearGradient id="gCow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e6e3dc"/></linearGradient>
-<linearGradient id="gPig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd0da"/><stop offset="1" stop-color="#f597ae"/></linearGradient>
-<linearGradient id="gHorse" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9945f"/><stop offset="1" stop-color="#a0603a"/></linearGradient>
-<linearGradient id="gDuck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffec94"/><stop offset="1" stop-color="#f6c22c"/></linearGradient>
-<linearGradient id="gHen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf7"/><stop offset="1" stop-color="#ebe3d2"/></linearGradient>
-<radialGradient id="gWool" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e5e0d5"/></radialGradient>
-<linearGradient id="gBarn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a48f"/><stop offset="1" stop-color="#df8371"/></linearGradient>
-<radialGradient id="gLeaf" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#8ddc5c"/><stop offset="1" stop-color="#3f9b3a"/></radialGradient>
-<radialGradient id="gLeaf2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#6cc44c"/><stop offset="1" stop-color="#2f7d30"/></radialGradient>
-<radialGradient id="gApple" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ff7b6b"/><stop offset="1" stop-color="#c91f1f"/></radialGradient>
-<radialGradient id="gWater" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#8fd6f7"/><stop offset="1" stop-color="#3a95cc"/></radialGradient>
-<linearGradient id="gHay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6d77a"/><stop offset="1" stop-color="#d9a73e"/></linearGradient>
-<linearGradient id="gIce" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dff4ff"/><stop offset="1" stop-color="#8cc6f2"/></linearGradient>
-<linearGradient id="gBall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9e6"/><stop offset="1" stop-color="#ffa8c6"/></linearGradient>
+<linearGradient id="gCow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#fffaf2"/></linearGradient>
+<linearGradient id="gPig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc9d4"/><stop offset="1" stop-color="#ffc9d4"/></linearGradient>
+<linearGradient id="gHorse" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3b48e"/><stop offset="1" stop-color="#e3b48e"/></linearGradient>
+<linearGradient id="gDuck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe596"/><stop offset="1" stop-color="#ffe596"/></linearGradient>
+<linearGradient id="gHen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#fffaf2"/></linearGradient>
+<radialGradient id="gWool" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#fffaf2"/></radialGradient>
+<linearGradient id="gBarn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a48f"/><stop offset="1" stop-color="#f4a48f"/></linearGradient>
+<radialGradient id="gLeaf" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#a6d88a"/><stop offset="1" stop-color="#a6d88a"/></radialGradient>
+<radialGradient id="gLeaf2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#93cc80"/><stop offset="1" stop-color="#93cc80"/></radialGradient>
+<radialGradient id="gApple" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ff9f95"/><stop offset="1" stop-color="#ff9f95"/></radialGradient>
+<radialGradient id="gWater" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#a9dbef"/><stop offset="1" stop-color="#a9dbef"/></radialGradient>
+<linearGradient id="gHay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d998"/><stop offset="1" stop-color="#f3d998"/></linearGradient>
+<linearGradient id="gIce" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4ecf8"/><stop offset="1" stop-color="#d4ecf8"/></linearGradient>
+<linearGradient id="gBall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc4d6"/><stop offset="1" stop-color="#ffc4d6"/></linearGradient>
 </defs></svg>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3.2"/></filter></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="4"/><feColorMatrix type="saturate" values=".72"/></filter></svg>
 <div id="stage"><div id="grain"></div>
   <svg class="cloud" style="top:6%;animation-delay:-12s" viewBox="0 0 120 50"><g fill="#fff"><circle cx="30" cy="30" r="18"/><circle cx="55" cy="22" r="22"/><circle cx="82" cy="30" r="17"/><rect x="28" y="30" width="56" height="18"/></g></svg>
-  <svg class="cloud" style="top:15%;animation-delay:-45s;animation-duration:90s" viewBox="0 0 120 50"><g fill="#fff"><circle cx="30" cy="30" r="15"/><circle cx="52" cy="24" r="19"/><circle cx="76" cy="31" r="14"/><rect x="28" y="31" width="50" height="16"/></g></svg>
+  <svg class="cloud" style="top:15%;animation-delay:-80s;animation-duration:240s" viewBox="0 0 120 50"><g fill="#fff"><circle cx="30" cy="30" r="15"/><circle cx="52" cy="24" r="19"/><circle cx="76" cy="31" r="14"/><rect x="28" y="31" width="50" height="16"/></g></svg>
   <svg class="bird" style="top:11%;animation-delay:-8s" viewBox="0 0 26 10"><path d="M1 8q6 -8 12 0q6 -8 12 0" fill="none" stroke="#6b4f3a" stroke-width="2"/></svg>
   <svg class="bird" style="top:18%;animation-delay:-22s;width:20px" viewBox="0 0 26 10"><path d="M1 8q6 -8 12 0q6 -8 12 0" fill="none" stroke="#6b4f3a" stroke-width="2"/></svg>
   <svg id="sun" viewBox="0 0 100 100" aria-label="해"><g class="rays" stroke="#ffb703" stroke-width="6" stroke-linecap="round"><line x1="50" y1="3" x2="50" y2="15"/><line x1="50" y1="85" x2="50" y2="97"/><line x1="3" y1="50" x2="15" y2="50"/><line x1="85" y1="50" x2="97" y2="50"/><line x1="17" y1="17" x2="25" y2="25"/><line x1="75" y1="75" x2="83" y2="83"/><line x1="83" y1="17" x2="75" y2="25"/><line x1="25" y1="75" x2="17" y2="83"/></g><circle cx="50" cy="50" r="28" fill="#ffd23f" stroke="#f4a300" stroke-width="4"/><circle cx="42" cy="40" r="9" fill="#ffe88a"/><g class="eye"><ellipse cx="41" cy="48" rx="3.6" ry="4.6" fill="#2b2118"/><circle cx="42.4" cy="46.2" r="1.5" fill="#fff"/></g><g class="eye"><ellipse cx="59" cy="48" rx="3.6" ry="4.6" fill="#2b2118"/><circle cx="60.4" cy="46.2" r="1.5" fill="#fff"/></g><circle cx="35" cy="57" r="4" fill="#ffad8a"/><circle cx="65" cy="57" r="4" fill="#ffad8a"/><path d="M45 58q5 5 10 0" stroke="#6b4f3a" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
@@ -580,7 +580,7 @@ svg{display:block;overflow:visible}
 {
 const $=id=>document.getElementById(id),stage=$('stage'),bar=$('bar');
 (()=>{try{const c=document.createElement('canvas');c.width=c.height=220;const x=c.getContext('2d'),d=x.createImageData(220,220);for(let i=0;i<d.data.length;i+=4){const v=225+Math.random()*30;d.data[i]=v;d.data[i+1]=v*.97;d.data[i+2]=v*.92;d.data[i+3]=Math.random()<.5?40:0}x.putImageData(d,0,0);document.getElementById('grain').style.backgroundImage=`url(${c.toDataURL()})`}catch(e){}})();
-const ink='#a88a70',S=`stroke="${ink}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`,S2=`stroke="${ink}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
+const ink='#a88a70',S=`stroke="${ink}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"`,S2=`stroke="${ink}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const use=n=>{try{return window.claude&&window.claude.use?Promise.resolve(window.claude.use(n)).catch(()=>null):Promise.resolve(null)}catch(e){return Promise.resolve(null)}};
 const CHARS=[
@@ -616,7 +616,7 @@ function place(html,x,y,w,cls='',z){const d=document.createElement('div');d.clas
 const TREEV={
  oak:(a,b,bl)=>`<svg viewBox="0 0 90 112"><ellipse class="sh" cx="45" cy="108" rx="26" ry="3.5"/><path d="M39 108q3 -22 -1 -46h13q-4 24 -1 46z" fill="#8a5a3a" ${S2}/><path d="M43 98v-14M47 90q3 -4 2 -10M41 76q-2 -4 0 -8" stroke="#6b4429" stroke-width="1.6" fill="none"/><path d="M44 70l-15 -13M47 66l13 -12" stroke="#8a5a3a" stroke-width="4.5" stroke-linecap="round"/><g class="sway2"><circle cx="45" cy="40" r="28" fill="${a}" ${S2}/><circle cx="21" cy="55" r="17" fill="${a}" ${S2}/><circle cx="69" cy="55" r="17" fill="${a}" ${S2}/><circle cx="45" cy="60" r="16" fill="${a}"/><circle cx="33" cy="68" r="9" fill="${a}"/><circle cx="57" cy="68" r="9" fill="${a}"/><circle cx="36" cy="31" r="16" fill="${b}"/><circle cx="59" cy="37" r="11" fill="${b}"/><circle cx="19" cy="50" r="8" fill="${b}"/><circle cx="72" cy="50" r="6" fill="${b}"/><circle cx="31" cy="23" r="5" fill="#fff" opacity=".4"/><circle cx="62" cy="31" r="3" fill="#fff" opacity=".35"/><path d="M52 60q6 4 12 0M27 64q5 3 10 0M38 48q5 3 9 0" stroke="${ink}" stroke-width="1.3" fill="none" opacity=".3"/>${bl?[[26,40],[52,22],[64,50],[40,58],[16,60],[72,62],[48,40]].map(([x,y])=>`<g><circle cx="${x}" cy="${y}" r="3.4" fill="#fff"/><circle cx="${x}" cy="${y}" r="1.4" fill="#ffd23f"/></g>`).join(''):[[28,46],[60,58],[50,26]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6" fill="#e8453c" opacity=".85"/>`).join('')}</g></svg>`,
  pine:(a,b)=>`<svg viewBox="0 0 72 112"><ellipse class="sh" cx="36" cy="108" rx="20" ry="3"/><rect x="31" y="88" width="10" height="20" fill="#7a4a2a" ${S2}/><path d="M34 94v8" stroke="#5a3424" stroke-width="1.5"/><g class="sway2"><path d="M36 3L58 38H47L65 64H52L70 92H2L20 64H7L25 38H14Z" fill="${a}" ${S2}/><path d="M36 3L46 38H37L51 64H39L53 92H36Z" fill="${b}" opacity=".5"/><path d="M25 38l7 -6M20 64l8 -7M14 92l9 -8M47 38l-5 -5M52 64l-6 -6" stroke="#fff" stroke-width="1.6" opacity=".3"/><circle cx="36" cy="3" r="2.5" fill="#ffd23f"/></g></svg>`};
-const TCOL={oak:['#4f9e3e','#7cc95e'],pine:['#2f7d4a','#5fae6a'],bloom:['#ff9fbd','#ffd0de']};
+const TCOL={oak:['#a2d488','#c4e6aa'],pine:['#8cc79a','#b2dcb9'],bloom:['#ffbccb','#ffdbe4']};
 const treeOf=t=>t==='pine'?TREEV.pine(...TCOL.pine):TREEV.oak(...TCOL[t],t==='bloom');
 [[5,43,'oak'],[18,41,'pine'],[27,42,'bloom'],[50,40,'pine'],[57,42,'oak'],[80,43,'bloom'],[104,41,'pine'],[112,43,'oak'],[132,41,'bloom'],[152,42,'pine'],[162,43,'oak'],[178,41,'pine'],[196,43,'oak'],[216,42,'pine'],[232,43,'bloom']].forEach(([x,y,t],i)=>{const el=placeT(treeOf(t),x,y,t==='pine'?'clamp(28px,6vmin,54px)':'clamp(36px,7.5vmin,70px)','deco');world.insertBefore(el,$('fence'));const g=el.querySelector('.sway2');if(g)g.style.animationDelay=(-i*.7)+'s'});
 [[8,168,'pine'],[60,228,'oak'],[78,186,'bloom'],[140,184,'pine'],[134,234,'oak'],[170,234,'bloom'],[228,160,'pine'],[232,222,'oak'],[6,234,'bloom'],[190,226,'pine'],
@@ -916,7 +916,7 @@ bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return
  else if(b.dataset.food){if(b.dataset.food==='apple'&&!apples){tree.classList.remove('shake');void tree.offsetWidth;tree.classList.add('shake');return}food=food===b.dataset.food?null:b.dataset.food;renderBar()}});
 
 const XMAX=100*W-4;
-function walk(k,x,y){const dx=x-k.x;if(Math.abs(dx)>2.5)k.el.classList.toggle('left',dx<0);k.el.classList.add('walk');k.el.style.left=wx(x);k.el.style.top=wy(y);k.el.style.zIndex=Math.round(y)+1;k.x=x;k.y=y;clearTimeout(k.t);k.t=setTimeout(()=>k.el.classList.remove('walk'),k.baby?2200:1100);if(k.id===myKid){pushPresence();camera()}}
+function walk(k,x,y){const dx=x-k.x,dist=Math.hypot(dx,y-k.y),dur=Math.max(k.baby?3.2:1.8,dist/(k.baby?9:16));k.el.style.transitionDuration=dur.toFixed(2)+'s';if(Math.abs(dx)>2.5)k.el.classList.toggle('left',dx<0);k.el.classList.add('walk');k.el.style.left=wx(x);k.el.style.top=wy(y);k.el.style.zIndex=Math.round(y)+1;k.x=x;k.y=y;clearTimeout(k.t);k.t=setTimeout(()=>k.el.classList.remove('walk'),dur*1000);if(k.id===myKid){pushPresence();camera()}}
 const pct=e=>{const r=world.getBoundingClientRect();return[(e.clientX-r.left)/r.width*100*W,(e.clientY-r.top)/r.height*100*H]};
 stage.addEventListener('click',e=>{if(e.target.closest('#counts,#momzone,.edge,#friends,#mini,#invite,#kmenu'))return;$('kmenu').hidden=true;const[x,y]=pct(e);if(y<50)return;walk(me(),Math.min(XMAX,Math.max(4,x)),Math.min(YMAX,y))});
 let camX=0,camY=0;
