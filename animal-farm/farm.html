@@ -1577,7 +1577,7 @@ function tapPot(i){const id='p'+i,v=garden[id],st=gStage(v),el=potEls[i];hop(el)
   if(garden[id].by===myKid&&Date.now()-(+garden[id].at||0)<10*60000){sayAt(el,'친구에게 물 부탁해 볼까?');return}
   garden[id]={...garden[id],w:myKid,wat:Date.now()};sfx('splash',.4);sparkle(el);const pk=kidOf(garden[id].by);sayAt(el,(pk&&pk.id!==myKid?nmP(pk.name,'이랑','랑')+' 같이 ':'')+'꽃이 피었어요!');
   if(pk&&pk.id!==myKid)albumAdd('flower_'+id+'_'+garden[id].at,{t:'flower',c:garden[id].c,kids:[pk.id,myKid]});saveGarden(id)}
- else{const a=kidOf(v.by),b=kidOf(v.w);sayAt(el,a&&b&&a!==b?nmP(a.name,'이랑','랑')+' '+b.name+'이 같이 키운 꽃':'예쁜 꽃이에요')}
+ else{const a=kidOf(v.by),b=kidOf(v.w);sayAt(el,a&&b&&a!==b?nmP(a.name,'이랑','랑')+' '+iga(b.name)+' 같이 키운 꽃':'예쁜 꽃이에요')}
  drawGarden()}
 function saveGarden(id){LS.set('farmGarden',garden);if(db)db.doc('garden/'+id).set(garden[id]).catch(()=>{})}
 setInterval(drawGarden,30000);drawGarden();
