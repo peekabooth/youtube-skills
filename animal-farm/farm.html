@@ -348,7 +348,8 @@ svg{display:block;overflow:visible}
 /* 말풍선 채팅 */
 #talk{flex:none;background:var(--bar);border-top:4px solid var(--ink);padding:6px max(8px,env(safe-area-inset-right,0px)) 6px max(8px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:6px}
 #talk .strow button{width:46px;height:46px;font-size:26px}
-#talk .strow button.ph{font-size:18px;width:auto}
+#talk .strow button.ph{font-size:18px;width:auto;height:40px;border-radius:20px}
+#talk .strow button{border-radius:12px}
 #talk .inrow .ib{--b:46px}
 #talk #chatin{height:46px;font-size:20px}
 .say{position:absolute;left:50%;bottom:calc(100% + 20px);background:#fff;color:var(--ink);border:3px solid var(--ink);padding:4px 10px;font-size:clamp(16px,3.6vmin,26px);line-height:1.25;width:max-content;max-width:min(60vw,300px);white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none;z-index:5;animation:say 5.2s ease forwards}
@@ -454,6 +455,7 @@ svg{display:block;overflow:visible}
 </div>
 <div id="talk" hidden>
   <div class="strow" id="strow"></div>
+  <div class="strow" id="phrow"></div>
   <div id="chatpart"></div>
   <div class="inrow"><button class="ib mic" id="cmic" hidden aria-label="말로 쓰기"></button><input id="chatin" maxlength="60" enterkeyhint="send" autocomplete="off" aria-label="보낼 말"><button class="ib" id="csend" aria-label="보내기"></button></div>
 </div>
@@ -1337,10 +1339,10 @@ $('psend').addEventListener('click',async()=>{if(sending||!pL)return;const msg=$
  finally{sending=false;$('pcancel').disabled=false}});
 
 /* ===== 말풍선 채팅: 아래 입력창에서 보내면 내 캐릭터 머리 위에 떠요 (같이 접속한 화면에도) ===== */
-const STK=['👋','❤️','😀','😂','😢','😮','👍','🎉','🐮','🐷','🐥','🍎','🌈','⭐'];
+const STK=['👋','❤️','😀','😢','😮','🎉'];
 const PHR=['안녕!','같이 놀자!','이리 와!','사랑해','행복해','고마워','미안해','잘 자'];
 let chats=[];const chatBoot=Date.now();
-function cleanChat(id,d){if(!d||!KN[d.kid])return null;const st=STK.includes(d.s)||['🐴','🐑','🦆','🥕','🌙','💩'].includes(d.s)?d.s:'',t=typeof d.t==='string'?d.t.slice(0,80):'';if(!st&&!t.trim())return null;return{id:String(id),kid:d.kid,s:st,t,at:+d.at||0}}
+function cleanChat(id,d){if(!d||!KN[d.kid])return null;const st=STK.includes(d.s)||['😂','👍','🐮','🐷','🐥','🍎','🌈','⭐','🐴','🐑','🦆','🥕','🌙','💩'].includes(d.s)?d.s:'',t=typeof d.t==='string'?d.t.slice(0,80):'';if(!st&&!t.trim())return null;return{id:String(id),kid:d.kid,s:st,t,at:+d.at||0}}
 function ding(){sfx('ding',.4)}
 function talkSay(k,c){if(!k||!k.el)return;const old=k.el.querySelector('.say');if(old)old.remove();const b=document.createElement('div');b.className='say'+(c.s?' st':'');b.textContent=c.s||c.t;k.el.appendChild(b);k.el.classList.add('talking');clearTimeout(k.sayT);k.sayT=setTimeout(()=>{b.remove();k.el.classList.remove('talking')},5200)}
 function gotChats(list){const had=new Set(chats.map(c=>c.id)),fresh=list.filter(c=>!had.has(c.id)&&c.kid!==myKid&&c.at>chatBoot-8000);chats=list;
@@ -1352,8 +1354,8 @@ async function sendChat(d){if(!myKid||chatBusy)return false;const doc={kid:myKid
  try{if(db)await db.collection('chat').add(doc);else{const arr=[...chats,{id:'c'+doc.at,...doc}].slice(-60);LS.set('farmChat',arr);chats=arr}return true}
  catch(e){sfx('oops',.45);$('csend').classList.add('shakex');setTimeout(()=>$('csend').classList.remove('shakex'),500);return false}
  finally{chatBusy=false}}
-$('strow').innerHTML=STK.map(x=>`<button data-st="${x}" aria-label="스티커">${x}</button>`).join('')+PHR.map(x=>`<button class="ph" data-ph="${x}">${x}</button>`).join('');
-$('strow').addEventListener('click',e=>{const b=e.target.closest('[data-st],[data-ph]');if(!b)return;hop(b);sendChat(b.dataset.st?{s:b.dataset.st}:{t:b.dataset.ph})});
+$('strow').innerHTML=STK.map(x=>`<button data-st="${x}" aria-label="스티커">${x}</button>`).join('');$('phrow').innerHTML=PHR.map(x=>`<button class="ph" data-ph="${x}">${x}</button>`).join('');
+['strow','phrow'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('[data-st],[data-ph]');if(!b)return;hop(b);sendChat(b.dataset.st?{s:b.dataset.st}:{t:b.dataset.ph})}));
 $('csend').innerHTML=ICON.send;$('cmic').innerHTML=ICON.mic;
 async function sendTyped(){const i=$('chatin');if(listening&&dict)await dict.stop().catch(()=>{});if(await sendChat({t:i.value}))i.value=''}
 $('csend').addEventListener('click',sendTyped);
