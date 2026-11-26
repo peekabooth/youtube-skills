@@ -285,6 +285,8 @@ svg{display:block;overflow:visible}
 #ov-time{background:rgba(20,24,60,.82)}
 #tleft{position:absolute;left:50%;top:max(8px,env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:250;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:2px 12px;font-weight:900;font-size:16px;box-shadow:3px 3px 0 var(--ink);pointer-events:none}
 #tleft.low{background:var(--hot)}
+#invite{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:1100;background:#fffaf0;color:var(--ink);border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);padding:10px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:min(92vw,360px);text-align:center}
+#invite[hidden]{display:none}#invite p{margin:0;font-size:19px;font-weight:800}.ivf svg{width:56px;height:56px}.ivb{display:flex;gap:8px}
 .qeng{font-family:ui-rounded,'Arial Rounded MT Bold',system-ui,sans-serif;letter-spacing:.04em;text-transform:lowercase}.qeng u{color:var(--hot);text-decoration:none}
 .qask{display:flex;align-items:center;gap:6px;font-size:clamp(20px,4.5vmin,30px);background:#fff;color:var(--ink);border:3px solid var(--ink);padding:4px 12px}
 .qcnt svg{width:clamp(30px,6vmin,46px)}
@@ -401,6 +403,7 @@ svg{display:block;overflow:visible}
   <div id="counts"></div>
   <div id="friends" aria-label="지금 같이 있는 친구"></div>
   <div id="tleft" hidden></div>
+  <div id="invite" hidden><div class="ivf" id="ivf"></div><p id="ivt"></p><div class="ivb"><button class="txtbtn primary" id="ivyes">같이 그릴래!</button><button class="txtbtn" id="ivno">다음에</button></div></div>
   <div id="mini" aria-label="농장 지도 (누르면 그곳으로 가요)"><canvas id="minic"></canvas></div>
   <div id="momzone" aria-hidden="true"><svg viewBox="0 0 40 40"><rect x="13" y="18" width="14" height="12" fill="#fff" stroke="#2b2118" stroke-width="2"/><path d="M16 18v-4q4 -6 8 0v4" fill="none" stroke="#fff" stroke-width="2.5"/><circle class="ring" cx="20" cy="20" r="17" fill="none" stroke="#ffd23f" stroke-width="4" stroke-dasharray="106.8" stroke-dashoffset="106.8"/></svg></div>
 </div>
@@ -853,7 +856,7 @@ bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return
 const XMAX=100*W-4;
 function walk(k,x,y){const dx=x-k.x;if(Math.abs(dx)>.3)k.el.classList.toggle('left',dx<0);k.el.classList.add('walk');k.el.style.left=wx(x);k.el.style.top=wy(y);k.el.style.zIndex=Math.round(y)+1;k.x=x;k.y=y;clearTimeout(k.t);k.t=setTimeout(()=>k.el.classList.remove('walk'),k.baby?2200:1100);if(k.id===myKid){pushPresence();camera()}}
 const pct=e=>{const r=world.getBoundingClientRect();return[(e.clientX-r.left)/r.width*100*W,(e.clientY-r.top)/r.height*100*H]};
-stage.addEventListener('click',e=>{if(e.target.closest('#counts,#momzone,.edge,#friends,#mini'))return;const[x,y]=pct(e);if(y<50)return;walk(me(),Math.min(XMAX,Math.max(4,x)),Math.min(YMAX,y))});
+stage.addEventListener('click',e=>{if(e.target.closest('#counts,#momzone,.edge,#friends,#mini,#invite'))return;const[x,y]=pct(e);if(y<50)return;walk(me(),Math.min(XMAX,Math.max(4,x)),Math.min(YMAX,y))});
 let camX=0,camY=0;
 /* ===== 미니맵 ===== */
 const minic=$('minic'),mctx=minic.getContext('2d');let miniW=0,miniH=0;
@@ -897,7 +900,7 @@ tree.addEventListener('click',e=>{e.stopPropagation();tree.classList.remove('sha
  });
 setInterval(()=>{const gone=[...tree.querySelectorAll('[data-a]')].find(g=>g.style.display==='none');if(gone)gone.style.display=''},10*60*1000);
 
-const FEED_GAP=10*60*1000;let fedAt=LS.get('farmFed',{})||{};
+const FEED_GAP=30*60*1000;let fedAt=LS.get('farmFed',{})||{};
 const isFull=id=>Date.now()-(+fedAt[id]||0)<FEED_GAP,markFed=id=>{fedAt[id]=Date.now();LS.set('farmFed',fedAt)};
 function tapAnimal(a){
  if(food&&isFull(a.id)){hop(a.el);sayAt(a.el,'배불러요~ 이따 줘!');return}
@@ -919,8 +922,12 @@ function feedKid(k){const f=food;if(!f)return;
   if(f==='apple'&&!apples){food=null;renderBar()}},k.id===myKid?50:900)}
 /* 먹이 주기를 다른 화면에도 보여주기 (db acts) */
 const actBoot=Date.now(),actSeen=new Set();
+let invT=0;function showInvite(k){if(!k||!myKid||!$('ov-easel').hidden&&!solo)return;$('ivf').innerHTML=faceSvg(k);$('ivt').textContent=iga(k.name)+' 같이 그림 그리자고 해요. 같이 그릴래?';$('invite').hidden=false;sfx('ding',.3);clearTimeout(invT);invT=setTimeout(()=>{$('invite').hidden=true},45000)}
+$('ivyes').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;if($('ov-easel').hidden)openEasel();setSolo(false)});
+$('ivno').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;sfx('pop2',.4)});
 function shareAct(t,id,f){if(!db||!myKid)return;db.collection('acts').add({by:myKid,t,id,f,at:Date.now()}).catch(()=>{})}
-function gotActs(list){const now=Date.now();list.forEach(a=>{if(actSeen.has(a.id))return;actSeen.add(a.id);const v=a.v;if(!v||v.by===myKid||!KN[v.by]||!['kid','ani'].includes(v.t)||!['carrot','corn','apple','hay'].includes(v.f))return;
+function gotActs(list){const now=Date.now();list.forEach(a=>{if(actSeen.has(a.id))return;actSeen.add(a.id);const v=a.v;if(v&&v.t==='draw'&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<60000)showInvite(kidOf(v.by));return}
+  if(!v||v.by===myKid||!KN[v.by]||!['kid','ani'].includes(v.t)||!['carrot','corn','apple','hay'].includes(v.f))return;
   const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const giver=kidOf(v.by);
   if(v.t==='kid'){const k=kidOf(v.id);if(!k)return;k.el.classList.remove('munch');void k.el.offsetWidth;k.el.classList.add('munch');chomp();fxOn(k.el,HEART,'heart');sayAt(k.el,KID_EAT[v.f]||'냠냠!');
    if(v.id===myKid){hearts+=1;save();bumpCount('hc',hearts);setTimeout(()=>sayAt(k.el,iga(giver.name)+' 줬어요! 고마워!'),1600);setTimeout(()=>sfx('heart',.4),400)}}
@@ -1113,7 +1120,7 @@ et.addEventListener('click',e=>{const b=e.target.closest('[data-e]');if(!b)retur
 function setSolo(v){solo=!!v;paper.classList.toggle('solo',solo);if(solo){partner=null;$('pcur').hidden=true}$('emode').hidden=true;renderTools();presenceEasel(true);sfx('pop',.5)}
 function openEasel(){if(!myKid)return;renderTools();show('ov-easel');requestAnimationFrame(fitPaper);presenceEasel(true);
  $('emsoloi').innerHTML=faceSvg(me());$('emtogi').innerHTML=faceSvg(me())+HEART.replace('<svg','<svg style="width:28px;height:28px;align-self:center"')+(KIDS.find(k=>k.id!==myKid&&online.has(k.id))?faceSvg(KIDS.find(k=>k.id!==myKid&&online.has(k.id))):faceSvg(KIDS.find(k=>k.id!==myKid)));$('emode').hidden=false}
-$('emsolo').addEventListener('click',()=>setSolo(true));$('emtog').addEventListener('click',()=>setSolo(false));
+$('emsolo').addEventListener('click',()=>setSolo(true));$('emtog').addEventListener('click',()=>{setSolo(false);if(Date.now()-(window._invAt||0)>60000){window._invAt=Date.now();shareAct('draw','all','x')}});
 function composite(w=480){const h=Math.round(w*.75),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);shownIds().forEach(id=>x.drawImage(layers[id].c,0,0,w,h));return c.toDataURL('image/jpeg',.78)}
 
 /* ===== 저장소 (db, 없으면 이 기기) ===== */
@@ -1365,11 +1372,11 @@ const shopObj=place(`<svg viewBox="0 -24 110 124"><ellipse class="sh" cx="55" cy
 shopObj.addEventListener('click',e=>{e.stopPropagation();hop(shopObj);note();openShop()});
 
 /* ===== 함께 있으면 하트: 친구 곁에 3분 같이 있으면 둘 다 하트 하나 ===== */
-const NEAR_X=16,NEAR_Y=12,TOG_NEED=180;let togSec={},togLast=Date.now();
+const NEAR_X=16,NEAR_Y=12,TOG_NEED=60;let togSec={},togLast=Date.now();
 setInterval(()=>{const now=Date.now(),dt=Math.min(15,(now-togLast)/1000);togLast=now;if(!myKid||document.hidden)return;const m=me();
  KIDS.forEach(k=>{if(k.id===myKid||!online.has(k.id))return;const near=Math.abs(k.x-m.x)<NEAR_X&&Math.abs(k.y-m.y)<NEAR_Y;
   if(!near){togSec[k.id]=Math.max(0,(togSec[k.id]||0)-dt);return}togSec[k.id]=(togSec[k.id]||0)+dt;
-  if(togSec[k.id]%40<dt)fxOn(k.el,HEART,'heart');
+  if(togSec[k.id]%20<dt)fxOn(k.el,HEART,'heart');
   if(togSec[k.id]>=TOG_NEED){togSec[k.id]=0;hearts+=1;save();bumpCount('hc',hearts);fxOn(m.el,HEART,'heart');fxOn(k.el,HEART,'heart');sfx('heart',.35);sayAt(m.el,(c=>k.name+(c>=0&&c<11172&&c%28?'이랑':'랑'))(k.name.charCodeAt(k.name.length-1)-0xAC00)+' 함께해서 하트 하나!')}})},5000);
 
 /* ===== 하루 놀이 시간 (아이들만, 캐릭터별 하루 합계) ===== */
@@ -1412,7 +1419,7 @@ function numOpts(ans,max){const set=new Set([ans]);let g=0;while(set.size<nOpts(
 const pickN=(a,n)=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b.slice(0,n)};
 const iey=w=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?'이에요':'예요')};
 function openLearn(g){if(!myKid)return;lStar=+LS.get('farmStar_'+myKid,0)||0;if(g)lg=g;OVS.forEach(id=>{if(id!=='ov-learn'&&id!=='ov-pick')hide(id)});show('ov-learn');newQuiz()}
-function renderStars(){$('lstars').innerHTML=Array.from({length:5},(_,i)=>`<span class="${i<lStar%5?'':'off'}">${SPARK}</span>`).join('')}
+function renderStars(){$('lstars').innerHTML=Array.from({length:3},(_,i)=>`<span class="${i<lStar%3?'':'off'}">${SPARK}</span>`).join('')}
 function newQuiz(){lLock=false;$('ltabs').innerHTML=LGAMES.map(([id,t])=>`<button class="txtbtn ltab${lg===id?' primary':''}" data-lg="${id}">${t}</button>`).join('');renderStars();
  let top='',opts='';
  if(lg==='sound'){const ch=pickN(ANIMALS.filter(a=>SNDF[a.id]),3);lAns=ch[0].id;
@@ -1446,7 +1453,7 @@ $('ltabs').addEventListener('click',e=>{const b=e.target.closest('[data-lg]');if
 $('lbody').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b||lLock)return;const ok=String(lAns)===b.dataset.q,fb=$('qfb');
  if(ok){lLock=true;b.classList.add('right');sfx('yay',.45);
   const nm=lg==='count'||lg==='math'?lAns+', '+(KNUM[lAns]||''):lg==='eng'?lAns:ANIMALS.find(a=>a.id===lAns).name;fb.textContent='딩동댕! '+nm+'!';
-  lStar++;LS.set('farmStar_'+myKid,lStar);renderStars();hearts+=1;save();bumpCount('hc',hearts);fb.textContent+=' 하트 하나!';setTimeout(()=>sfx('heart',.5),500)
+  lStar++;LS.set('farmStar_'+myKid,lStar);renderStars();if(lStar%3===0){hearts+=1;save();bumpCount('hc',hearts);fb.textContent+=' 하트 하나!';setTimeout(()=>sfx('heart',.5),500)}
   setTimeout(()=>{if(!$('ov-learn').hidden)newQuiz()},1700);return}
  b.classList.remove('shakex');void b.offsetWidth;b.classList.add('shakex');sfx('oops',.4);
  if(lg==='sound'&&0){}else if(lg==='sound'){fb.textContent='다시 들어 볼까?';setTimeout(playQ,500)}else if(lg==='count'||lg==='math')fb.textContent=lg==='math'&&b.closest('.qopts')?'사과를 하나씩 세어 봐!':'하나씩 손가락으로 세어 봐!';else fb.textContent='다시 골라 볼까?'});
@@ -1478,7 +1485,7 @@ drawCorn();setInterval(drawCorn,20000);
 const WEED=`<svg viewBox="0 0 40 36"><ellipse class="sh" cx="20" cy="34" rx="14" ry="2.5"/><path d="M20 34q-14 -2 -17 -14q8 2 11 8q-6 -12 -2 -22q6 6 6 16q0 -14 6 -20q4 10 -1 20q4 -8 12 -10q-2 12 -15 22z" fill="#5c8f2e" ${S2}/><path d="M20 33v-12" stroke="#3d6b1c" stroke-width="2"/><circle cx="27" cy="9" r="3.4" fill="#ffd23f" ${S2}/></svg>`;
 let weedN=+LS.get('farmWeed',0)||0;const weeds=new Set();
 function addWeed(){if(weeds.size>=5)return;const x=6+Math.random()*(XMAX-10),y=58+Math.random()*(YMAX-62),w=document.createElement('div');w.className='pick weed';w.innerHTML=WEED;w.style.left=wx(x);w.style.top=wy(y);w.style.zIndex=Math.round(y);w.setAttribute('role','button');w.setAttribute('aria-label','잡초');world.appendChild(w);weeds.add(w);
- w.addEventListener('click',e=>{e.stopPropagation();if(w.classList.contains('out'))return;weedN++;LS.set('farmWeed',weedN);const big=weedN%5===0;sayAt(w,big?'잡초 다섯 개! 하트!':'쏙!');if(big){hearts++;save();bumpCount('hc',hearts);fxOn(w,HEART,'heart')}w.classList.add('out');weeds.delete(w);sfx('pop',.55,.8);setTimeout(()=>w.remove(),600)})}
+ w.addEventListener('click',e=>{e.stopPropagation();if(w.classList.contains('out'))return;weedN++;LS.set('farmWeed',weedN);const big=weedN%10===0;sayAt(w,big?'잡초 열 개! 하트!':'쏙!');if(big){hearts++;save();bumpCount('hc',hearts);fxOn(w,HEART,'heart')}w.classList.add('out');weeds.delete(w);sfx('pop',.55,.8);setTimeout(()=>w.remove(),600)})}
 for(let i=0;i<3;i++)addWeed();setInterval(()=>{if(!document.hidden)addWeed()},4*60*1000);
 
 /* ===== 하늘 시간 ===== */
