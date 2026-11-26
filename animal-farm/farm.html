@@ -439,7 +439,7 @@ svg{display:block;overflow:visible}
 
 <!-- 가게 -->
 <div id="ov-shop" class="ov" hidden>
-  <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><span style="flex:1"></span><span class="price" id="shopwallet"></span></div>
+  <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><span class="mrow" id="shoptabs" style="flex:1;gap:6px"></span><span class="price" id="shopwallet"></span></div>
   <div class="ovbody"><div class="grid" id="shopgrid"></div></div>
 </div>
 
@@ -1271,8 +1271,10 @@ function shopPreview(it){const [kind,v]=it.id.split(':'),k=me();
  return headSvg({...k,hc:v,hair:k.hair==='tuft'?'short':k.hair,outfit:'basic'},'-6 -6 72 72').replace('<svg ','<svg class="pv" ')}
 const priceHtml=(h,e)=>`<span>${HEART}${h}</span>${e?`<span>${BASKET}${e}</span>`:''}`;
 function openShop(){if(!myKid)return;OVS.forEach(id=>{if(id!=='ov-shop'&&id!=='ov-pick')hide(id)});renderShop();show('ov-shop');speak('가게에 왔어요!')}
-function renderShop(){$('shopwallet').innerHTML=`<span>${HEART}${hearts}</span><span>${BASKET}${eggs}</span>`;
- const g=$('shopgrid');g.replaceChildren();SHOP.forEach(it=>{const b=document.createElement('button');const have=owned.has(it.id),ok=hearts>=it.h&&eggs>=it.e;b.className='scard'+(have?' owned':ok?'':' cant');b.dataset.buy=it.id;
+const SHOPCAT=[['a','동물 친구'],['o','옷'],['h','머리'],['hc','머리색']];let shopCat='a';
+$('shoptabs').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;shopCat=b.dataset.cat;sfx('tap',.5);renderShop()});
+function renderShop(){$('shoptabs').innerHTML=SHOPCAT.map(([c,t])=>`<button class="txtbtn ltab${shopCat===c?' primary':''}" data-cat="${c}">${t}</button>`).join('');$('shopwallet').innerHTML=`<span>${HEART}${hearts}</span><span>${BASKET}${eggs}</span>`;
+ const g=$('shopgrid');g.replaceChildren();SHOP.filter(it=>it.id.split(':')[0]===shopCat).forEach(it=>{const b=document.createElement('button');const have=owned.has(it.id),ok=hearts>=it.h&&eggs>=it.e;b.className='scard'+(have?' owned':ok?'':' cant');b.dataset.buy=it.id;
   b.innerHTML=shopPreview(it)+(have?`<span class="own">${ICON.sent}</span>`:`<span class="price">${priceHtml(it.h,it.e)}</span>`);b.setAttribute('aria-label','사기');g.appendChild(b)})}
 $('shopgrid').addEventListener('click',e=>{const b=e.target.closest('[data-buy]');if(!b)return;const it=SHOP.find(x=>x.id===b.dataset.buy);if(!it)return;
  if(owned.has(it.id)){hop(b);note();return}
