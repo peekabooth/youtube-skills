@@ -443,6 +443,12 @@ svg{display:block;overflow:visible}
   <img id="vimg" alt="그림"><p id="vtext"></p>
 </div></div>
 
+<!-- 캐릭터 비밀번호 -->
+<div id="ov-pin" class="ov center" hidden><div class="box gate" id="pbox">
+  <div class="mrow" style="justify-content:center"><span class="ib" id="pface" style="--b:64px"></span><p class="gq" id="ptitle" style="font-size:30px">비밀번호</p></div>
+  <p class="ga" id="pdots" style="letter-spacing:10px"></p><div class="keys" id="pkeys"></div>
+  <button class="txtbtn" id="px">닫기</button>
+</div></div>
 <!-- 어른 확인 -->
 <div id="ov-gate" class="ov center" hidden><div class="box gate" id="gbox">
   <p class="gq" id="gq"></p><p class="ga" id="ga"></p><div class="keys" id="keys"></div>
@@ -455,6 +461,9 @@ svg{display:block;overflow:visible}
   <h3>이 기기의 캐릭터</h3>
   <p>이 기기에서는 고른 아이 한 명만 움직여요.</p>
   <div class="mrow" id="momkids"></div>
+  <h3>캐릭터 비밀번호</h3>
+  <p>비밀번호(숫자 4개)가 있는 캐릭터는 고를 때 비밀번호를 눌러야 해요.</p>
+  <div id="mompins" style="display:flex;flex-direction:column;gap:8px"></div>
   <h3>채팅</h3>
   <p id="chatnote"></p>
   <div class="mrow"><button class="txtbtn" id="chatclr">채팅 모두 지우기</button></div>
@@ -730,7 +739,17 @@ const KIDS=CHARS.map(ch=>{const v=SK[ch.id]||{};return{...ch,color:okHex(v.c)?v.
 let hearts=saved.hearts||0,eggs=saved.eggs||0,apples=saved.apples??1,food=null;
 let myKid=LS.get('farmKid',null);if(!KN[myKid])myKid=null;
 const me=()=>KIDS.find(k=>k.id===myKid)||KIDS[0],kidOf=id=>KIDS.find(k=>k.id===id);
-const save=()=>LS.set('farm3',{k:Object.fromEntries(KIDS.map(k=>[k.id,{c:k.color,o:k.outfit,h:k.hair,hc:k.hc}])),hearts,eggs,apples});
+/* 하트·달걀·사과는 캐릭터마다 따로. 이 기기(farmW)와 공유 저장소(wallet/<캐릭터>)에 같이 저장해요 */
+const okN=v=>Number.isFinite(+v)&&+v>=0&&+v<=99999?Math.floor(+v):0;
+let WAL=LS.get('farmW',null),walKid=null,walT=0,walUnsub=null;const walSeeded={};
+const legacyW=WAL?null:{h:okN(saved.hearts),e:okN(saved.eggs),a:saved.apples==null?1:okN(saved.apples),at:0};if(!WAL||typeof WAL!=='object')WAL={};
+function loadWallet(id){walKid=id;let w=WAL[id];if(!w&&legacyW&&!legacyW.used){w={...legacyW,at:Date.now()};legacyW.used=true;WAL[id]=w;LS.set('farmW',WAL)}w=w||{h:0,e:0,a:1,at:0};hearts=okN(w.h);eggs=okN(w.e);apples=okN(w.a)}
+function storeWallet(){if(!walKid)return;WAL[walKid]={h:hearts,e:eggs,a:apples,at:Date.now()};LS.set('farmW',WAL);clearTimeout(walT);const id=walKid,w=WAL[id];walT=setTimeout(()=>{if(db)db.doc('wallet/'+id).set(w).catch(()=>{})},1200)}
+function watchWallet(id){if(walUnsub){try{walUnsub()}catch(e){}walUnsub=null}if(!db||!id)return;
+ walUnsub=db.doc('wallet/'+id).onSnapshot(sn=>{const d=sn&&sn.exists&&(typeof sn.data==='function'?sn.data():null);const L=WAL[id];
+  if(!d){if(L&&!walSeeded[id]){walSeeded[id]=1;db.doc('wallet/'+id).set(L).catch(()=>{})}return}
+  if(!L||(+d.at||0)>(+L.at||0)){WAL[id]={h:okN(d.h),e:okN(d.e),a:okN(d.a),at:+d.at||0};LS.set('farmW',WAL);if(id===walKid){loadWallet(id);renderBar()}}},()=>{})}
+const save=()=>{LS.set('farm3',{k:Object.fromEntries(KIDS.map(k=>[k.id,{c:k.color,o:k.outfit,h:k.hair,hc:k.hc}]))});storeWallet()};
 const COLORS=['#e8453c','#ff8fab','#ffb703','#4cc9f0','#7b61ff','#3f9b3a'];
 
 function addAnimal(a,i){const d=document.createElement('div');d.className='thing animal';d.style.left=wx(a.x);d.style.top=wy(a.y);d.style.zIndex=Math.round(a.y);d.innerHTML=a.svg;d.setAttribute('role','button');d.setAttribute('aria-label',a.name);
@@ -831,8 +850,8 @@ function tapAnimal(a){
  if(food&&isFull(a.id)){hop(a.el);sayAt(a.el,'배불러요~ 이따 줘!');return}
  if(food){if(food==='apple'){if(!apples)return;apples--;save();renderBar()}markFed(a.id);
   const k=me();walk(k,Math.min(XMAX,Math.max(4,a.x+(a.x>k.x?-10:10))),Math.min(YMAX,a.y+2));const f=food;
-  setTimeout(()=>{a.el.classList.remove('munch');void a.el.offsetWidth;a.el.classList.add('munch');const n=f===a.fav?2:1;
-   for(let i=0;i<n;i++)setTimeout(()=>fxOn(a.el,HEART,'heart'),i*160);hearts+=n;save();bumpCount('hc',hearts);sayAt(a.el,n>1?'냠냠 최고!':'냠냠!');chomp();setTimeout(()=>sfx('heart',.45),350);
+  setTimeout(()=>{a.el.classList.remove('munch');void a.el.offsetWidth;a.el.classList.add('munch');const n=1;
+   for(let i=0;i<n;i++)setTimeout(()=>fxOn(a.el,HEART,'heart'),i*160);hearts+=n;save();bumpCount('hc',hearts);sayAt(a.el,f===a.fav?'냠냠 최고!':'냠냠!');chomp();setTimeout(()=>sfx('heart',.45),350);
    if(food==='apple'&&!apples){food=null;renderBar()}},900)}
  else{hop(a.el);const real=animalSound(a.id);sayAt(a.el,a.say,0,!real)}
 }
@@ -902,15 +921,31 @@ function chomp(){sfx('plop',.5,1.1);setTimeout(()=>sfx('plop',.45,.9),200)}
 function speak(){}
 
 /* ===== 오버레이 공통 ===== */
-const OVS=['ov-pick','ov-wardrobe','ov-easel','ov-gallery','ov-letter','ov-mail','ov-view','ov-gate','ov-mom','ov-prev','ov-learn'];
+const OVS=['ov-pin','ov-pick','ov-wardrobe','ov-easel','ov-gallery','ov-letter','ov-mail','ov-view','ov-gate','ov-mom','ov-prev','ov-learn'];
 document.querySelectorAll('[data-close]').forEach(b=>{b.innerHTML=b.closest('#ov-gallery,#ov-letter')?ICON.back:b.closest('#ov-view')?ICON.close:ICON.home;b.addEventListener('click',()=>{sfx('pop2',.45);b.closest('.ov').hidden=true;if(b.closest('#ov-easel'))presenceEasel(false)})});
 const show=id=>{$(id).hidden=false};const hide=id=>{$(id).hidden=true};
 
 /* ===== 캐릭터 고르기·잠금 ===== */
 function renderPick(){$('pickrow').innerHTML=KIDS.map(k=>`<button class="bigkid${k.id===myKid?' on':''}" data-pick="${k.id}" aria-label="${k.name}">${kidSvg(k)}<span>${k.name}</span></button>`).join('')}
 $('ov-pick').addEventListener('click',e=>{if(e.target.id==='ov-pick'&&myKid)hide('ov-pick')});
-$('pickrow').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;setKid(b.dataset.pick);hide('ov-pick');tune();speak('나는 '+KN[myKid]+'!');hop(me().el)});
-function setKid(id){if(!KN[id])return;myKid=id;LS.set('farmKid',id);KIDS.forEach(k=>k.el.classList.toggle('mine',k.id===id));showKids();
+function pickDone(id){setKid(id);hide('ov-pick');tune();hop(me().el)}
+$('pickrow').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;const id=b.dataset.pick;if(id!==myKid&&PINS[id])askPin(id,'check',()=>pickDone(id));else pickDone(id)});
+/* ===== 캐릭터 비밀번호 (숫자 4개, 해시만 저장) ===== */
+let PINS=LS.get('farmPins',{})||{};let pinMode=null,pinKid=null,pinIn='',pinNext=null,pinFails=0;
+const pinHash=(id,p)=>{let h=2166136261;for(const ch of 'farm:'+id+':'+p){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(16)};
+$('pkeys').innerHTML=[1,2,3,4,5,6,7,8,9,'←',0,'확인'].map(v=>`<button data-k="${v}">${v}</button>`).join('');
+function pinDots(){$('pdots').textContent='●'.repeat(pinIn.length)+'○'.repeat(4-pinIn.length)}
+function askPin(id,mode,next){pinKid=id;pinMode=mode;pinNext=next;pinIn='';pinFails=0;$('pface').innerHTML=faceSvg(kidOf(id));$('ptitle').textContent=mode==='set'?KN[id]+' 새 비밀번호':KN[id]+' 비밀번호';pinDots();show('ov-pin')}
+function setPin(id,p){if(p)PINS[id]=pinHash(id,p);else delete PINS[id];LS.set('farmPins',PINS);if(db){const r=db.doc('pins/'+id);(p?r.set({h:PINS[id],at:Date.now()}):r.delete()).catch(()=>{})}if(!$('ov-mom').hidden)renderMom()}
+$('pkeys').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;const k=b.dataset.k;sfx('tap',.5);
+ if(k==='←')pinIn=pinIn.slice(0,-1);else if(k==='확인'||pinIn.length>=4){}else pinIn+=k;
+ if(pinIn.length===4||k==='확인'){if(pinIn.length<4){pinDots();return}
+  if(pinMode==='set'){setPin(pinKid,pinIn);hide('ov-pin');sfx('yay',.4);return}
+  if(PINS[pinKid]===pinHash(pinKid,pinIn)){hide('ov-pin');const n=pinNext;pinNext=null;n&&n();return}
+  pinFails++;pinIn='';const bx=$('pbox');bx.classList.remove('shakex');void bx.offsetWidth;bx.classList.add('shakex');sfx('oops',.45);if(pinFails>=3){hide('ov-pin');return}}
+ pinDots()});
+$('px').addEventListener('click',()=>hide('ov-pin'));
+function setKid(id){if(!KN[id])return;if(walKid&&walKid!==id)storeWallet();myKid=id;loadWallet(id);watchWallet(id);LS.set('farmKid',id);KIDS.forEach(k=>k.el.classList.toggle('mine',k.id===id));showKids();
  Object.keys(layers).forEach(kid=>layers[kid].c.classList.toggle('mine',kid===id));renderBar();pushPresence();presenceEasel(!$('ov-easel').hidden);camera(true)}
 
 /* ===== 옷장 ===== */
@@ -1012,7 +1047,8 @@ async function addDoc(col,d){if(db){await db.collection(col).add(d);return}
  if(!LS.set(LOCAL[col],arr)&&arr.length>1){arr.pop();LS.set(LOCAL[col],arr)}refreshAll();if(col==='drawings'&&!$('ov-gallery').hidden)renderGallery()}
 async function updDoc(col,id,patch){if(db){await db.doc(col+'/'+id).update(patch);return}const arr=col==='letters'?letters:drawings;const L=arr.find(x=>x.id===id);if(L)Object.assign(L,patch);LS.set(LOCAL[col],arr);refreshAll()}
 async function delDoc(col,id){if(db){await db.doc(col+'/'+id).delete();return}const arr=col==='letters'?letters:drawings;const i=arr.findIndex(x=>x.id===id);if(i>=0)arr.splice(i,1);LS.set(LOCAL[col],arr);refreshAll();if(col==='drawings'&&!$('ov-gallery').hidden)renderGallery()}
-use('db').then(d=>{if(!d){loadLocal();return}db=d;
+use('db').then(d=>{if(!d){loadLocal();return}db=d;if(myKid)watchWallet(myKid);
+ d.collection('pins').onSnapshot(s=>{const m={};s.docs.forEach(x=>{const v=x.data();if(KN[x.id]&&v&&typeof v.h==='string'&&/^[0-9a-f]{1,8}$/.test(v.h))m[x.id]=v.h});PINS=m;LS.set('farmPins',PINS);if(!$('ov-mom').hidden)renderMom()},()=>{});
  d.collection('letters').orderBy('at','desc').limit(40).onSnapshot(s=>{letters=s.docs.map(x=>clean(x.id,x.data())).filter(Boolean);refreshAll()},()=>{});
  d.collection('chat').orderBy('at','desc').limit(60).onSnapshot(s=>{gotChats(s.docs.map(x=>cleanChat(x.id,x.data())).filter(Boolean).reverse())},()=>{});
  d.collection('drawings').orderBy('at','desc').limit(30).onSnapshot(s=>{drawings=s.docs.map(x=>clean(x.id,x.data())).filter(Boolean);if(!$('ov-gallery').hidden)renderGallery()},()=>{})});
@@ -1123,6 +1159,9 @@ function openMom(){renderMom();show('ov-mom')}
 $('momx').addEventListener('click',()=>hide('ov-mom'));
 const fmt=t=>{const d=new Date(t);const p=n=>String(n).padStart(2,'0');return`${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`};
 function renderMom(){
+ const mp=$('mompins');if(mp){mp.replaceChildren();KIDS.forEach(k=>{const row=document.createElement('div');row.className='mrow';const t=document.createElement('span');t.className='kidbtn';t.innerHTML=faceSvg(k);t.appendChild(document.createTextNode(k.name+(PINS[k.id]?' · 비밀번호 있음':' · 없음')));t.style.minWidth='200px';
+  const a=document.createElement('button');a.className='txtbtn';a.textContent=PINS[k.id]?'바꾸기':'정하기';a.addEventListener('click',()=>askPin(k.id,'set'));row.append(t,a);
+  if(PINS[k.id]){const d=document.createElement('button');d.className='txtbtn';d.textContent='없애기';d.addEventListener('click',()=>setPin(k.id,''));row.appendChild(d)}mp.appendChild(row)})}
  const mk=$('momkids');mk.replaceChildren();KIDS.forEach(k=>{const b=document.createElement('button');b.className='txtbtn kidbtn'+(k.id===myKid?' on':'');b.innerHTML=faceSvg(k);b.appendChild(document.createTextNode(k.name));b.addEventListener('click',()=>{setKid(k.id);renderMom();tune()});mk.appendChild(b)});
  $('chatnote').textContent=chats.length?`채팅 ${chats.length}개가 있어요. 지우면 모든 기기에서 사라져요.`:'아직 채팅이 없어요.';$('chatclr').disabled=!chats.length;
  const canSend=isOwner&&!!mcp;
@@ -1241,13 +1280,19 @@ const shopObj=place(`<svg viewBox="0 0 110 100"><ellipse class="sh" cx="55" cy="
 shopObj.addEventListener('click',e=>{e.stopPropagation();hop(shopObj);note();openShop()});
 
 /* ===== 배움 놀이: 소리 맞히기 · 숫자 세기 · 색깔 · 글자 ===== */
-const KNUM=['','하나','둘','셋','넷','다섯','여섯','일곱','여덟','아홉','열'];
+const KNUM=['영','하나','둘','셋','넷','다섯','여섯','일곱','여덟','아홉','열','열하나','열둘','열셋','열넷','열다섯','열여섯','열일곱','열여덟','열아홉','스물'];
 const CNAME=[['#e8453c','빨강'],['#ff9f1c','주황'],['#ffd23f','노랑'],['#3f9b3a','초록'],['#2f80ed','파랑'],['#8a5cf6','보라'],['#ff8fab','분홍'],['#8a5a3a','갈색'],['#2b2118','검정'],['#ffffff','하양']];
 const LGAMES=[['math','더하기 빼기'],['sound','소리 맞히기'],['count','숫자 세기'],['color','색깔'],['word','글자']];
-let lg='math',lAns=null,lLock=false,lStar=+LS.get('farmStar',0)||0;
+let lg='math',lAns=null,lLock=false,lStar=0;
+/* 난이도: 세아(2021년 5월생) 1단계, 찌안(2020년 3월생) 2단계, 아기 0단계, 어른 3단계. 정답 20개마다 한 단계씩 올라가요 */
+const BASELV={sea:1,jian:2,ian:0,seoan:0};
+const lvl=()=>Math.min(3,(BASELV[myKid]??3)+Math.floor(lStar/20));
+const nOpts=()=>lvl()>=2?4:3;
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function numOpts(ans,max){const set=new Set([ans]);let g=0;while(set.size<nOpts()&&g++<50)set.add(Math.max(0,Math.min(max,ans+rnd(-3,3))));return pickN([...set],set.size).map(m=>`<button class="qbtn" data-q="${m}" aria-label="${m}"><span class="n">${m}</span><span class="w">${KNUM[m]||''}</span></button>`).join('')}
 const pickN=(a,n)=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b.slice(0,n)};
 const iey=w=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?'이에요':'예요')};
-function openLearn(g){if(!myKid)return;if(g)lg=g;OVS.forEach(id=>{if(id!=='ov-learn'&&id!=='ov-pick')hide(id)});show('ov-learn');newQuiz()}
+function openLearn(g){if(!myKid)return;lStar=+LS.get('farmStar_'+myKid,0)||0;if(g)lg=g;OVS.forEach(id=>{if(id!=='ov-learn'&&id!=='ov-pick')hide(id)});show('ov-learn');newQuiz()}
 function renderStars(){$('lstars').innerHTML=Array.from({length:5},(_,i)=>`<span class="${i<lStar%5?'':'off'}">${SPARK}</span>`).join('')}
 function newQuiz(){lLock=false;$('ltabs').innerHTML=LGAMES.map(([id,t])=>`<button class="txtbtn ltab${lg===id?' primary':''}" data-lg="${id}">${t}</button>`).join('');renderStars();
  let top='',opts='';
@@ -1255,29 +1300,28 @@ function newQuiz(){lLock=false;$('ltabs').innerHTML=LGAMES.map(([id,t])=>`<butto
   top=`<button class="ib" id="qplay" aria-label="다시 듣기" style="--b:110px">${ICON.speaker}</button>`;
   opts=pickN(ch,3).map(a=>`<button class="qbtn" data-q="${a.id}" aria-label="${a.name}">${a.svg}<span>${a.name}</span></button>`).join('');
   setTimeout(()=>{if(!$('ov-learn').hidden&&lg==='sound')playQ()},450)}
- else if(lg==='math'){const plus=Math.random()<.55||lStar<3;let a,b;if(plus){a=1+Math.floor(Math.random()*5);b=1+Math.floor(Math.random()*Math.min(5,10-a))}else{a=2+Math.floor(Math.random()*8);b=1+Math.floor(Math.random()*(a-1))}lAns=plus?a+b:a-b;
-  const ap=FOODS[3].svg,gone=ap.replace('<svg ','<svg style="opacity:.25" ');
-  top=`<div class="qeq"><div class="qitems">${Array.from({length:a},(_,i)=>!plus&&i>=a-b?gone:ap).join('')}</div>${plus?`<span class="qop">+</span><div class="qitems">${Array.from({length:b},()=>ap).join('')}</div>`:''}</div><div class="qword">${a} ${plus?'+':'−'} ${b} = ?</div>`;
-  const set=new Set([lAns]);while(set.size<3)set.add(Math.max(0,Math.min(10,lAns+Math.floor(Math.random()*5)-2)));
-  opts=pickN([...set],3).map(m=>`<button class="qbtn" data-q="${m}" aria-label="${m}"><span class="n">${m}</span><span class="w">${KNUM[m]||'영'}</span></button>`).join('')}
- else if(lg==='count'){const n=1+Math.floor(Math.random()*(lStar<10?5:10));lAns=n;const it=pickN([FOODS[3].svg,FOODS[0].svg,FOODS[1].svg,EGG,flower('#ff8fab'),HEART],1)[0];
-  top=`<div class="qitems">${Array.from({length:n},()=>it).join('')}</div>`;
-  const set=new Set([n]);while(set.size<3)set.add(Math.max(1,Math.min(10,n+Math.floor(Math.random()*5)-2)));
-  opts=pickN([...set],3).map(m=>`<button class="qbtn" data-q="${m}" aria-label="${m}"><span class="n">${m}</span><span class="w">${KNUM[m]}</span></button>`).join('')}
- else if(lg==='color'){const ch=pickN(CNAME,4);lAns=ch[0][1];
+ else if(lg==='math'){const L=lvl(),max=[4,10,20,20][L],plus=L===0||Math.random()<.55;let a,b;
+  if(plus){const top=L===1&&lStar<10?6:max;a=rnd(1,Math.max(1,Math.min(top-1,L>=2?(L===3?15:10):5)));b=rnd(1,Math.max(1,Math.min(top-a,L===0?2:L===1?5:10)))}
+  else{const top=L===1?(lStar<10?6:10):max;a=rnd(2,top);b=rnd(1,Math.min(a-1,L===1?5:10))}
+  lAns=plus?a+b:a-b;const ap=FOODS[3].svg,gone=ap.replace('<svg ','<svg style="opacity:.25" '),pics=a<=10&&(plus?b<=10:true);
+  top=`${pics?`<div class="qeq"><div class="qitems">${Array.from({length:a},(_,i)=>!plus&&i>=a-b?gone:ap).join('')}</div>${plus?`<span class="qop">+</span><div class="qitems">${Array.from({length:b},()=>ap).join('')}</div>`:''}</div>`:''}<div class="qword">${a} ${plus?'+':'−'} ${b} = ?</div>`;
+  opts=numOpts(lAns,max)}
+ else if(lg==='count'){const L=lvl(),n=rnd([1,1,3,5][L],[3,lStar<10?6:10,15,20][L]);lAns=n;const it=pickN([FOODS[3].svg,FOODS[0].svg,FOODS[1].svg,EGG,flower('#ff8fab'),HEART],1)[0];
+  top=`<div class="qitems">${Array.from({length:n},()=>it).join('')}</div>`;opts=numOpts(n,20)}
+ else if(lg==='color'){const ch=pickN(lvl()===0?CNAME.slice(0,6):CNAME,lvl()===0?3:4);lAns=ch[0][1];
   top=`<div class="qword">${lAns}</div>`;
-  opts=pickN(ch,4).map(([c,nm])=>`<button class="qbtn qsw" data-q="${nm}" aria-label="${nm}" style="background:${c}"></button>`).join('')}
- else{const ch=pickN(ANIMALS,3);lAns=ch[0].id;
+  opts=pickN(ch,ch.length).map(([c,nm])=>`<button class="qbtn qsw" data-q="${nm}" aria-label="${nm}" style="background:${c}"></button>`).join('')}
+ else{const ch=pickN(ANIMALS,Math.min(ANIMALS.length,nOpts()));lAns=ch[0].id;
   top=`<div class="qbig">${ch[0].svg}</div>`;
-  opts=pickN(ch,3).map(a=>`<button class="qbtn" data-q="${a.id}" style="min-height:80px"><span class="n" style="font-size:clamp(30px,7vmin,52px)">${a.name}</span></button>`).join('')}
+  opts=pickN(ch,ch.length).map(a=>`<button class="qbtn" data-q="${a.id}" style="min-height:80px"><span class="n" style="font-size:clamp(30px,7vmin,52px)">${a.name}</span></button>`).join('')}
  $('lbody').innerHTML=`<div class="qwrap"><div class="qtop">${top}</div><div class="qfb" id="qfb"></div><div class="qopts">${opts}</div></div>`;
  const qp=$('qplay');if(qp)qp.addEventListener('click',playQ)}
 function playQ(){animalSound(lAns);hop($('qplay'))}
 $('ltabs').addEventListener('click',e=>{const b=e.target.closest('[data-lg]');if(!b)return;lg=b.dataset.lg;sfx('tap',.5);newQuiz()});
 $('lbody').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b||lLock)return;const ok=String(lAns)===b.dataset.q,fb=$('qfb');
  if(ok){lLock=true;b.classList.add('right');sfx('yay',.45);
-  const nm=lg==='count'||lg==='math'?lAns+', '+(KNUM[lAns]||'영'):lg==='color'?lAns:ANIMALS.find(a=>a.id===lAns).name;fb.textContent='딩동댕! '+nm+'!';
-  lStar++;LS.set('farmStar',lStar);renderStars();const bonus=lStar%5===0?2:0;hearts+=1+bonus;save();bumpCount('hc',hearts);fb.textContent+=bonus?' 별 다섯 개! 하트 3개!':' 하트 하나!';setTimeout(()=>sfx('heart',.5),500)
+  const nm=lg==='count'||lg==='math'?lAns+', '+(KNUM[lAns]||''):lg==='color'?lAns:ANIMALS.find(a=>a.id===lAns).name;fb.textContent='딩동댕! '+nm+'!';
+  lStar++;LS.set('farmStar_'+myKid,lStar);renderStars();hearts+=1;save();bumpCount('hc',hearts);fb.textContent+=' 하트 하나!';setTimeout(()=>sfx('heart',.5),500)
   setTimeout(()=>{if(!$('ov-learn').hidden)newQuiz()},1700);return}
  b.classList.remove('shakex');void b.offsetWidth;b.classList.add('shakex');sfx('oops',.4);
  if(lg==='color')fb.textContent='그건 '+iey(b.dataset.q);else if(lg==='sound'){fb.textContent='다시 들어 볼까?';setTimeout(playQ,500)}else if(lg==='count'||lg==='math')fb.textContent=lg==='math'&&b.closest('.qopts')?'사과를 하나씩 세어 봐!':'하나씩 손가락으로 세어 봐!';else fb.textContent='다시 골라 볼까?'});
