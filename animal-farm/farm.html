@@ -1141,7 +1141,8 @@ function renderMom(){
 /* 카톡 미리보기 → 보내기 */
 let pL=null,sending=false;
 const cp=s=>Array.from(s).length;
-function kakaoText(L){const body=(L.text||'').trim()||'(그림만 그린 편지예요)';const head=`💌 ${KN[L.kid]}의 편지 (${fmt(L.at)})\n`,tail=(L.voice?'\n(목소리는 농장 우체통에서 들을 수 있어요)':'')+'\n- 동물농장 우체통에서';return Array.from(head+body+tail).slice(0,200).join('')}
+function kakaoText(L){const body=(L.text||'').trim()||'(그림만 그린 편지예요)';const head=`💌 ${KN[L.kid]}의 편지 (${fmt(L.at)})\n`,tail=(L.voice?'\n(목소리도 함께 들어 있어요)':'')+'\n🖼 그림 원본은 농장 우체통에서: '+FARM_URL;const room=200-Array.from(tail).length;return Array.from(head+body).slice(0,room).join('')+tail}
+const FARM_URL='https://claude.ai/artifact/VTBE4fwVcdMVbRXVD5bmwi';
 function openPreview(L){pL=L;$('pimg').src=L.img;$('pmsg').value=kakaoText(L);$('pstat').textContent='';$('pstat').className='status';$('psend').disabled=false;$('psend').textContent='카카오톡으로 보내기';updCnt();show('ov-prev')}
 function updCnt(){const n=cp($('pmsg').value);$('pcnt').textContent=`${n} / 200자`;$('pcnt').classList.toggle('over',n>200);if(!sending)$('psend').disabled=n>200||!$('pmsg').value.trim()}
 $('pmsg').addEventListener('input',updCnt);
