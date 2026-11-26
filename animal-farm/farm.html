@@ -199,6 +199,8 @@ svg{display:block;overflow:visible}
 .cnt.over{color:var(--red)}
 #vimg{width:min(720px,100%);border:4px solid var(--ink);background:#fff}
 #vtext{font-size:24px;margin:0;white-space:pre-wrap;word-break:break-word}
+.nametag{position:absolute;left:50%;top:100%;transform:translate(-50%,-3px);background:#fff;color:var(--ink);border:2px solid var(--ink);font-size:clamp(12px,2.6vmin,18px);line-height:1.25;padding:0 6px;white-space:nowrap;pointer-events:none}
+.kid.mine .nametag{background:var(--hot)}
 /* 아기 */
 .kid.baby{width:clamp(50px,11vmin,96px);transition:left 2.2s ease-in-out,top 2.2s ease-in-out}
 .kid.baby.walk svg{animation:crawl .34s ease-in-out infinite alternate}
@@ -675,9 +677,12 @@ ${eye(50,47)}${eye(70,47)}${blush(42,57)}${blush(78,57)}</svg>`}];
 let owned=new Set((LS.get('farmOwned',[])||[]).filter(x=>typeof x==='string'));
 const hasFriend=id=>owned.has('a:'+id);
 FRIENDS.forEach((a,i)=>{if(hasFriend(a.id)){ANIMALS.push(a);addAnimal(a,i+6)}});
-KIDS.forEach(k=>{const d=document.createElement('div');d.className='thing kid'+(k.baby?' baby':'');d.style.left=wx(k.x);d.style.top=k.y+'%';d.style.zIndex=Math.round(k.y)+1;d.innerHTML=kidSvg(k);d.setAttribute('role','button');d.setAttribute('aria-label',k.name);k.el=d;world.appendChild(d);
+KIDS.forEach(k=>{const d=document.createElement('div');d.className='thing kid'+(k.baby?' baby':'');d.style.left=wx(k.x);d.style.top=k.y+'%';d.style.zIndex=Math.round(k.y)+1;d.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`;d.hidden=true;d.setAttribute('role','button');d.setAttribute('aria-label',k.name);k.el=d;world.appendChild(d);
  d.addEventListener('click',e=>{e.stopPropagation();if(food){feedKid(k);return}hop(d);speak(k.id===myKid?'나는 '+k.name+'!':k.name+' 안녕!')})});
-const redrawKid=k=>{k.el.innerHTML=kidSvg(k)};
+const redrawKid=k=>{k.el.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`};
+/* 이 기기에서 고른 캐릭터와 지금 접속해 있는 캐릭터만 농장에 보여요 */
+let online=new Set();
+function showKids(){KIDS.forEach(k=>{k.el.hidden=!(k.id===myKid||online.has(k.id))})}
 
 function renderBar(){const k=me(),n=letters.length,u=chatUnread();
  bar.innerHTML=`<button class="btn on" data-act="me" aria-label="${k.name}">${faceSvg(k)}</button><span class="sep"></span>`
@@ -801,7 +806,7 @@ const show=id=>{$(id).hidden=false};const hide=id=>{$(id).hidden=true};
 /* ===== 캐릭터 고르기·잠금 ===== */
 function renderPick(){$('pickrow').innerHTML=KIDS.map(k=>`<button class="bigkid" data-pick="${k.id}" aria-label="${k.name}">${kidSvg(k)}<span>${k.name}</span></button>`).join('')}
 $('pickrow').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;setKid(b.dataset.pick);hide('ov-pick');tune();speak('나는 '+KN[myKid]+'!');hop(me().el)});
-function setKid(id){if(!KN[id])return;myKid=id;LS.set('farmKid',id);KIDS.forEach(k=>k.el.classList.toggle('mine',k.id===id));
+function setKid(id){if(!KN[id])return;myKid=id;LS.set('farmKid',id);KIDS.forEach(k=>k.el.classList.toggle('mine',k.id===id));showKids();
  Object.keys(layers).forEach(kid=>layers[kid].c.classList.toggle('mine',kid===id));renderBar();pushPresence();presenceEasel(!$('ov-easel').hidden);camera(true)}
 
 /* ===== 옷장 ===== */
@@ -821,10 +826,10 @@ $('wsw').addEventListener('click',e=>{const b=e.target.closest('[data-c],[data-h
 /* ===== 같이 놀기 (room): 농장 위치 + 그림판 ===== */
 let room=null,eRoom=null;const ctlAt={};
 function pushPresence(){if(!room||!myKid)return;const k=me();room.presence({kid:myKid,x:+k.x.toFixed(1),y:+k.y.toFixed(1),o:k.outfit,c:k.color,h:k.hair,hc:k.hc}).catch(()=>{})}
-function onFarmPeers(ch){for(const p of ch.peers){if(p.sameTab||p.kind!=='viewer')continue;const s=p.presence||{};if(!KN[s.kid]||s.kid===myKid)continue;const k=kidOf(s.kid);ctlAt[k.id]=Date.now();
+function onFarmPeers(ch){online=new Set(ch.peers.filter(p=>!p.sameTab&&p.kind==='viewer'&&p.presence&&KN[p.presence.kid]).map(p=>p.presence.kid));showKids();for(const p of ch.peers){if(p.sameTab||p.kind!=='viewer')continue;const s=p.presence||{};if(!KN[s.kid]||s.kid===myKid)continue;const k=kidOf(s.kid);ctlAt[k.id]=Date.now();
   let re=false;if(OUTFITS.includes(s.o)&&s.o!==k.outfit){k.outfit=s.o;re=true}if(okHex(s.c)&&s.c!==k.color){k.color=s.c;re=true}if(HAIRS.includes(s.h)&&s.h!==k.hair){k.hair=s.h;re=true}if(okHex(s.hc)&&s.hc!==k.hc){k.hc=s.hc;re=true}if(re)redrawKid(k);
   const x=+s.x,y=+s.y;if(isFinite(x)&&isFinite(y)&&(Math.abs(x-k.x)>.2||Math.abs(y-k.y)>.2))walk(k,Math.min(XMAX,Math.max(4,x)),Math.min(99,Math.max(50,y)))}}
-setInterval(()=>{if(!myKid||document.hidden)return;const free=KIDS.filter(k=>k.id!==myKid&&Date.now()-(ctlAt[k.id]||0)>20000);if(!free.length)return;const k=free[Math.floor(Math.random()*free.length)],r=k.baby?6:9;
+if(0)setInterval(()=>{if(!myKid||document.hidden)return;const free=KIDS.filter(k=>k.id!==myKid&&Date.now()-(ctlAt[k.id]||0)>20000);if(!free.length)return;const k=free[Math.floor(Math.random()*free.length)],r=k.baby?6:9;
  walk(k,Math.min(k.home+14,Math.max(k.home-14,Math.min(XMAX,Math.max(4,k.x+(Math.random()*2-1)*r)))),Math.min(98,Math.max(72,k.y+(Math.random()*8-4))))},4500);
 use('room').then(async r=>{if(!r)return;room=r;r.onPeers(onFarmPeers,()=>{});pushPresence();
  try{eRoom=await r.join('easel');eRoom.on('seg',m=>{if(!m.sameTab)remoteSeg(m.data)},()=>{});eRoom.on('clr',m=>{if(!m.sameTab){clearLayers();beep(300,.2,'triangle',150)}},()=>{});eRoom.onPeers(onEaselPeers,()=>{});presenceEasel(!$('ov-easel').hidden)}catch(e){eRoom=null}});
