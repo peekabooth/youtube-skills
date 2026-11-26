@@ -816,12 +816,12 @@ const me=()=>KIDS.find(k=>k.id===myKid)||KIDS[0],kidOf=id=>KIDS.find(k=>k.id===i
 const okN=v=>Number.isFinite(+v)&&+v>=0&&+v<=99999?Math.floor(+v):0;
 const FAM='family';let WAL=LS.get('farmW',null),walKid=null,walT=0,walUnsub=null;const walSeeded={};
 const legacyW=WAL?null:{h:okN(saved.hearts),e:okN(saved.eggs),a:saved.apples==null?1:okN(saved.apples),at:0};if(!WAL||typeof WAL!=='object')WAL={};
-function loadWallet(id){walKid=id;if(id===FAM&&!WAL[FAM]){let h=0,e=0,a=0;Object.keys(WAL).forEach(k=>{if(KN[k]){h+=okN(WAL[k].h);e+=okN(WAL[k].e);a+=okN(WAL[k].a)}});if(legacyW&&!legacyW.used){h+=legacyW.h;e+=legacyW.e;legacyW.used=true}WAL[FAM]={h,e,a:Math.max(1,a),at:1};LS.set('farmW',WAL)}let w=WAL[id];if(!w&&legacyW&&!legacyW.used){w={...legacyW,at:Date.now()};legacyW.used=true;WAL[id]=w;LS.set('farmW',WAL)}w=w||{h:0,e:0,a:1,at:0};hearts=okN(w.h);eggs=okN(w.e);apples=okN(w.a)}
+function loadWallet(id){walKid=id;if(id===FAM&&!WAL[FAM]){let h=0,e=0,a=0;Object.keys(WAL).forEach(k=>{if(KN[k]){h+=okN(WAL[k].h);e+=okN(WAL[k].e);a+=okN(WAL[k].a)}});if(legacyW&&!legacyW.used){h+=legacyW.h;e+=legacyW.e;legacyW.used=true}WAL[FAM]={h,e,a:Math.max(1,a),at:0};LS.set('farmW',WAL)}let w=WAL[id];if(!w&&legacyW&&!legacyW.used){w={...legacyW,at:Date.now()};legacyW.used=true;WAL[id]=w;LS.set('farmW',WAL)}w=w||{h:0,e:0,a:1,at:0};hearts=okN(w.h);eggs=okN(w.e);apples=okN(w.a)}
 function storeWallet(){if(!walKid)return;WAL[walKid]={h:hearts,e:eggs,a:apples,at:Date.now()};LS.set('farmW',WAL);clearTimeout(walT);const id=walKid,w=WAL[id];walT=setTimeout(()=>{if(db)db.doc('wallet/'+id).set(w).catch(()=>{})},1200)}
 function watchWallet(id){if(walUnsub){try{walUnsub()}catch(e){}walUnsub=null}if(!db||!id)return;
  walUnsub=db.doc('wallet/'+id).onSnapshot(sn=>{const d=sn&&sn.exists&&(typeof sn.data==='function'?sn.data():null);const L=WAL[id];
   if(!d){if(L&&!walSeeded[id]){walSeeded[id]=1;db.doc('wallet/'+id).set(L).catch(()=>{})}return}
-  if(!L||(+d.at||0)>(+L.at||0)){WAL[id]={h:okN(d.h),e:okN(d.e),a:okN(d.a),at:+d.at||0};LS.set('farmW',WAL);if(id===walKid){loadWallet(id);renderBar()}}},()=>{})}
+  if(!L||!(+L.at)||(+d.at||0)>(+L.at||0)){WAL[id]={h:okN(d.h),e:okN(d.e),a:okN(d.a),at:+d.at||0};LS.set('farmW',WAL);if(id===walKid){loadWallet(id);renderBar()}}},()=>{})}
 const save=()=>{LS.set('farm3',{k:Object.fromEntries(KIDS.map(k=>[k.id,{c:k.color,o:k.outfit,h:k.hair,hc:k.hc}]))});storeWallet()};
 const COLORS=['#e8453c','#ff8fab','#ffb703','#4cc9f0','#7b61ff','#3f9b3a'];
 
