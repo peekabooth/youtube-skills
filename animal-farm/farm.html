@@ -285,6 +285,16 @@ svg{display:block;overflow:visible}
 #ov-time{background:rgba(20,24,60,.82)}
 #tleft{position:absolute;left:50%;top:max(8px,env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:250;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:2px 12px;font-weight:900;font-size:16px;box-shadow:3px 3px 0 var(--ink);pointer-events:none}
 #tleft.low{background:var(--hot)}
+.gbody{display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px}
+.gseats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.gseat{display:flex;align-items:center;gap:6px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);padding:4px 10px;font:inherit;font-size:18px;font-weight:800;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.gseat.turn{background:#ffe9a8}.gseat svg{width:40px;height:40px}.gseat .pc{width:26px;height:26px}
+.gmsg{font-size:20px;font-weight:800;min-height:28px;text-align:center}
+.gboard{display:grid;gap:2px;background:#b98a52;border:4px solid var(--ink);padding:4px;border-radius:8px;width:min(92vw,calc(100vh - 260px),520px);aspect-ratio:1}
+.gboard button{border:0;background:#f3d9a4;padding:0;cursor:pointer;display:grid;place-items:center;border-radius:3px;min-width:0;min-height:0}
+.gboard.oth button{background:#5fae6a}.gboard button.last{outline:3px solid #ff9f1c;outline-offset:-3px}.gboard button.hint::after{content:"";width:22%;height:22%;border-radius:50%;background:rgba(255,255,255,.55)}
+.gboard .pc{width:82%;height:82%}
+@media(max-height:500px){.gboard{width:min(92vw,calc(100vh - 150px))}.gseat svg{width:30px;height:30px}.gmsg{font-size:17px}}
 #invite{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:1100;background:#fffaf0;color:var(--ink);border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);padding:10px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:min(92vw,360px);text-align:center}
 #invite[hidden]{display:none}#invite p{margin:0;font-size:19px;font-weight:800}.ivf svg{width:56px;height:56px}.ivb{display:flex;gap:8px}
 .qeng{font-family:ui-rounded,'Arial Rounded MT Bold',system-ui,sans-serif;letter-spacing:.04em;text-transform:lowercase}.qeng u{color:var(--hot);text-decoration:none}
@@ -441,8 +451,8 @@ svg{display:block;overflow:visible}
   <div class="ovtop"><button class="ib" data-close aria-label="뒤로"></button><span style="flex:1"></span><span id="lwho" class="ib" style="--b:52px"></span></div>
   <div class="ovbody"><div class="lrow"><img id="limg" alt="편지 그림">
    <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:10px">
-    <div class="mrow"><button class="ib big vbtn" id="lrec" hidden aria-label="목소리 녹음"></button><button class="ib big" id="lfile" aria-label="녹음 파일 넣기"></button><input type="file" id="lfin" accept="audio/*" capture hidden><button class="ib big" id="lplay" hidden aria-label="녹음 듣기"></button><span id="lvoice"></span></div>
-    <div class="mrow"><button class="ib big mic" id="lmic" hidden aria-label="말로 쓰기"></button><div id="lpart" style="flex:1"></div></div>
+    <div class="mrow"><button class="ib big vbtn" id="lrec" hidden aria-label="목소리 녹음"></button><button class="ib big" id="lfile" aria-label="녹음 파일 넣기" style="display:none"></button><input type="file" id="lfin" accept="audio/*" capture hidden><button class="ib big" id="lplay" hidden aria-label="녹음 듣기"></button><span id="lvoice"></span></div>
+    <div class="mrow"><button class="ib big mic" id="lmic" hidden aria-label="말로 쓰기" style="--b:84px"></button><div id="lpart" style="flex:1;font-size:18px;opacity:.8"></div></div>
     <textarea id="ltext" maxlength="120" aria-label="편지 글"></textarea>
     <div class="mrow"><button class="ib big" id="lpost" aria-label="우체통에 넣기"></button></div>
    </div></div></div>
@@ -455,6 +465,10 @@ svg{display:block;overflow:visible}
 </div>
 
 <!-- 배움 놀이 -->
+<div id="ov-games" class="ov" hidden>
+  <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><span class="mrow" id="gtabs" style="flex:1;gap:6px"></span></div>
+  <div class="ovbody gbody"><div class="gseats" id="gseats"></div><div class="gmsg" id="gmsg"></div><div class="gboard" id="gboard"></div><div class="mrow" style="justify-content:center"><button class="txtbtn" id="gnew">새 판</button></div></div>
+</div>
 <div id="ov-learn" class="ov" hidden>
   <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><span class="mrow" id="ltabs" style="flex:1;gap:6px"></span><span class="qstars" id="lstars"></span></div>
   <div class="ovbody" id="lbody"></div>
@@ -604,6 +618,7 @@ const mbadge=document.createElement('span');mbadge.className='mbadge';mbadge.hid
 
 /* 이젤 (그림판) */
 const EASEL=`<svg viewBox="0 0 80 104"><ellipse class="sh" cx="40" cy="100" rx="30" ry="4"/><g stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"><path d="M40 4L14 98M40 4L66 98M42 40L46 98"/></g><rect x="8" y="12" width="64" height="48" fill="#fff" ${S}/><path d="M16 50q10 -26 20 -6t22 -14" fill="none" stroke="#e8453c" stroke-width="4" stroke-linecap="round"/><circle cx="58" cy="25" r="6" fill="#ffd23f" ${S2}/><path d="M16 22l8 8M24 22l-8 8" stroke="#2f80ed" stroke-width="3"/><rect x="4" y="60" width="72" height="6" fill="#c98a4a" ${S2}/><circle cx="16" cy="58" r="3" fill="#3f9b3a"/><circle cx="26" cy="58" r="3" fill="#8a5cf6"/></svg>`;
+place(`<svg viewBox="0 0 100 80"><ellipse class="sh" cx="50" cy="76" rx="42" ry="4"/><path d="M20 40v34M80 40v34" stroke="#8a5a3a" stroke-width="6"/><path d="M6 30h88l-6 12H12z" fill="#c9945a" stroke="#2b2118" stroke-width="3"/><rect x="28" y="14" width="44" height="18" rx="3" fill="#f3d9a4" stroke="#2b2118" stroke-width="2.5"/><circle cx="40" cy="23" r="4" fill="#2b2118"/><circle cx="52" cy="23" r="4" fill="#fff" stroke="#2b2118" stroke-width="1.5"/><circle cx="62" cy="23" r="4" fill="#2b2118"/></svg>`,126,112,'clamp(60px,12vmin,110px)','tap',112).addEventListener('click',e=>{e.stopPropagation();openGames()});
 const easel=place(EASEL,104,106,'clamp(54px,10.5vmin,98px)','tap',106);easel.id='easelObj';
 
 /* 꽃과 풀 */
@@ -710,6 +725,7 @@ const ICON={
  rec:`<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="20" fill="#e8453c" ${S}/><rect x="25" y="16" width="10" height="18" fill="#fff"/><path d="M20 30q0 10 10 10t10 -10M30 40v6" fill="none" stroke="#fff" stroke-width="3"/></svg>`,
  stop:`<svg viewBox="0 0 60 60"><rect x="14" y="14" width="32" height="32" fill="#e8453c" ${S}/></svg>`,
  newpage:`<svg viewBox="0 0 60 60"><path d="M12 6h26l10 10v38H12z" fill="#fff" ${S}/><path d="M38 6v10h10" fill="none" ${S2}/><path d="M30 24v20M20 34h20" stroke="#3f9b3a" stroke-width="6"/></svg>`,
+ games:`<svg viewBox="0 0 60 60"><rect x="6" y="6" width="48" height="48" rx="6" fill="#f3d9a4" ${S}/><path d="M22 8v44M38 8v44M8 22h44M8 38h44" stroke="#b98a52" stroke-width="2.5"/><circle cx="15" cy="15" r="5.5" fill="#2b2118"/><circle cx="30" cy="30" r="5.5" fill="#fff" stroke="#2b2118" stroke-width="2"/><circle cx="45" cy="45" r="5.5" fill="#2b2118"/><circle cx="45" cy="15" r="5.5" fill="#fff" stroke="#2b2118" stroke-width="2"/></svg>`,
  goU:`<svg viewBox="0 0 60 60"><path d="M8 44L30 14l22 30z" fill="#ffd23f" ${S}/></svg>`,
  goD:`<svg viewBox="0 0 60 60"><path d="M8 16L30 46l22 -30z" fill="#ffd23f" ${S}/></svg>`,
  undo:`<svg viewBox="0 0 60 60"><path d="M20 22h20q14 0 14 14t-14 14H24" fill="none" stroke="${ink}" stroke-width="7"/><path d="M24 8L6 22l18 14z" fill="#ffd23f" ${S}/></svg>`,
@@ -839,7 +855,7 @@ function showKids(){KIDS.forEach(k=>{k.el.hidden=!(k.id===myKid||online.has(k.id
 function renderBar(){const k=me(),n=letters.length,tk=!$('talk').hidden;
  bar.innerHTML=`<button class="btn on" data-act="me" aria-label="캐릭터 바꾸기">${faceSvg(k)}</button><span class="sep"></span>`
  +FOODS.map(f=>`<button class="btn${food===f.id?' on':''}${f.id==='apple'&&!apples?' off':''}" data-food="${f.id}" aria-label="먹이">${f.svg}${f.id==='apple'?`<span class="badge">${apples}</span>`:''}</button>`).join('')
- +`<span class="sep"></span><button class="btn${tk?' on':''}" data-act="chat" aria-label="말하기">${ICON.chat}</button><button class="btn" data-act="learn" aria-label="배움 놀이">${ICON.learn}</button><button class="btn" data-act="wardrobe" aria-label="옷장">${ICON.shirt}</button><button class="btn" data-act="easel" aria-label="그림판">${ICON.easel}</button><button class="btn" data-act="mail" aria-label="우체통">${ICON.mail}${n?`<span class="badge">${n}</span>`:''}</button><button class="btn" data-act="shop" aria-label="가게">${ICON.shop}</button><span class="sep"></span><button class="btn" data-act="music" aria-label="음악">${musicIcon(musicLv)}</button>`;
+ +`<span class="sep"></span><button class="btn${tk?' on':''}" data-act="chat" aria-label="말하기">${ICON.chat}</button><button class="btn" data-act="learn" aria-label="배움 놀이">${ICON.learn}</button><button class="btn" data-act="wardrobe" aria-label="옷장">${ICON.shirt}</button><button class="btn" data-act="easel" aria-label="그림판">${ICON.easel}</button><button class="btn" data-act="games" aria-label="같이 놀이">${ICON.games}</button><button class="btn" data-act="mail" aria-label="우체통">${ICON.mail}${n?`<span class="badge">${n}</span>`:''}</button><button class="btn" data-act="shop" aria-label="가게">${ICON.shop}</button><span class="sep"></span><button class="btn" data-act="music" aria-label="음악">${musicIcon(musicLv)}</button>`;
  $('counts').innerHTML=`<span class="count" id="hc">${HEART}<b>${hearts}</b></span><span class="count" id="ec">${BASKET}<b>${eggs}</b></span>`;
 }
 bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sfx('tap',.5);const act=b.dataset.act;
@@ -850,6 +866,7 @@ bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return
  else if(act==='music'){musicLv=(musicLv+1)%4;LS.set('farmMusic2',musicLv);applyMusic();renderBar()}
  else if(act==='wardrobe')openWardrobe();
  else if(act==='easel')openEasel();
+ else if(act==='games')openGames();
  else if(act==='mail')openMail();
  else if(b.dataset.food){if(b.dataset.food==='apple'&&!apples){tree.classList.remove('shake');void tree.offsetWidth;tree.classList.add('shake');return}food=food===b.dataset.food?null:b.dataset.food;renderBar()}});
 
@@ -925,13 +942,13 @@ const actBoot=Date.now(),actSeen=new Set();
 let giftAt=0;function giftHeart(k){const m=me();hop(k.el);if(Date.now()-giftAt<4000)return;
  if(hearts<1){sayAt(m.el,'하트를 모으면 '+k.name+'에게 선물할 수 있어요');return}giftAt=Date.now();hearts-=1;save();bumpCount('hc',hearts);
  fxOn(m.el,HEART,'heart');setTimeout(()=>fxOn(k.el,HEART,'heart'),400);sfx('heart',.35);sayAt(m.el,k.name+'에게 하트 선물!');shareAct('gift',k.id,'h')}
-let invT=0;function showInvite(k){if(!k||!myKid||!$('ov-easel').hidden&&!solo)return;$('ivf').innerHTML=faceSvg(k);$('ivt').textContent=iga(k.name)+' 같이 그림 그리자고 해요. 같이 그릴래?';$('invite').hidden=false;sfx('ding',.3);clearTimeout(invT);invT=setTimeout(()=>{$('invite').hidden=true},45000)}
-$('ivyes').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;if($('ov-easel').hidden)openEasel();setSolo(false)});
+let invT=0,invG=null;function showInvite(k,g){if(!k||!myKid)return;if(!g&&!$('ov-easel').hidden&&!solo)return;if(g&&!$('ov-games').hidden&&gCur===g)return;invG=g||null;$('ivf').innerHTML=faceSvg(k);$('ivt').textContent=iga(k.name)+(g?' '+GAMES[g].name+' 하자고 해요. 같이 할래?':' 같이 그림 그리자고 해요. 같이 그릴래?');$('ivyes').textContent=g?'같이 할래!':'같이 그릴래!';$('invite').hidden=false;sfx('ding',.3);clearTimeout(invT);invT=setTimeout(()=>{$('invite').hidden=true},45000)}
+$('ivyes').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;if(invG){openGames(invG);return}if($('ov-easel').hidden)openEasel();setSolo(false)});
 $('ivno').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;sfx('pop2',.4)});
 function shareAct(t,id,f){if(!db||!myKid)return;db.collection('acts').add({by:myKid,t,id,f,at:Date.now()}).catch(()=>{})}
 function gotActs(list){const now=Date.now();list.forEach(a=>{if(actSeen.has(a.id))return;actSeen.add(a.id);const v=a.v;if(v&&v.t==='gift'&&v.by!==myKid&&KN[v.by]&&KN[v.id]){const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const to=kidOf(v.id),fr=kidOf(v.by);fxOn(fr.el,HEART,'heart');setTimeout(()=>fxOn(to.el,HEART,'heart'),400);
    if(v.id===myKid){hearts+=1;save();bumpCount('hc',hearts);sfx('heart',.35);sayAt(to.el,iga(fr.name)+' 하트를 선물했어요!')}return}
-  if(v&&v.t==='draw'&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<60000)showInvite(kidOf(v.by));return}
+  if(v&&(v.t==='draw'||v.t==='play')&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<60000)showInvite(kidOf(v.by),v.t==='play'&&GAMES[v.id]?v.id:null);return}
   if(!v||v.by===myKid||!KN[v.by]||!['kid','ani'].includes(v.t)||!['carrot','corn','apple','hay'].includes(v.f))return;
   const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const giver=kidOf(v.by);
   if(v.t==='kid'){const k=kidOf(v.id);if(!k)return;k.el.classList.remove('munch');void k.el.offsetWidth;k.el.classList.add('munch');chomp();fxOn(k.el,HEART,'heart');sayAt(k.el,KID_EAT[v.f]||'냠냠!');
@@ -994,7 +1011,7 @@ function chomp(){sfx('plop',.5,1.1);setTimeout(()=>sfx('plop',.45,.9),200)}
 function speak(){}
 
 /* ===== 오버레이 공통 ===== */
-const OVS=['ov-pin','ov-pick','ov-wardrobe','ov-easel','ov-gallery','ov-letter','ov-mail','ov-view','ov-gate','ov-mom','ov-prev','ov-learn'];
+const OVS=['ov-games','ov-pin','ov-pick','ov-wardrobe','ov-easel','ov-gallery','ov-letter','ov-mail','ov-view','ov-gate','ov-mom','ov-prev','ov-learn'];
 document.querySelectorAll('[data-close]').forEach(b=>{b.innerHTML=b.closest('#ov-gallery,#ov-letter')?ICON.back:b.closest('#ov-view')?ICON.close:ICON.home;b.addEventListener('click',()=>{sfx('pop2',.45);b.closest('.ov').hidden=true;if(b.closest('#ov-easel'))presenceEasel(false)})});
 const show=id=>{$(id).hidden=false};const hide=id=>{$(id).hidden=true};
 
@@ -1149,6 +1166,7 @@ use('db').then(d=>{if(!d){netSt.db='이 기기에서는 안 됨';loadLocal();ret
  d.collection('here').onSnapshot(s=>{const m={};s.docs.forEach(x=>{if(KN[x.id])m[x.id]=x.data()});HERE=m;gotHere()},e=>{netSt.db='읽기 안 됨 ('+((e&&e.code)||'오류')+')'});
  d.collection('pins').onSnapshot(s=>{const m={};s.docs.forEach(x=>{const v=x.data();if(KN[x.id]&&v&&typeof v.h==='string'&&/^[0-9a-f]{1,8}$/.test(v.h))m[x.id]=v.h});PINS=m;LS.set('farmPins',PINS);if(!$('ov-mom').hidden)renderMom()},()=>{});
  d.collection('letters').orderBy('at','desc').limit(40).onSnapshot(s=>{letters=s.docs.map(x=>clean(x.id,x.data())).filter(Boolean);refreshAll()},()=>{});
+ d.collection('games').onSnapshot(s=>{gotGames(s.docs.map(x=>[x.id,x.data()]))},()=>{});
  d.collection('board').onSnapshot(s=>{gotBoard(s.docs.map(x=>[x.id,x.data()]))},()=>{});
  d.collection('acts').orderBy('at','desc').limit(12).onSnapshot(s=>{gotActs(s.docs.map(x=>({id:x.id,v:x.data()})).reverse())},()=>{});
  d.collection('chat').orderBy('at','desc').limit(60).onSnapshot(s=>{gotChats(s.docs.map(x=>cleanChat(x.id,x.data())).filter(Boolean).reverse())},()=>{});
@@ -1220,9 +1238,9 @@ async function startRec(){let st;try{st=await navigator.mediaDevices.getUserMedi
 function stopRec(){clearTimeout(recT);if(rec&&rec.state!=='inactive')rec.stop();applyMusic()}
 $('lrec').addEventListener('click',()=>{if(rec)stopRec();else startRec()});
 $('lplay').addEventListener('click',()=>{if(recVoice)playVoice(recVoice)});
-function openLetter(){recVoice='';if(rec)stopRec();recUI();letterImg=composite(480);$('limg').src=letterImg;$('ltext').value='';$('lpart').textContent='';$('lwho').innerHTML=faceSvg(me());$('lpost').disabled=false;show('ov-letter');speak('하고 싶은 말을 해 봐!')}
+function openLetter(){recVoice='';if(rec)stopRec();recUI();letterImg=composite(480);$('limg').src=letterImg;$('ltext').value='';$('lpart').textContent=dict?'마이크를 누르고 말하면 글자가 돼요':'';$('lwho').innerHTML=faceSvg(me());$('lpost').disabled=false;show('ov-letter');speak('하고 싶은 말을 해 봐!')}
 let dictTo='letter';const DT={letter:{mic:'lmic',part:'lpart',ta:'ltext',max:120},chat:{mic:'cmic',part:'chatpart',ta:'chatin',max:60}};
-use('dictation').then(d=>{dict=d;if(!d)return;$('lmic').hidden=false;$('cmic').hidden=false;
+use('dictation').then(d=>{dict=d;if(!d)return;$('lmic').hidden=false;$('cmic').hidden=false;if(!$('lpart').textContent)$('lpart').textContent='마이크를 누르고 말하면 글자가 돼요';
  d.onPartial(({text})=>{$(DT[dictTo].part).textContent=text});
  d.onFinal(({text})=>{const T=DT[dictTo],ta=$(T.ta);const t=ta.value?text:text.replace(/^\s+/,'');ta.value=(ta.value+t).slice(0,T.max);$(T.part).textContent=''});
  d.onState(({state})=>{listening=state!=='idle';Object.values(DT).forEach(T=>{$(T.mic).classList.toggle('on',listening&&T===DT[dictTo]);if(!listening)$(T.part).textContent=''})})});
@@ -1389,6 +1407,50 @@ setInterval(()=>{const now=Date.now(),dt=Math.min(15,(now-togLast)/1000);togLast
   if(!near){togSec[k.id]=Math.max(0,(togSec[k.id]||0)-dt);return}togSec[k.id]=(togSec[k.id]||0)+dt;
   if(togSec[k.id]%20<dt)fxOn(k.el,HEART,'heart');
   if(togSec[k.id]>=TOG_NEED){togSec[k.id]=0;hearts+=1;save();bumpCount('hc',hearts);fxOn(m.el,HEART,'heart');fxOn(k.el,HEART,'heart');sfx('heart',.35);sayAt(m.el,(c=>k.name+(c>=0&&c<11172&&c%28?'이랑':'랑'))(k.name.charCodeAt(k.name.length-1)-0xAC00)+' 함께해서 하트 하나!')}})},5000);
+
+/* ===== 같이 하는 놀이: 틱택토 · 오목 · 오셀로 (db games/<g>) ===== */
+const GAMES={ttt:{name:'틱택토',n:3,win:3},omok:{name:'오목',n:9,win:5},oth:{name:'오셀로',n:6}};
+let gCur='ttt',gState={},gUnsub=null,gBusy=false;
+const PC=[`<svg class="pc" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#3a2c22" stroke="#1d1510" stroke-width="2"/><circle cx="14" cy="13" r="4" fill="#fff" opacity=".25"/></svg>`,`<svg class="pc" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#fffdf6" stroke="#2b2118" stroke-width="2.5"/></svg>`];
+const PCT=[`<svg class="pc" viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" fill="none" stroke="#e8453c" stroke-width="6"/></svg>`,`<svg class="pc" viewBox="0 0 40 40"><path d="M9 9l22 22M31 9L9 31" stroke="#2f80ed" stroke-width="6" stroke-linecap="round"/></svg>`];
+const pcOf=(g,v)=>(g==='ttt'?PCT:PC)[v];
+function gFresh(g){const n=GAMES[g].n;let b='.'.repeat(n*n);if(g==='oth'){const a=b.split(''),h=n/2;a[(h-1)*n+h-1]='1';a[h*n+h]='1';a[(h-1)*n+h]='0';a[h*n+h-1]='0';b=a.join('')}return{b,t:0,p:(gState[g]&&gState[g].p)||[null,null],w:-1,last:-1,at:Date.now()}}
+function gOk(v,g){const n=GAMES[g].n;return v&&typeof v.b==='string'&&v.b.length===n*n&&/^[.01]+$/.test(v.b)&&(v.t===0||v.t===1)&&Array.isArray(v.p)&&v.p.length===2}
+function openGames(g){if(!myKid)return;if(g)gCur=g;OVS.forEach(id=>{if(id!=='ov-games')hide(id)});show('ov-games');renderGames()}
+function gSave(g,v){v.at=Date.now();gState[g]=v;renderGames();if(db)db.doc('games/'+g).set(v).catch(()=>{});else LS.set('farmGame_'+g,v)}
+function othFlips(b,n,i,c){if(b[i]!=='.')return[];const r=Math.floor(i/n),q=i%n,o=c==='0'?'1':'0',out=[];
+ for(const[dr,dq]of[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const line=[];let rr=r+dr,qq=q+dq;while(rr>=0&&rr<n&&qq>=0&&qq<n&&b[rr*n+qq]===o){line.push(rr*n+qq);rr+=dr;qq+=dq}
+  if(line.length&&rr>=0&&rr<n&&qq>=0&&qq<n&&b[rr*n+qq]===c)out.push(...line)}return out}
+function othMoves(b,n,c){const m=[];for(let i=0;i<n*n;i++)if(othFlips(b,n,i,c).length)m.push(i);return m}
+function lineWin(b,n,i,need){const c=b[i],r=Math.floor(i/n),q=i%n;for(const[dr,dq]of[[0,1],[1,0],[1,1],[1,-1]]){let k=1;for(const sgn of[1,-1]){let rr=r+dr*sgn,qq=q+dq*sgn;while(rr>=0&&rr<n&&qq>=0&&qq<n&&b[rr*n+qq]===c){k++;rr+=dr*sgn;qq+=dq*sgn}}if(k>=need)return true}return false}
+function seatOf(v){return v.p[0]===myKid?(v.p[1]===myKid?2:0):v.p[1]===myKid?1:-1}
+function renderGames(){const g=gCur,G=GAMES[g];let v=gState[g];if(!gOk(v,g))v=gState[g]=gFresh(g);const n=G.n;
+ $('gtabs').innerHTML=Object.entries(GAMES).map(([id,x])=>`<button class="txtbtn ltab${g===id?' primary':''}" data-g="${id}">${x.name}</button>`).join('');
+ const se=$('gseats');se.replaceChildren();[0,1].forEach(i=>{const b=document.createElement('button');b.className='gseat'+(v.w<0&&v.t===i?' turn':'');b.dataset.seat=i;const k=v.p[i]&&kidOf(v.p[i]);
+  b.innerHTML=pcOf(g,i)+(k?faceSvg(k):'');b.appendChild(document.createTextNode(k?k.name:'여기 앉기'));se.appendChild(b)});
+ const me_=seatOf(v),cnt=c=>v.b.split('').filter(x=>x===c).length;let msg='';
+ if(v.w>=0&&v.w<2){const k=v.p[v.w]&&kidOf(v.p[v.w]);msg=g==='oth'?`다 했어요! ${cnt('0')} : ${cnt('1')} 재미있었다! 한 판 더?`:`${k?iga(k.name):'누군가'} 줄을 만들었어요! 한 판 더 할까?`}
+ else if(v.w===2)msg=g==='oth'?`다 했어요! ${cnt('0')} : ${cnt('1')} 사이좋게 비겼어요!`:'칸이 다 찼어요. 사이좋게 비겼어요!';
+ else if(!v.p[0]||!v.p[1])msg='친구랑 자리에 앉으면 시작해요. 혼자서 두 자리에 앉아도 돼요.';
+ else{const k=kidOf(v.p[v.t]);msg=(k?k.name:'')+' 차례예요'+(g==='oth'?`  (${cnt('0')} : ${cnt('1')})`:'')}
+ $('gmsg').textContent=msg;
+ const bd=$('gboard');bd.className='gboard'+(g==='oth'?' oth':'');bd.style.gridTemplateColumns=`repeat(${n},1fr)`;bd.style.gridTemplateRows=`repeat(${n},1fr)`;bd.replaceChildren();
+ const myTurn=v.w<0&&v.p[0]&&v.p[1]&&(v.p[v.t]===myKid),hints=g==='oth'&&myTurn?new Set(othMoves(v.b,n,String(v.t))):null;
+ for(let i=0;i<n*n;i++){const c=document.createElement('button');c.dataset.i=i;const x=v.b[i];if(x!=='.')c.innerHTML=pcOf(g,+x);if(i===v.last)c.classList.add('last');if(hints&&hints.has(i))c.classList.add('hint');c.setAttribute('aria-label',(Math.floor(i/n)+1)+'줄 '+(i%n+1)+'칸');bd.appendChild(c)}}
+$('gtabs').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;sfx('tap',.4);gCur=b.dataset.g;renderGames()});
+$('gseats').addEventListener('click',e=>{const b=e.target.closest('[data-seat]');if(!b)return;const g=gCur,v={...gState[g]},i=+b.dataset.seat;v.p=[...v.p];
+ if(v.p[i]===myKid){v.p[i]=null}else{const who=v.p[i];if(who&&who!==myKid&&online.has(who)){hop(b);sfx('oops',.3);return}v.p[i]=myKid;if(!v.p[1-i]||v.p[1-i]===myKid)shareAct('play',g,'x')}
+ sfx('pop',.4);gSave(g,v)});
+$('gnew').addEventListener('click',()=>{sfx('pop2',.4);const v=gFresh(gCur);gSave(gCur,v)});
+$('gboard').addEventListener('click',e=>{const c=e.target.closest('[data-i]');if(!c)return;const g=gCur,G=GAMES[g],n=G.n,v={...gState[g]},i=+c.dataset.i;
+ if(v.w>=0||!v.p[0]||!v.p[1]||v.p[v.t]!==myKid||v.b[i]!=='.'){hop(c);return}
+ const a=v.b.split(''),me_=String(v.t);
+ if(g==='oth'){const f=othFlips(v.b,n,i,me_);if(!f.length){hop(c);sfx('oops',.3);return}a[i]=me_;f.forEach(j=>a[j]=me_);v.b=a.join('');v.last=i;
+  const o=me_==='0'?'1':'0';if(othMoves(v.b,n,o).length)v.t=1-v.t;else if(!othMoves(v.b,n,me_).length){const c0=a.filter(x=>x==='0').length,c1=a.filter(x=>x==='1').length;v.w=c0===c1?2:c0>c1?0:1}}
+ else{a[i]=me_;v.b=a.join('');v.last=i;if(lineWin(v.b,n,i,G.win))v.w=v.t;else if(!v.b.includes('.'))v.w=2;else v.t=1-v.t}
+ sfx('plop',.45);if(v.w>=0)setTimeout(()=>sfx('yay',.35),300);gSave(g,v)});
+function gotGames(docs){docs.forEach(([id,v])=>{if(!GAMES[id]||!gOk(v,id))return;const cur=gState[id];if(cur&&(+cur.at||0)>(+v.at||0))return;v.p=v.p.map(x=>KN[x]?x:null);gState[id]=v});if(!$('ov-games').hidden)renderGames()}
+Object.keys(GAMES).forEach(g=>{const v=LS.get('farmGame_'+g,null);if(gOk(v,g))gState[g]=v});
 
 /* ===== 하루 놀이 시간 (아이들만, 캐릭터별 하루 합계) ===== */
 const KIDLIM=new Set(['sea','jian','ian','seoan']);
