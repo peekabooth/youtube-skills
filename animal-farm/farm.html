@@ -977,7 +977,7 @@ function loadSnd(){const c=ctx();if(!c||sndLoading)return;sndLoading=true;
 const BGMS=['audio/nature-quiet-forest.mp3','audio/nature-mountain-stream.mp3','audio/nature-wind-in-trees.mp3'];
 let musicLv=LS.get('farmMusic2',1);if(![0,1,2,3].includes(musicLv))musicLv=1;
 const bgm=new Audio(BGMS[Math.max(0,musicLv-1)]);bgm.loop=true;bgm.preload='none';
-const MVOL=.22;let bgmG=null,duckK=1,duckT=0,unlocked=false;
+const MVOL=.07;let bgmG=null,duckK=1,duckT=0,unlocked=false;
 const volOK=(()=>{try{bgm.volume=.5;const ok=Math.abs(bgm.volume-.5)<.01;bgm.volume=1;return ok}catch(e){return false}})();
 function bgmGain(){const v=(musicLv?MVOL:0)*duckK;if(bgmG){const c=ctx();bgmG.gain.setTargetAtTime(v,c.currentTime,.25)}else bgm.volume=v}
 function applyMusic(){bgmGain();if(musicLv){const want=BGMS[musicLv-1];if(!bgm.src.endsWith(want)){bgm.src=want;bgm.loop=true}}
