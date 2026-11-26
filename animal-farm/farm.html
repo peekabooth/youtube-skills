@@ -212,6 +212,7 @@ svg{display:block;overflow:visible}
 .nametag{position:absolute;left:50%;top:100%;transform:translate(-50%,-3px);background:#fff;color:var(--ink);border:2px solid var(--ink);font-size:clamp(12px,2.6vmin,18px);line-height:1.25;padding:0 6px;white-space:nowrap;pointer-events:none}
 .kid.mine .nametag{background:var(--hot)}
 /* 아기 */
+.kid.baby.twin{width:clamp(90px,20vmin,172px)}
 .kid.baby{width:clamp(50px,11vmin,96px);transition:left 3.2s ease-in-out,top 3.2s ease-in-out}
 .kid.baby.walk svg{animation:crawl .6s ease-in-out infinite alternate}
 @keyframes crawl{from{transform:rotate(-3deg) translateY(0)}to{transform:rotate(3deg) translateY(-3%)}}
@@ -437,7 +438,7 @@ svg{display:block;overflow:visible}
   <div id="world">
   <svg id="paths" viewBox="0 0 240 240" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#e9d3a4" stroke-linecap="round" stroke-linejoin="round" opacity=".85"><path d="M30 100 Q60 104 84 106 T126 112 Q150 100 152 74 M126 112 Q170 120 204 130 M84 106 Q80 130 84 150 Q92 180 104 206 M84 150 Q60 175 38 196 M152 74 Q190 72 222 82 M160 140 Q172 156 182 172" stroke-width="7" vector-effect="non-scaling-stroke" style="stroke-width:34px"/></g><g fill="none" stroke="#f4e4c0" stroke-linecap="round" opacity=".7"><path d="M30 100 Q60 104 84 106 T126 112 Q150 100 152 74 M126 112 Q170 120 204 130 M84 106 Q80 130 84 150 Q92 180 104 206 M84 150 Q60 175 38 196 M152 74 Q190 72 222 82 M160 140 Q172 156 182 172" vector-effect="non-scaling-stroke" style="stroke-width:20px"/></g></svg>
   <svg id="hills" viewBox="0 0 2400 200" preserveAspectRatio="none"><path d="M0 110Q160 10 360 90T740 60T1100 90T1500 40T1900 90T2400 60V200H0Z" fill="#a7dd8a"/><path d="M0 150Q260 70 520 140T1040 120T1560 140T2080 100T2400 130V200H0Z" fill="#92d175"/><g id="farTrees"></g></svg>
-  <svg id="fence" viewBox="0 0 2400 70" preserveAspectRatio="none"><g fill="#f6e7c8" stroke="#7a5a3a" stroke-width="3"><rect x="0" y="22" width="2400" height="9"/><rect x="0" y="44" width="2400" height="9"/></g><g id="posts" fill="#f6e7c8" stroke="#7a5a3a" stroke-width="3"></g></svg>
+  <svg id="fence" viewBox="0 0 2400 70" preserveAspectRatio="none"><g fill="#fbefd8" stroke="#a88a70" stroke-width="3"><rect x="0" y="22" width="2400" height="9"/><rect x="0" y="44" width="2400" height="9"/></g><g id="posts" fill="#fbefd8" stroke="#a88a70" stroke-width="3"></g></svg>
   </div>
   <button class="edge" id="goL" aria-label="왼쪽으로" hidden></button><button class="edge" id="goR" aria-label="오른쪽으로" hidden></button><button class="edge v" id="goU" aria-label="위로" hidden></button><button class="edge v" id="goD" aria-label="아래로" hidden></button>
   <div id="tint"></div>
@@ -586,8 +587,7 @@ const use=n=>{try{return window.claude&&window.claude.use?Promise.resolve(window
 const CHARS=[
  {id:'sea',name:'세아',color:'#ff8fab',hair:'buns',hc:'#3b2a20',x:44,y:93},
  {id:'jian',name:'찌안',color:'#4cc9f0',hair:'short',hc:'#2a1d16',x:62,y:94},
- {id:'ian',name:'이안',baby:1,color:'#ffd23f',hair:'tuft',hc:'#3b2a20',x:72,y:97},
- {id:'seoan',name:'서안',baby:1,color:'#c39bff',hair:'tuft',hc:'#7a4a2a',x:30,y:97},
+ {id:'ian',name:'이안·서안',baby:1,twin:{color:'#c39bff',hc:'#7a4a2a'},color:'#ffd23f',hair:'tuft',hc:'#3b2a20',x:72,y:97},
  {id:'minji',name:'민지',color:'#7b61ff',hair:'long',hc:'#3b2a20',x:84,y:95},
  {id:'eunji',name:'은지',color:'#3f9b3a',hair:'bob',hc:'#2a1d16',x:106,y:93},
  {id:'rakmi',name:'락미',color:'#ffb703',hair:'pony',hc:'#7a4a2a',x:126,y:95},
@@ -600,9 +600,10 @@ const okImg=s=>typeof s==='string'&&s.length<500000&&/^data:image\/(jpeg|png);ba
 const okHex=s=>typeof s==='string'&&/^#[0-9a-fA-F]{6}$/.test(s);
 
 /* ===== 동물의숲 느낌 얼굴 부품 ===== */
-const eye=(x,y,s=1)=>`<g class="eye"><ellipse cx="${x}" cy="${y}" rx="${4.4*s}" ry="${5.6*s}" fill="${ink}"/><circle cx="${x+1.5*s}" cy="${y-2.1*s}" r="${1.9*s}" fill="#fff"/><circle cx="${x-1.5*s}" cy="${y+2.3*s}" r="${.9*s}" fill="#fff"/></g>`;
+const eye=(x,y,s=1)=>dot(x,y,3.6*s);
+const EYEC='#5a4436',dot=(x,y,r=3.6)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${EYEC}"/><circle cx="${x+1.2}" cy="${y-1.3}" r="${r*.34}" fill="#fff"/>`;
 const blush=(x,y,r=5)=>`<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*.6}" fill="#ff8fa3" opacity=".6"/>`;
-const smile=(x,y,w=3)=>`<path d="M${x-w} ${y}q${w} ${w*.9} ${w*2} 0" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`;
+const smile=(x,y,w=3)=>`<path d="M${x-w} ${y}q${w} ${w*.9} ${w*2} 0" fill="none" stroke="#8a6450" stroke-width="2" stroke-linecap="round"/>`;
 const hooves=(c)=>`<g fill="${c}"><rect x="44" y="116" width="13" height="5"/><rect x="63" y="116" width="13" height="5"/><rect x="34" y="114" width="12" height="4"/><rect x="74" y="114" width="12" height="4"/></g>`;
 
 /* 배경 장식 */
@@ -614,8 +615,8 @@ function place(html,x,y,w,cls='',z){const d=document.createElement('div');d.clas
 
 /* 나무: 잎 덩어리, 그림자, 하이라이트가 있는 세 종류 (뒤쪽 언덕 + 아래 들판) */
 const TREEV={
- oak:(a,b,bl)=>`<svg viewBox="0 0 90 112"><ellipse class="sh" cx="45" cy="108" rx="26" ry="3.5"/><path d="M39 108q3 -22 -1 -46h13q-4 24 -1 46z" fill="#8a5a3a" ${S2}/><path d="M43 98v-14M47 90q3 -4 2 -10M41 76q-2 -4 0 -8" stroke="#6b4429" stroke-width="1.6" fill="none"/><path d="M44 70l-15 -13M47 66l13 -12" stroke="#8a5a3a" stroke-width="4.5" stroke-linecap="round"/><g class="sway2"><circle cx="45" cy="40" r="28" fill="${a}" ${S2}/><circle cx="21" cy="55" r="17" fill="${a}" ${S2}/><circle cx="69" cy="55" r="17" fill="${a}" ${S2}/><circle cx="45" cy="60" r="16" fill="${a}"/><circle cx="33" cy="68" r="9" fill="${a}"/><circle cx="57" cy="68" r="9" fill="${a}"/><circle cx="36" cy="31" r="16" fill="${b}"/><circle cx="59" cy="37" r="11" fill="${b}"/><circle cx="19" cy="50" r="8" fill="${b}"/><circle cx="72" cy="50" r="6" fill="${b}"/><circle cx="31" cy="23" r="5" fill="#fff" opacity=".4"/><circle cx="62" cy="31" r="3" fill="#fff" opacity=".35"/><path d="M52 60q6 4 12 0M27 64q5 3 10 0M38 48q5 3 9 0" stroke="${ink}" stroke-width="1.3" fill="none" opacity=".3"/>${bl?[[26,40],[52,22],[64,50],[40,58],[16,60],[72,62],[48,40]].map(([x,y])=>`<g><circle cx="${x}" cy="${y}" r="3.4" fill="#fff"/><circle cx="${x}" cy="${y}" r="1.4" fill="#ffd23f"/></g>`).join(''):[[28,46],[60,58],[50,26]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6" fill="#e8453c" opacity=".85"/>`).join('')}</g></svg>`,
- pine:(a,b)=>`<svg viewBox="0 0 72 112"><ellipse class="sh" cx="36" cy="108" rx="20" ry="3"/><rect x="31" y="88" width="10" height="20" fill="#7a4a2a" ${S2}/><path d="M34 94v8" stroke="#5a3424" stroke-width="1.5"/><g class="sway2"><path d="M36 3L58 38H47L65 64H52L70 92H2L20 64H7L25 38H14Z" fill="${a}" ${S2}/><path d="M36 3L46 38H37L51 64H39L53 92H36Z" fill="${b}" opacity=".5"/><path d="M25 38l7 -6M20 64l8 -7M14 92l9 -8M47 38l-5 -5M52 64l-6 -6" stroke="#fff" stroke-width="1.6" opacity=".3"/><circle cx="36" cy="3" r="2.5" fill="#ffd23f"/></g></svg>`};
+ oak:(a,b,bl)=>`<svg viewBox="0 0 90 112"><ellipse class="sh" cx="45" cy="108" rx="24" ry="3.5"/><path d="M38 108q4 -24 0 -48h14q-4 24 0 48z" fill="#c9966c" ${S}/><path d="M44 96v-10" stroke="#a87650" stroke-width="2" stroke-linecap="round"/><g class="sway2"><path d="M14 66q-14 -24 8 -40q2 -22 26 -22q24 0 26 22q20 16 8 40q-14 14 -34 6q-20 8 -34 -6z" fill="${a}" ${S}/><path d="M28 36q8 -10 20 -10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".45"/>${bl?`<g fill="#fff3f6" ${S2}><circle cx="30" cy="44" r="4"/><circle cx="56" cy="34" r="4"/><circle cx="62" cy="58" r="4"/><circle cx="38" cy="64" r="4"/></g>`:`<g fill="#ffa89c" ${S2}><circle cx="30" cy="46" r="4.5"/><circle cx="58" cy="36" r="4.5"/><circle cx="60" cy="60" r="4.5"/></g>`}</g></svg>`,
+ pine:(a,b)=>`<svg viewBox="0 0 72 112"><ellipse class="sh" cx="36" cy="108" rx="18" ry="3"/><rect x="31" y="88" width="10" height="20" rx="3" fill="#c9966c" ${S}/><g class="sway2"><path d="M36 6L56 40H46L62 66H50L66 92H6L22 66H10L26 40H16Z" fill="${a}" ${S}/><path d="M30 34l6 -6M24 60l7 -6M18 86l8 -7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".4"/></g></svg>`};
 const TCOL={oak:['#a2d488','#c4e6aa'],pine:['#8cc79a','#b2dcb9'],bloom:['#ffbccb','#ffdbe4']};
 const treeOf=t=>t==='pine'?TREEV.pine(...TCOL.pine):TREEV.oak(...TCOL[t],t==='bloom');
 [[5,43,'oak'],[18,41,'pine'],[27,42,'bloom'],[50,40,'pine'],[57,42,'oak'],[80,43,'bloom'],[104,41,'pine'],[112,43,'oak'],[132,41,'bloom'],[152,42,'pine'],[162,43,'oak'],[178,41,'pine'],[196,43,'oak'],[216,42,'pine'],[232,43,'bloom']].forEach(([x,y,t],i)=>{const el=placeT(treeOf(t),x,y,t==='pine'?'clamp(28px,6vmin,54px)':'clamp(36px,7.5vmin,70px)','deco');world.insertBefore(el,$('fence'));const g=el.querySelector('.sway2');if(g)g.style.animationDelay=(-i*.7)+'s'});
@@ -623,111 +624,63 @@ const treeOf=t=>t==='pine'?TREEV.pine(...TCOL.pine):TREEV.oak(...TCOL[t],t==='bl
  [7,118,'oak'],[66,152,'pine'],[140,114,'bloom'],[176,148,'oak'],[228,120,'pine'],[212,156,'bloom']].forEach(([x,y,t],i)=>{const el=placeT(treeOf(t),x,y,t==='pine'?'clamp(60px,12vmin,110px)':'clamp(80px,16vmin,150px)','deco',Math.round(y));const g=el.querySelector('.sway2');if(g)g.style.animationDelay=(-i*1.1)+'s'});
 
 /* 헛간 */
-const barn=place(`<svg viewBox="0 0 220 200"><ellipse class="sh" cx="110" cy="196" rx="104" ry="7"/>
-<path d="M18 86L110 26L202 86V192H18Z" fill="url(#gBarn)" ${S}/>${Array.from({length:9},(_,i)=>`<path d="M${38+i*20} ${i<4?86-i*9:i>4?86-(8-i)*9:52}V192" stroke="#c97a68" stroke-width="2"/>`).join('')}
-<path d="M4 92L58 40L110 14L162 40L216 92" fill="none" stroke="#a8604f" stroke-width="16" stroke-linejoin="round"/><path d="M4 92L58 40L110 14L162 40L216 92" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
-<rect x="88" y="54" width="44" height="34" fill="#ffe9a8" ${S}/><path d="M90 88q20 -18 40 0" fill="#e6b84a"/><path d="M110 54v34M88 71h44" stroke="#fff" stroke-width="3"/>
-<rect x="68" y="112" width="84" height="80" fill="#7a4a3c"/><g id="cat"><circle cx="110" cy="166" r="20" fill="#ffa94d" ${S}/><path d="M93 156l0 -18l12 10zM127 156l0 -18l-12 10z" fill="#ffa94d" ${S}/>${eye(102,166,.7)}${eye(118,166,.7)}${blush(96,174,3.5)}${blush(124,174,3.5)}<path d="M107 174q3 3 6 0" fill="none" stroke="${ink}" stroke-width="2"/><path d="M92 172h-10M92 176h-10M128 172h10M128 176h10" stroke="${ink}" stroke-width="1.5"/><rect x="94" y="184" width="32" height="10" fill="#ffa94d"/></g>
-<g class="dl" style="transform-origin:68px 150px"><rect x="68" y="112" width="42" height="80" fill="#c06a5a" ${S}/><path d="M70 114l38 76M108 114l-38 76" stroke="#fff" stroke-width="5"/><rect x="70" y="114" width="38" height="76" fill="none" stroke="#fff" stroke-width="4"/></g>
-<g class="dr" style="transform-origin:152px 150px"><rect x="110" y="112" width="42" height="80" fill="#c06a5a" ${S}/><path d="M112 114l38 76M150 114l-38 76" stroke="#fff" stroke-width="5"/><rect x="112" y="114" width="38" height="76" fill="none" stroke="#fff" stroke-width="4"/></g>
-<path d="M18 192h184" stroke="${ink}" stroke-width="3"/></svg>`,14,53,'clamp(124px,25vmin,240px)','tap',40);
+const barn=place(`<svg viewBox="0 0 220 200"><ellipse class="sh" cx="110" cy="196" rx="100" ry="6"/>
+<path d="M26 94L110 34L194 94V192H26Z" fill="#f4a48f" ${S}/>
+<path d="M44 130l18 -6M160 120l16 -6M168 160l14 -5M40 170l16 -5" stroke="#e08a76" stroke-width="3" stroke-linecap="round"/>
+<path d="M10 100L110 24L210 100" fill="none" stroke="${ink}" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 100L110 24L210 100" fill="none" stroke="#e57d6a" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="110" cy="74" r="16" fill="#fff3e0" ${S}/><path d="M110 60v28M96 74h28" stroke="${ink}" stroke-width="2"/>
+<rect x="70" y="112" width="80" height="80" rx="10" fill="#8a6454"/><g id="cat"><circle cx="110" cy="166" r="20" fill="#ffcf9a" ${S}/><path d="M93 156l0 -18l12 10zM127 156l0 -18l-12 10z" fill="#ffcf9a" ${S}/>${eye(102,166,.7)}${eye(118,166,.7)}${blush(96,174,3.5)}${blush(124,174,3.5)}<path d="M107 174q3 3 6 0" fill="none" stroke="${ink}" stroke-width="2"/><path d="M92 172h-10M92 176h-10M128 172h10M128 176h10" stroke="${ink}" stroke-width="1.5"/><rect x="94" y="184" width="32" height="10" fill="#ffcf9a"/></g>
+<g class="dl" style="transform-origin:70px 150px"><path d="M70 122q0 -10 10 -10h30v80h-40z" fill="#fff3e0" ${S}/><path d="M76 120l28 66M104 120l-28 66" stroke="#f0c4b4" stroke-width="4" stroke-linecap="round"/></g>
+<g class="dr" style="transform-origin:150px 150px"><path d="M110 112h30q10 0 10 10v70h-40z" fill="#fff3e0" ${S}/><path d="M116 120l28 66M144 120l-28 66" stroke="#f0c4b4" stroke-width="4" stroke-linecap="round"/></g>
+<path d="M26 192h168" ${S}/></svg>`,14,53,'clamp(124px,25vmin,240px)','tap',40);
 barn.id='barn';
 
 /* 풍차 */
-const mill=place(`<svg viewBox="0 0 120 200"><ellipse class="sh" cx="60" cy="196" rx="34" ry="5"/><path d="M40 60L30 194H90L80 60Z" fill="#f6e7c8" ${S}/><path d="M37 100h46M34 140h52M32 175h56" stroke="#c9b48c" stroke-width="2.5"/><rect x="51" y="162" width="18" height="32" fill="#7a5a3a" ${S}/><path d="M34 62L60 34L86 62Z" fill="#5a7fbf" ${S}/>
-<g id="blades">${[0,90,180,270].map(r=>`<g transform="rotate(${r} 60 52)"><rect x="56" y="-6" width="8" height="56" fill="#fff" ${S}/><path d="M64 0h14v46h-14M64 12h14M64 24h14M64 36h14" fill="#fff8e0" stroke="${ink}" stroke-width="2"/></g>`).join('')}<circle cx="60" cy="52" r="7" fill="#e8453c" ${S}/></g></svg>`,36,45,'clamp(58px,11.5vmin,104px)','tap',20);
+const mill=place(`<svg viewBox="0 0 120 200"><ellipse class="sh" cx="60" cy="196" rx="32" ry="5"/><path d="M42 62L32 194H88L78 62Z" fill="#fbefd8" ${S}/><path d="M40 110l10 -3M74 140l10 -3M42 168l10 -3" stroke="#e8d3ad" stroke-width="3" stroke-linecap="round"/><path d="M52 194v-22q8 -10 16 0v22z" fill="#c9a27e" ${S}/><path d="M32 66L60 36L88 66Z" fill="#a9cbe8" ${S}/>
+<g id="blades">${[0,90,180,270].map(r=>`<g transform="rotate(${r} 60 52)"><path d="M57 50V2q3 -3 6 0v48z" fill="#fffaf2" ${S2}/><path d="M63 6q14 0 14 6v30q0 4 -14 4z" fill="#ffe7ec" ${S}/></g>`).join('')}<circle cx="60" cy="52" r="7" fill="#ffb3a6" ${S}/></g></svg>`,36,45,'clamp(58px,11.5vmin,104px)','tap',20);
 mill.id='mill';
 
 /* 사과나무 */
 const APPLE_POS=[[50,60],[92,48],[112,76],[70,92],[34,86],[100,104]];
-const tree=place(`<svg viewBox="0 0 160 190"><ellipse class="sh" cx="80" cy="186" rx="44" ry="6"/><path d="M70 186q4 -40 0 -70l20 0q-4 30 2 70z" fill="#8a5a3a" ${S}/><path d="M80 130l-18 -18M84 124l16 -14" stroke="#8a5a3a" stroke-width="6" stroke-linecap="round"/>
-<g class="leaf"><circle cx="80" cy="70" r="58" fill="url(#gLeaf2)" ${S}/><circle cx="46" cy="86" r="34" fill="url(#gLeaf2)" ${S}/><circle cx="116" cy="88" r="32" fill="url(#gLeaf2)" ${S}/><circle cx="68" cy="56" r="34" fill="url(#gLeaf)"/><circle cx="104" cy="60" r="26" fill="url(#gLeaf)"/><circle cx="58" cy="44" r="10" fill="#b6ec8d" opacity=".7"/>
-<g id="apples">${APPLE_POS.map(([x,y],i)=>`<g data-a="${i}"><circle cx="${x}" cy="${y}" r="8" fill="url(#gApple)" stroke="${ink}" stroke-width="2"/><path d="M${x} ${y-8}l2 -5" stroke="#5a3a22" stroke-width="2"/><ellipse cx="${x+4}" cy="${y-10}" rx="4" ry="2" fill="#3f9b3a"/></g>`).join('')}</g></g></svg>`,64,46,'clamp(112px,24vmin,224px)','tap',25);
+const tree=place(`<svg viewBox="0 0 160 190"><ellipse class="sh" cx="80" cy="186" rx="42" ry="5.5"/><path d="M70 186q5 -40 0 -74h20q-5 34 0 74z" fill="#c9966c" ${S}/><path d="M78 160v-12M84 140v-10" stroke="#a87650" stroke-width="2.4" stroke-linecap="round"/>
+<g class="leaf"><path d="M22 104q-26 -40 10 -66q4 -36 48 -36q44 0 48 36q36 26 10 66q-22 24 -58 12q-36 12 -58 -12z" fill="#a2d488" ${S}/><path d="M44 46q14 -18 36 -18" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+<g id="apples">${APPLE_POS.map(([x,y],i)=>`<g data-a="${i}"><circle cx="${x}" cy="${y}" r="8" fill="#ff9f95" ${S2}/><path d="M${x} ${y-8}l2 -4" stroke="#a87650" stroke-width="2" stroke-linecap="round"/></g>`).join('')}</g></g></svg>`,64,46,'clamp(112px,24vmin,224px)','tap',25);
 tree.id='tree';
 
 /* 건초더미 */
 place(`<svg viewBox="0 0 120 70"><ellipse class="sh" cx="60" cy="66" rx="56" ry="5"/><rect x="6" y="22" width="62" height="42" fill="url(#gHay)" ${S}/><ellipse cx="68" cy="43" rx="10" ry="21" fill="#f0c95a" ${S}/><path d="M14 22v42M50 22v42" stroke="#a87a28" stroke-width="3"/><rect x="58" y="34" width="56" height="30" fill="url(#gHay)" ${S}/><path d="M66 34v30M104 34v30" stroke="#a87a28" stroke-width="3"/></svg>`,30,57,'clamp(70px,13vmin,124px)','deco',45);
 
 /* 연못 */
-const pond=place(`<svg viewBox="0 0 260 100"><ellipse cx="130" cy="56" rx="124" ry="40" fill="#5d9e48"/><ellipse cx="130" cy="52" rx="118" ry="36" fill="url(#gWater)" stroke="#2f7fb0" stroke-width="4"/><path d="M60 44q30 -10 60 0M150 66q24 -8 48 0" stroke="#c8ecfb" stroke-width="3" fill="none" stroke-linecap="round"/>
-<g fill="#4cae4c" ${S}><path d="M200 50a14 8 0 1 0 0.1 0l-8 6z"/><path d="M48 68a12 7 0 1 0 0.1 0l-7 5z"/></g><g transform="translate(200 46)"><path d="M0 0l-5 -8l5 3l5 -3z" fill="#ff8fab" stroke="${ink}" stroke-width="2"/></g>
-<g stroke="#3f7d32" stroke-width="3" stroke-linecap="round"><path d="M10 50v-30M18 52v-38M26 54v-26M238 54v-34M246 52v-24"/></g><g fill="#7a4a2a"><rect x="15" y="10" width="6" height="16"/><rect x="243" y="18" width="6" height="14"/></g></svg>`,52,73,'clamp(150px,30vmin,280px)','tap',30);
+const pond=place(`<svg viewBox="0 0 260 100"><path d="M14 56q0 -38 116 -38q116 0 116 38q0 36 -116 36q-116 0 -116 -36z" fill="#bfe3f2" ${S}/><path d="M66 46q30 -10 60 0M150 66q24 -8 48 0" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" opacity=".8"/>
+<g fill="#a6d488" ${S2}><path d="M200 50a14 8 0 1 0 0.1 0l-8 6z"/><path d="M48 68a12 7 0 1 0 0.1 0l-7 5z"/></g><circle cx="200" cy="44" r="4.5" fill="#ffc4d0" ${S2}/>
+<g stroke="#93c27a" stroke-width="3.4" stroke-linecap="round"><path d="M10 52v-28M18 54v-34M246 52v-26"/></g><g fill="#c9a27e" ${S2}><rect x="15" y="12" width="6" height="14" rx="3"/><rect x="243" y="20" width="6" height="12" rx="3"/></g></svg>`,52,73,'clamp(150px,30vmin,280px)','tap',30);
 
 /* 우체통 */
-const MAILBOX=`<svg viewBox="0 0 80 100"><ellipse class="sh" cx="36" cy="97" rx="22" ry="4"/><rect x="31" y="46" width="10" height="50" fill="#8a5a3a" ${S}/><path d="M6 50V28q0 -16 22 -16h16q22 0 22 16v22z" fill="#3a7bd5" ${S}/><path d="M10 28q0 -12 18 -12" stroke="#8fc0ff" stroke-width="3" fill="none"/><rect x="18" y="26" width="36" height="5" fill="${ink}"/><rect x="24" y="35" width="24" height="15" fill="#fff" ${S2}/><path d="M24 35l12 8l12 -8" fill="none" ${S2}/><g id="flag"><rect x="61" y="16" width="4" height="28" fill="#7a5a3a" ${S2}/><rect x="65" y="16" width="14" height="10" fill="#e8453c" ${S2}/></g></svg>`;
+const MAILBOX=`<svg viewBox="0 0 80 100"><ellipse class="sh" cx="36" cy="97" rx="20" ry="4"/><rect x="31" y="46" width="10" height="50" rx="3" fill="#c9966c" ${S}/><path d="M6 52V30q0 -18 22 -18h16q22 0 22 18v22z" fill="#a9cbe8" ${S}/><path d="M12 30q0 -12 16 -12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/><rect x="22" y="34" width="28" height="16" rx="3" fill="#fffaf2" ${S2}/><path d="M22 35l14 9l14 -9" fill="none" ${S2}/><g id="flag"><rect x="61" y="16" width="4" height="28" rx="2" fill="#c9966c" ${S2}/><path d="M65 16h14l-3 5l3 5h-14z" fill="#ffb3a6" ${S2}/></g></svg>`;
 const mailbox=place(MAILBOX,66,106,'clamp(48px,9.5vmin,90px)','tap',106);mailbox.id='mailbox';
 const mbadge=document.createElement('span');mbadge.className='mbadge';mbadge.hidden=true;mailbox.appendChild(mbadge);
 
 /* 이젤 (그림판) */
-const EASEL=`<svg viewBox="0 0 80 104"><ellipse class="sh" cx="40" cy="100" rx="30" ry="4"/><g stroke="#8a5a3a" stroke-width="5" stroke-linecap="round"><path d="M40 4L14 98M40 4L66 98M42 40L46 98"/></g><rect x="8" y="12" width="64" height="48" fill="#fff" ${S}/><path d="M16 50q10 -26 20 -6t22 -14" fill="none" stroke="#e8453c" stroke-width="4" stroke-linecap="round"/><circle cx="58" cy="25" r="6" fill="#ffd23f" ${S2}/><path d="M16 22l8 8M24 22l-8 8" stroke="#2f80ed" stroke-width="3"/><rect x="4" y="60" width="72" height="6" fill="#c98a4a" ${S2}/><circle cx="16" cy="58" r="3" fill="#3f9b3a"/><circle cx="26" cy="58" r="3" fill="#8a5cf6"/></svg>`;
-place(`<svg viewBox="0 0 100 80"><ellipse class="sh" cx="50" cy="76" rx="42" ry="4"/><path d="M20 40v34M80 40v34" stroke="#8a5a3a" stroke-width="6"/><path d="M6 30h88l-6 12H12z" fill="#c9945a" stroke="#6b4f3a" stroke-width="3"/><rect x="28" y="14" width="44" height="18" rx="3" fill="#f3d9a4" stroke="#6b4f3a" stroke-width="2.5"/><circle cx="40" cy="23" r="4" fill="#2b2118"/><circle cx="52" cy="23" r="4" fill="#fff" stroke="#6b4f3a" stroke-width="1.5"/><circle cx="62" cy="23" r="4" fill="#2b2118"/></svg>`,126,112,'clamp(60px,12vmin,110px)','tap',112).addEventListener('click',e=>{e.stopPropagation();openGames()});
+const EASEL=`<svg viewBox="0 0 80 104"><ellipse class="sh" cx="40" cy="100" rx="28" ry="4"/><g stroke="#c9966c" stroke-width="5" stroke-linecap="round"><path d="M40 6L16 98M40 6L64 98M42 40L45 98"/></g><rect x="8" y="12" width="64" height="48" rx="4" fill="#fffaf2" ${S}/><path d="M18 50q10 -24 20 -6t20 -14" fill="none" stroke="#ffb3a6" stroke-width="4" stroke-linecap="round"/><circle cx="57" cy="25" r="6" fill="#ffe596" ${S2}/><rect x="4" y="60" width="72" height="6" rx="3" fill="#e3c39e" ${S2}/><circle cx="18" cy="57" r="3" fill="#a6d488"/><circle cx="28" cy="57" r="3" fill="#c9b6ec"/></svg>`;
+place(`<svg viewBox="0 0 100 80"><ellipse class="sh" cx="50" cy="76" rx="40" ry="4"/><path d="M22 40v34M78 40v34" stroke="#c9966c" stroke-width="6" stroke-linecap="round"/><path d="M8 32q0 -4 4 -4h76q4 0 4 4l-4 8H12z" fill="#e3c39e" ${S}/><rect x="28" y="12" width="44" height="18" rx="4" fill="#fbefd8" ${S2}/><circle cx="40" cy="21" r="4" fill="#8a7466"/><circle cx="52" cy="21" r="4" fill="#fffaf2" ${S2}/><circle cx="62" cy="21" r="4" fill="#8a7466"/></svg>`,126,112,'clamp(60px,12vmin,110px)','tap',112).addEventListener('click',e=>{e.stopPropagation();openGames()});
 const easel=place(EASEL,104,106,'clamp(54px,10.5vmin,98px)','tap',106);easel.id='easelObj';
 
 /* 꽃과 풀 */
 const FL=[['#ff8fab',6,58],['#ffd23f',25,62],['#c39bff',97,72],['#fff',68,79],['#ff8fab',28,79],['#ffd23f',95,96],['#c39bff',50,97],['#fff',79,72],['#ff6b6b',8,77],['#4cc9f0',62,92],['#ff8fab',104,66],['#ffd23f',112,90],['#fff',134,78],['#c39bff',146,96],['#ff6b6b',176,92],['#ffd23f',196,64],['#ff8fab',202,74],['#c39bff',208,66],['#fff',214,76],['#ffd23f',220,68],['#4cc9f0',232,94],['#ff8fab',190,96],['#ff8fab',14,108],['#ffd23f',36,142],['#c39bff',60,112],['#fff',84,150],['#ff6b6b',112,142],['#4cc9f0',130,120],['#ffd23f',152,154],['#ff8fab',170,124],['#c39bff',194,138],['#fff',206,110],['#ff6b6b',236,146],['#ffd23f',72,130],['#ff8fab',122,104],['#4cc9f0',200,152],['#c39bff',20,150],['#ffd23f',160,104],['#c39bff',42,214],['#4cc9f0',16,173],['#ff6b6b',28,210],['#ff6b6b',18,228],['#ffd23f',13,175],['#fff',111,172],['#ffd23f',27,234],['#fff',19,179],['#ffd23f',165,171],['#ff6b6b',153,214],['#ff8fab',60,169],['#ff6b6b',223,181],['#c39bff',111,182],['#ff6b6b',34,203],['#ff6b6b',212,187],['#ff8fab',152,188],['#c39bff',28,234],['#4cc9f0',20,171],['#ff6b6b',56,227],['#4cc9f0',140,218],['#c39bff',123,222],['#c39bff',80,195],['#ffd23f',182,195],['#ff8fab',151,202],['#ff6b6b',130,207],['#4cc9f0',118,200]];
-const flower=c=>`<svg viewBox="0 0 30 40"><path d="M15 40V18" stroke="#3f9b3a" stroke-width="3"/><path d="M15 32q-8 -2 -9 -8q7 0 9 6" fill="#5fb043"/>${[0,72,144,216,288].map(r=>`<ellipse cx="15" cy="7" rx="5" ry="7" fill="${c}" stroke="${ink}" stroke-width="1.5" transform="rotate(${r} 15 14)"/>`).join('')}<circle cx="15" cy="14" r="4" fill="#ffb703" stroke="${ink}" stroke-width="1.5"/></svg>`;
+const FLC={'#ff8fab':'#ffbccb','#ffd23f':'#ffe39a','#c39bff':'#d6c6f4','#fff':'#fffaf2','#ff6b6b':'#ffb3a6','#4cc9f0':'#b6dcf0'};
+const flower=c=>`<svg viewBox="0 0 30 40"><path d="M15 40V18" stroke="#93c27a" stroke-width="3" stroke-linecap="round"/><path d="M15 32q-8 -2 -9 -8q7 0 9 6" fill="#a6d488"/>${[0,72,144,216,288].map(r=>`<circle cx="15" cy="7.5" r="5.2" fill="${FLC[c]||c}" ${S2} transform="rotate(${r} 15 14)"/>`).join('')}<circle cx="15" cy="14" r="4" fill="#ffe39a" ${S2}/></svg>`;
 const BUSY=[[38,198,16,8],[118,154,16,14],[156,154,12,10],[104,206,14,10],[182,172,16,8],[126,112,10,6],[104,106,8,6],[66,106,8,6]];
-FL.forEach(([c,x,y])=>{if(BUSY.some(([bx,by,rx,ry])=>Math.abs(x-bx)<rx&&Math.abs(y-by)<ry))return;const f=place(flower(c),x,y,'clamp(22px,4.6vmin,40px)','tap flw',Math.round(y));f.addEventListener('click',e=>{e.stopPropagation();f.classList.remove('spinf');void f.offsetWidth;f.classList.add('spinf');note();sparkle(f)})});
+FL.forEach(([c,x,y])=>{if(BUSY.some(([bx,by,rx,ry])=>Math.abs(x-bx)<rx&&Math.abs(y-by)<ry))return;const f=place(flower(c),x,y,'clamp(22px,4.6vmin,40px)','tap flw',Math.round(y));f.addEventListener('click',e=>{e.stopPropagation();hop(f);note()})});
 [[12,62],[40,66],[58,82],[86,68],[18,84],[72,97],[34,95],[90,90],[4,95],[48,76],[102,80],[118,96],[138,70],[158,94],[168,66],[186,84],[226,62],[236,82],[198,92],[144,86],[10,104],[30,134],[52,148],[78,110],[116,128],[134,146],[150,110],[166,132],[186,112],[204,128],[222,140],[238,108],[60,124],[88,138]].forEach(([x,y])=>place(`<svg viewBox="0 0 30 14"><path d="M2 14q2 -10 6 -12q-1 8 2 12q1 -10 6 -14q0 9 3 14q2 -8 6 -10q-1 6 0 10z" fill="#4c9e37"/></svg>`,x,y,'clamp(20px,4vmin,34px)','deco',1));
 
 /* ===== 동물 6마리: 큰 머리(지름 56) + 짧은 몸 = 약 2등신 ===== */
 const ANIMALS=[
- {id:'cow',name:'소',say:'음메~',fav:'hay',x:20,y:69,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="36" ry="5"/>
-<g class="tail" style="transform-origin:0 100%"><path d="M86 90q16 -4 18 -20" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/><path d="M100 72q4 -9 10 -2q-1 8 -10 2z" fill="#5b4033" ${S2}/></g>
-<g fill="#e4e2dc" ${S}><rect x="34" y="102" width="12" height="16"/><rect x="74" y="102" width="12" height="16"/></g>
-<g class="breath"><ellipse cx="60" cy="90" rx="30" ry="23" fill="url(#gCow)" ${S}/><path d="M38 86q8 -10 16 -2q2 10 -8 12q-10 0 -8 -10z" fill="#5b4033"/><path d="M70 98q8 -6 14 2q-2 8 -10 6z" fill="#5b4033"/></g>
-<g fill="url(#gCow)" ${S}><rect x="44" y="104" width="13" height="17"/><rect x="63" y="104" width="13" height="17"/></g>${hooves('#5b4033')}
-<path d="M42 68q18 9 36 0" fill="none" stroke="#e8453c" stroke-width="5"/><circle cx="60" cy="74" r="5.5" fill="#ffd23f" ${S2}/>
-<g class="ear" style="transform-origin:100% 50%"><ellipse cx="27" cy="34" rx="12" ry="6.5" fill="#fff" ${S} transform="rotate(-20 27 34)"/><ellipse cx="28" cy="34" rx="6" ry="3" fill="#f7b6c2" transform="rotate(-20 28 34)"/></g>
-<ellipse cx="93" cy="34" rx="12" ry="6.5" fill="#fff" ${S} transform="rotate(20 93 34)"/><ellipse cx="92" cy="34" rx="6" ry="3" fill="#f7b6c2" transform="rotate(20 92 34)"/>
-<path d="M44 18q-4 -8 2 -12M76 18q4 -8 -2 -12" fill="none" stroke="#e9d7ad" stroke-width="5" stroke-linecap="round"/>
-<circle cx="60" cy="40" r="28" fill="url(#gCow)" ${S}/><path d="M35 33q3 -15 19 -14q-2 12 -12 16q-6 1 -7 -2z" fill="#5b4033"/>
-<ellipse cx="60" cy="56" rx="17" ry="10" fill="#f7b6c2" ${S}/><ellipse cx="54" cy="54" rx="2" ry="2.6" fill="#9e5a6a"/><ellipse cx="66" cy="54" rx="2" ry="2.6" fill="#9e5a6a"/>${smile(60,59.5,3)}
-${eye(48,38)}${eye(72,38)}${blush(38,48)}${blush(82,48)}</svg>`},
- {id:'pig',name:'돼지',say:'꿀꿀!',fav:'apple',x:30,y:134,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="34" ry="5"/>
-<g class="tail" style="transform-origin:0 50%"><path d="M88 90q10 -2 10 -10q-2 -6 -7 -3q-3 5 5 7" fill="none" stroke="#c25f7a" stroke-width="3" stroke-linecap="round"/></g>
-<g fill="#f08ca5" ${S}><rect x="34" y="102" width="12" height="15"/><rect x="74" y="102" width="12" height="15"/></g>
-<g class="breath"><ellipse cx="60" cy="90" rx="31" ry="23" fill="url(#gPig)" ${S}/><path d="M42 80q8 -6 18 -5" stroke="#fff" stroke-width="4" opacity=".6" fill="none" stroke-linecap="round"/></g>
-<g fill="url(#gPig)" ${S}><rect x="44" y="104" width="13" height="17"/><rect x="63" y="104" width="13" height="17"/></g>${hooves('#c25f7a')}
-<g class="ear" style="transform-origin:100% 100%"><path d="M40 22l-12 -15l21 5z" fill="#f08ca5" ${S}/></g><path d="M80 22l12 -15l-21 5z" fill="#f08ca5" ${S}/>
-<circle cx="60" cy="40" r="28" fill="url(#gPig)" ${S}/>
-<ellipse cx="60" cy="54" rx="12" ry="8.5" fill="#f78fa8" ${S}/><ellipse cx="56" cy="54" rx="2" ry="3" fill="#9e3a55"/><ellipse cx="64" cy="54" rx="2" ry="3" fill="#9e3a55"/>${smile(60,65,2.5)}
-${eye(46,37)}${eye(74,37)}${blush(37,50)}${blush(83,50)}</svg>`},
- {id:'chick',name:'닭',say:'꼬꼬댁!',fav:'corn',x:74,y:63,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="28" ry="4"/>
-<g stroke="#f4a300" stroke-width="4" stroke-linecap="round" fill="none"><path d="M50 106v14M70 106v14M43 121h12M63 121h12"/></g>
-<g class="tail" style="transform-origin:0 100%"><path d="M80 94q14 -10 12 -30q8 8 8 18q4 -6 4 -14q8 14 -4 30z" fill="url(#gHen)" ${S}/></g>
-<g class="breath"><ellipse cx="60" cy="90" rx="27" ry="21" fill="url(#gHen)" ${S}/><path d="M34 86q-8 4 -6 14q8 2 12 -6z" fill="#ece4d2" ${S2}/><path d="M86 86q8 4 6 14q-8 2 -12 -6z" fill="#ece4d2" ${S2}/></g>
-<path d="M48 18q-3 -12 8 -9q4 -10 10 -1q10 -4 7 8z" fill="#e8453c" ${S}/>
-<circle cx="60" cy="42" r="27" fill="url(#gHen)" ${S}/>
-<path d="M54 49l6 -4l6 4l-6 5z" fill="#ffb703" ${S2}/><path d="M57 55q3 9 6 0" fill="#e8453c" ${S2}/>
-${eye(48,39)}${eye(72,39)}${blush(38,50)}${blush(82,50)}</svg>`},
- {id:'sheep',name:'양',say:'메에에~',fav:'hay',x:146,y:118,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="36" ry="5"/>
-<g fill="#5a463a" ${S}><rect x="36" y="104" width="10" height="16"/><rect x="74" y="104" width="10" height="16"/><rect x="47" y="106" width="10" height="16"/><rect x="63" y="106" width="10" height="16"/></g>
-<g class="breath" fill="url(#gWool)" ${S}><circle cx="38" cy="86" r="13"/><circle cx="50" cy="76" r="13"/><circle cx="70" cy="76" r="13"/><circle cx="82" cy="86" r="13"/><circle cx="44" cy="100" r="12"/><circle cx="60" cy="102" r="12"/><circle cx="76" cy="100" r="12"/><circle cx="60" cy="88" r="17" stroke="none"/></g>
-<g class="ear" style="transform-origin:100% 50%"><ellipse cx="26" cy="44" rx="12" ry="6" fill="#e8cfa8" ${S} transform="rotate(-15 26 44)"/></g><ellipse cx="94" cy="44" rx="12" ry="6" fill="#e8cfa8" ${S} transform="rotate(15 94 44)"/>
-<ellipse cx="60" cy="46" rx="25" ry="26" fill="#fff1dc" ${S}/>
-<g fill="url(#gWool)" ${S}><circle cx="42" cy="24" r="11"/><circle cx="60" cy="18" r="12"/><circle cx="78" cy="24" r="11"/></g><g fill="#fff"><circle cx="51" cy="27" r="9"/><circle cx="69" cy="27" r="9"/><circle cx="60" cy="25" r="8"/></g>
-<ellipse cx="60" cy="57" rx="3" ry="2" fill="#c98f7a"/>${smile(60,61,2.5)}
-${eye(49,45)}${eye(71,45)}${blush(40,56,4.5)}${blush(80,56,4.5)}</svg>`},
- {id:'duck',name:'오리',say:'꽥꽥!',fav:'corn',x:53,y:69,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="30" ry="4"/>
-<g fill="#f48c06" ${S2}><path d="M42 120l8 -12l8 12z"/><path d="M62 120l8 -12l8 12z"/></g>
-<g class="tail" style="transform-origin:0 100%"><path d="M82 98q14 -4 14 -16q-6 4 -14 4z" fill="url(#gDuck)" ${S}/></g>
-<g class="breath"><ellipse cx="60" cy="92" rx="28" ry="20" fill="url(#gDuck)" ${S}/><path d="M34 88q-6 6 -2 14q8 0 10 -8z" fill="#f2b51b" ${S2}/><path d="M86 88q6 6 2 14q-8 0 -10 -8z" fill="#f2b51b" ${S2}/></g>
-<path d="M58 18q-2 -12 7 -12q-4 4 0 8q2 -6 9 -4q-7 4 -7 9z" fill="#f4bd1f" ${S2}/>
-<circle cx="60" cy="42" r="27" fill="url(#gDuck)" ${S}/>
-<ellipse cx="60" cy="54" rx="13" ry="6" fill="#f48c06" ${S}/><path d="M49 54h22" stroke="#c46a00" stroke-width="2"/>
-${eye(48,38)}${eye(72,38)}${blush(37,49)}${blush(83,49)}</svg>`},
- {id:'horse',name:'말',say:'히히힝~',fav:'carrot',x:150,y:214,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="36" ry="5"/>
-<g class="tail" style="transform-origin:0 0"><path d="M86 84q18 0 16 26q-6 -4 -8 -10q-2 8 -8 8q4 -10 -2 -18z" fill="#5a3424" ${S}/></g>
-<g fill="#a0603a" ${S}><rect x="34" y="102" width="12" height="16"/><rect x="74" y="102" width="12" height="16"/></g>
-<g class="breath"><ellipse cx="60" cy="90" rx="30" ry="23" fill="url(#gHorse)" ${S}/><path d="M42 80q8 -6 18 -5" stroke="#e8b98a" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-<g fill="url(#gHorse)" ${S}><rect x="44" y="104" width="13" height="17"/><rect x="63" y="104" width="13" height="17"/></g>${hooves('#3a2418')}
-<g class="ear" style="transform-origin:50% 100%"><path d="M39 21l-4 -17l14 11z" fill="#a0603a" ${S}/></g><path d="M81 21l4 -17l-14 11z" fill="#a0603a" ${S}/>
-<circle cx="60" cy="40" r="28" fill="url(#gHorse)" ${S}/>
-<path d="M44 18q4 -12 16 -8q12 -4 16 8q-6 -3 -8 3q-4 -6 -8 0q-4 -6 -8 0q-2 -6 -8 -3z" fill="#5a3424" ${S2}/>
-<path d="M57 22h6l-1 13h-4z" fill="#fff" opacity=".85"/>
-<ellipse cx="60" cy="56" rx="16" ry="10" fill="#f0c49a" ${S}/><ellipse cx="54" cy="54" rx="2" ry="2.6" fill="#5a3424"/><ellipse cx="66" cy="54" rx="2" ry="2.6" fill="#5a3424"/>${smile(60,59.5,3)}
-${eye(47,38)}${eye(73,38)}${blush(37,49)}${blush(83,49)}</svg>`}
+ {id:'cow',name:'소',say:'음메~',fav:'hay',x:20,y:69,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="40" ry="4.5"/><path d="M22 74q-12 4 -10 20" fill="none" ${S}/><circle cx="12" cy="96" r="4.5" fill="#a8907f" ${S2}/><g fill="#fffaf2" ${S}><rect x="28" y="96" width="13" height="24" rx="6"/><rect x="46" y="98" width="13" height="22" rx="6"/><rect x="66" y="98" width="13" height="22" rx="6"/><rect x="84" y="96" width="13" height="24" rx="6"/></g><g class="breath"><rect x="18" y="60" width="84" height="46" rx="23" fill="#fffaf2" ${S}/><path d="M34 62q18 0 20 18q-12 10 -26 -2q-2 -10 6 -16z" fill="#a8907f"/><ellipse cx="74" cy="94" rx="10" ry="6" fill="#a8907f"/></g><path d="M84 30l-4 -11M104 30l4 -11" stroke="#efdcb0" stroke-width="6" stroke-linecap="round"/><path d="M84 30l-4 -11M104 30l4 -11" fill="none" ${S2}/><ellipse cx="72" cy="40" rx="10" ry="6" fill="#fffaf2" ${S} transform="rotate(-18 72 40)"/><ellipse cx="116" cy="40" rx="8" ry="5.5" fill="#fffaf2" ${S} transform="rotate(18 116 40)"/><circle cx="94" cy="50" r="22" fill="#fffaf2" ${S}/><rect x="78" y="56" width="32" height="18" rx="9" fill="#ffd0c8" ${S}/><circle cx="87" cy="65" r="2" fill="#c98e86"/><circle cx="101" cy="65" r="2" fill="#c98e86"/>${dot(86,46)}${dot(103,46)}${blush(80,55,4)}${blush(109,55,4)}</svg>`},
+ {id:'pig',name:'돼지',say:'꿀꿀!',fav:'apple',x:30,y:134,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="36" ry="4.5"/><path d="M20 82q-10 -2 -9 -10q2 -6 7 -2q2 5 -5 6" fill="none" stroke="#d68fa0" stroke-width="3" stroke-linecap="round"/><g fill="#ffc9d4" ${S}><rect x="28" y="100" width="13" height="20" rx="6"/><rect x="46" y="102" width="13" height="18" rx="6"/><rect x="64" y="102" width="13" height="18" rx="6"/><rect x="80" y="100" width="13" height="20" rx="6"/></g><g class="breath"><ellipse cx="56" cy="86" rx="38" ry="25" fill="#ffc9d4" ${S}/></g><path d="M80 50l-2 -16l13 9z" fill="#ffb3c4" ${S}/><path d="M104 50l4 -16l-13 7z" fill="#ffb3c4" ${S}/><circle cx="92" cy="66" r="22" fill="#ffc9d4" ${S}/><ellipse cx="104" cy="74" rx="10" ry="8" fill="#ffadbf" ${S}/><circle cx="101" cy="74" r="1.8" fill="#c47a8c"/><circle cx="107" cy="74" r="1.8" fill="#c47a8c"/>${dot(86,62)}${dot(100,60)}${blush(80,72,4)}</svg>`},
+ {id:'chick',name:'닭',say:'꼬꼬댁!',fav:'corn',x:74,y:63,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="30" ry="4.5"/><path d="M64 106v14M74 106v14M60 120h8M70 120h8" stroke="#f0a860" stroke-width="3.2" stroke-linecap="round"/><path d="M28 82q-14 -10 -8 -24q8 6 12 12q0 -14 10 -18q4 10 2 20z" fill="#fffaf2" ${S}/><g class="breath"><ellipse cx="62" cy="88" rx="32" ry="24" fill="#fffaf2" ${S}/><path d="M48 86q10 14 26 4" fill="none" ${S2}/></g><path d="M78 34q2 -10 8 -6q4 -8 9 -1q7 -3 6 6z" fill="#ff9f95" ${S}/><circle cx="86" cy="54" r="18" fill="#fffaf2" ${S}/><path d="M102 52l12 4l-12 5z" fill="#ffcf7a" ${S}/><path d="M100 64q4 8 -2 10q-5 -4 2 -10z" fill="#ff9f95" ${S2}/>${dot(90,50)}${blush(84,60,3.6)}</svg>`},
+ {id:'sheep',name:'양',say:'메에에~',fav:'hay',x:146,y:118,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="36" ry="4.5"/><g fill="#b8a497" ${S}><rect x="30" y="100" width="11" height="20" rx="5"/><rect x="46" y="102" width="11" height="18" rx="5"/><rect x="64" y="102" width="11" height="18" rx="5"/><rect x="80" y="100" width="11" height="20" rx="5"/></g><g class="breath"><g fill="#fffaf2" ${S}><circle cx="30" cy="84" r="15"/><circle cx="44" cy="68" r="16"/><circle cx="64" cy="64" r="17"/><circle cx="82" cy="72" r="15"/><circle cx="86" cy="92" r="14"/><circle cx="66" cy="102" r="14"/><circle cx="44" cy="102" r="14"/></g><ellipse cx="58" cy="86" rx="30" ry="20" fill="#fffaf2"/></g><ellipse cx="84" cy="50" rx="9" ry="5" fill="#b8a497" ${S} transform="rotate(-25 84 50)"/><ellipse cx="114" cy="54" rx="8" ry="5" fill="#b8a497" ${S} transform="rotate(25 114 54)"/><ellipse cx="99" cy="64" rx="16" ry="19" fill="#d6c6ba" ${S}/><g fill="#fffaf2" ${S2}><circle cx="92" cy="46" r="7"/><circle cx="102" cy="44" r="7"/></g>${dot(93,62)}${dot(106,62)}${smile(99,72,3)}</svg>`},
+ {id:'duck',name:'오리',say:'꽥꽥!',fav:'corn',x:53,y:69,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="32" ry="4.5"/><path d="M54 108v12M66 108v12" stroke="#f0a860" stroke-width="3.4" stroke-linecap="round"/><path d="M48 120h12M60 120h12" stroke="#f0a860" stroke-width="4" stroke-linecap="round"/><g class="breath"><path d="M22 80l-8 -12q14 0 18 6z" fill="#ffe596" ${S}/><ellipse cx="56" cy="92" rx="36" ry="22" fill="#ffe596" ${S}/><path d="M38 88q14 16 32 2" fill="none" ${S2}/></g><circle cx="84" cy="58" r="20" fill="#ffe596" ${S}/><path d="M100 60q16 -2 16 5q-2 7 -16 4z" fill="#ffc078" ${S}/>${dot(88,53)}${blush(82,64,4)}</svg>`},
+ {id:'horse',name:'말',say:'히히힝~',fav:'carrot',x:150,y:214,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="38" ry="4.5"/><path d="M20 64q-14 10 -10 34q8 -6 8 -16" fill="#b98463" ${S}/><g fill="#e3b48e" ${S}><rect x="28" y="90" width="12" height="30" rx="6"/><rect x="44" y="92" width="12" height="28" rx="6"/><rect x="66" y="92" width="12" height="28" rx="6"/><rect x="82" y="90" width="12" height="30" rx="6"/></g><g fill="#b98463"><rect x="28" y="114" width="12" height="6" rx="3"/><rect x="44" y="114" width="12" height="6" rx="3"/><rect x="66" y="114" width="12" height="6" rx="3"/><rect x="82" y="114" width="12" height="6" rx="3"/></g><g class="breath"><rect x="18" y="58" width="82" height="42" rx="21" fill="#e3b48e" ${S}/></g><path d="M78 72l6 -38q2 -8 12 -6l10 6l-10 44z" fill="#e3b48e" ${S}/><path d="M84 26l-2 -10l8 6z" fill="#e3b48e" ${S}/><path d="M80 34q-8 10 -4 30q4 -6 6 -12q-2 10 2 16" fill="#b98463" ${S2}/><path d="M88 26q22 -2 26 18q2 12 -8 14q-10 2 -20 -8z" fill="#e3b48e" ${S}/><ellipse cx="108" cy="50" rx="8" ry="6" fill="#f0cdb0" ${S2}/><circle cx="110" cy="49" r="1.6" fill="#8a6650"/>${dot(98,36)}${blush(102,44,3.5)}</svg>`}
 ];
 const FOODS=[
  {id:'carrot',svg:`<svg viewBox="0 0 60 60"><path d="M22 20L46 26L18 54Z" fill="#f48c06" ${S}/><path d="M26 30l6 2M24 38l6 2M21 46l5 1" stroke="#c46a00" stroke-width="2"/><path d="M34 20l-4 -14M38 22l8 -12M30 22l-12 -8" stroke="#3f9b3a" stroke-width="5" stroke-linecap="round"/></svg>`},
@@ -787,7 +740,7 @@ const legs=c=>`<rect x="19" y="80" width="9" height="15" fill="${c}" ${S2}/><rec
 const shoes=c=>`<rect x="17" y="93" width="12" height="7" fill="${c}" ${S2}/><rect x="31" y="93" width="12" height="7" fill="${c}" ${S2}/>`;
 const torso=c=>`<path d="M17 55h26l4 27h-34z" fill="${c}" ${S2}/>`;
 const flake=(x,y,r,c='#fff')=>`<path d="M${x} ${y-r}v${r*2}M${x-r*.87} ${y-r/2}l${r*1.73} ${r}M${x-r*.87} ${y+r/2}l${r*1.73} ${-r}" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/>`;
-function outfitParts(k){const c=k.color;switch(k.outfit){
+function outfitParts(k){const c=soft(k.color);switch(k.outfit){
  case 'tkd':return{body:legs('#fbfbf7').replace(/width="9"/g,'width="10"')+`<ellipse cx="23.5" cy="97" rx="5.5" ry="3" fill="${SKIN}" ${S2}/><ellipse cx="37" cy="97" rx="5.5" ry="3" fill="${SKIN}" ${S2}/>`+arm('#fbfbf7',9)+torso('#fbfbf7')+`<path d="M22 55l10 14M38 55l-12 15" stroke="${ink}" stroke-width="3.5"/>`+(k.id==='sea'?`<rect x="14" y="72" width="32" height="5" fill="#fff" stroke="${ink}" stroke-width="1.4"/><path d="M31 75l-5 9M31 75l5 9" stroke="${ink}" stroke-width="5.5"/><path d="M31 75l-5 9M31 75l5 9" stroke="#fff" stroke-width="3"/><rect x="28" y="72" width="6" height="5" fill="#f2f2ec" stroke="${ink}" stroke-width="1.2"/>`:'<rect x="14" y="72" width="32" height="5" fill="#222"/><path d="M31 75l-5 9M31 75l5 9" stroke="#222" stroke-width="3.5"/><rect x="28" y="72" width="6" height="5" fill="#444"/>')};
  case 'ice':return{back:`<path d="M15 58q-9 22 -7 43h44q2 -21 -7 -43z" fill="#d9d0ff" opacity=".75" ${S2}/>`,body:`<ellipse cx="22" cy="100" rx="5" ry="2.6" fill="#bfe6ff" ${S2}/><ellipse cx="38" cy="100" rx="5" ry="2.6" fill="#bfe6ff" ${S2}/>`+arm('#e7f7ff',6)+`<path d="M17 68h26l10 31h-46z" fill="url(#gIce)" ${S2}/><path d="M9 94q5 -3 10 0t10 0t10 0t10 0" fill="none" stroke="#fff" stroke-width="2"/>${flake(18,86,3)}${flake(42,84,3)}${flake(30,92,2.5)}<path d="M19 55h22l2 13h-26z" fill="#cfeefe" ${S2}/>${flake(30,61,3.6,'#5aa9e6')}`,hat:`<path d="M20 15l3 -7l3 4l4 -8l4 8l3 -4l3 7z" fill="#eef8ff" ${S2}/><circle cx="30" cy="10" r="1.8" fill="#8fd6f7"/>`};
  case 'ball':return{body:`<ellipse cx="22" cy="101" rx="5" ry="2.6" fill="#ffcf4d" ${S2}/><ellipse cx="38" cy="101" rx="5" ry="2.6" fill="#ffcf4d" ${S2}/>`+arm('#ffb3cc',3)+`<path d="M16 68h28l13 32h-54z" fill="url(#gBall)" ${S2}/>${[9,16,23,30,37,44,51].map(x=>`<circle cx="${x}" cy="99" r="1.6" fill="#ffcf4d"/>`).join('')}<path d="M18 68h24l7 18q-3.8 4 -7.6 0t-7.6 0t-7.6 0t-7.6 0t-7.6 0z" fill="#ff9ec1" ${S2}/><circle cx="16" cy="58" r="5.5" fill="#ffb3cc" ${S2}/><circle cx="44" cy="58" r="5.5" fill="#ffb3cc" ${S2}/><path d="M20 55h20l2 13h-24z" fill="#ff8fb3" ${S2}/><path d="M30 68l-6 -4v8zM30 68l6 -4v8z" fill="#ffcf4d" ${S2}/>`,hat:`<path d="M21 15l2 -7l4 4l3 -6l3 6l4 -4l2 7z" fill="#ffcf4d" ${S2}/><path d="M30 13l-2 -2q-1 -2 1 -2l1 1l1 -1q2 0 1 2z" fill="#ff4d8a"/>`};
@@ -815,11 +768,16 @@ function hairParts(style,h,c,hat){
   case 'tuft':return{back:'',fringe:`<path d="M29 15q-1 -9 6 -9q3 1 2 4q-3 -2 -4 1q0 2 -1 4z" fill="${h}" ${S2}/><path d="M18 20q3 -3 6 -2M36 18q4 0 6 3" stroke="${h}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`};
   default:return{back:shortB,fringe:`<path d="M10 35q0 -23 20 -23q20 0 20 23q-4 -6 -8 -9l-2 4l-4 -6l-4 5l-4 -5l-4 6l-2 -4q-6 3 -12 9z" fill="${h}"/>${hat?'':`<rect x="37" y="18" width="8" height="3.5" fill="${c}" ${S2} transform="rotate(-25 41 19)"/>`}`};
  }}
-const HEADFACE=`<circle cx="30" cy="34" r="20" fill="${SKIN}" ${S2}/>${eye(23,38,.7)}${eye(37,38,.7)}${blush(17,44,3.4)}${blush(43,44,3.4)}<ellipse cx="30" cy="42.5" rx="1.2" ry=".8" fill="#e09a7a"/>${smile(30,46,2)}`;
-function hp(k,p){return hairParts(HAIRS.includes(k.hair)?k.hair:'short',okHex(k.hc)?k.hc:'#2a1d16',k.color,!!p.hat)}
+const HEADFACE=`<circle cx="30" cy="34" r="20" fill="${SKIN}" ${S2}/>${dot(23.5,38,2.7)}${dot(36.5,38,2.7)}${blush(18,44,3.4)}${blush(42,44,3.4)}${smile(30,45.5,2.2)}`;
+function hp(k,p){return hairParts(HAIRS.includes(k.hair)?k.hair:'short',soft(okHex(k.hc)?k.hc:'#2a1d16',.28,'#b08868'),soft(k.color),!!p.hat)}
+/* 색을 살짝 연하게(파스텔) */
+function soft(c,t=.32,m='#ffffff'){if(!okHex(c))return c;const a=parseInt(c.slice(1),16),b=parseInt(m.slice(1),16),f=(x,y)=>Math.round(x+(y-x)*t);return'#'+[16,8,0].map(sh=>f(a>>sh&255,b>>sh&255).toString(16).padStart(2,'0')).join('')}
 function headInner(k,withBack=true){const p=outfitParts(k),h=hp(k,p);return`${p.hood?(withBack?p.back:''):h.back}${HEADFACE}${h.fringe}${p.hat||''}`}
 const ONESIE={pirate:'#e8453c',tkd:'#fbfbf7',ice:'#cfeefe',ball:'#ffb3cc',dino:'#7ccf6a',fire:'#2f4a7a',hanbok:'#ffd23f',pajama:'#9bb7ff'};
-function babySvg(k){const p=outfitParts(k),o=ONESIE[k.outfit]||k.color;
+/* 쌍둥이 이안·서안: 한 캐릭터로 둘이 나란히 */
+const twinOf=k=>({...k,color:k.twin.color,hc:k.twin.hc,twin:null});
+const inner=h=>h.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
+function babySvg(k){if(k.twin)return`<svg viewBox="0 0 146 78"><g transform="translate(0 4)">${inner(babySvg({...k,twin:null}))}</g><g transform="translate(62 0)">${inner(babySvg(twinOf(k)))}</g></svg>`;const p=outfitParts(k),o=soft(ONESIE[k.outfit]||k.color);
  const dino=k.outfit==='dino'?[0,1,2].map(i=>`<path d="M${44+i*8} 37l4 -7l4 7z" fill="#ffb347" ${S2}/>`).join(''):'';
  return `<svg viewBox="0 0 80 74"><ellipse class="sh" cx="42" cy="70" rx="30" ry="3.5"/><g class="flip">
 <rect x="56" y="52" width="10" height="16" fill="${o}" ${S2}/><ellipse cx="64" cy="68" rx="7" ry="3.5" fill="${SKIN}" ${S2}/>
@@ -829,7 +787,7 @@ ${dino}<ellipse cx="47" cy="50" rx="22" ry="13" fill="${o}" ${S2}/><ellipse cx="
 <g transform="translate(-4 4) scale(.86)">${headInner(k)}<circle cx="30" cy="47.5" r="3" fill="#ff8fab" ${S2}/></g></g></svg>`}
 function kidSvg(k){if(k.baby)return babySvg(k);const p=outfitParts(k),h=hp(k,p);
  return `<svg viewBox="0 0 60 112"><ellipse class="sh" cx="30" cy="103" rx="18" ry="3.5"/><g class="flip">${p.back||''}${p.hood?'':h.back}${p.body}${HEADFACE}${h.fringe}${p.hat||''}</g></svg>`}
-const headSvg=(k,vb='2 2 56 56')=>k.baby?`<svg viewBox="${vb}" style="overflow:hidden">${headInner(k)}</svg>`:kidSvg(k).replace('viewBox="0 0 60 112"',`viewBox="${vb}" style="overflow:hidden"`);
+const headSvg=(k,vb='2 2 56 56')=>k.twin?`<svg viewBox="2 2 92 56" style="overflow:hidden"><g transform="translate(0 6) scale(.85)">${headInner(k)}</g><g transform="translate(40 6) scale(.85)">${headInner(twinOf(k))}</g></svg>`:k.baby?`<svg viewBox="${vb}" style="overflow:hidden">${headInner(k)}</svg>`:kidSvg(k).replace('viewBox="0 0 60 112"',`viewBox="${vb}" style="overflow:hidden"`);
 const faceSvg=k=>headSvg(k);
 
 /* ===== 상태 (기기별) ===== */
@@ -837,7 +795,7 @@ let saved=LS.get('farm3',{});const SK=saved.k&&typeof saved.k==='object'?saved.k
 if(!saved.k){SK.sea={c:saved.sea,o:saved.oSea};SK.jian={c:saved.jian,o:saved.oJian}}
 const KIDS=CHARS.map(ch=>{const v=SK[ch.id]||{};return{...ch,color:okHex(v.c)?v.c:ch.color,outfit:OUTFITS.includes(v.o)?v.o:'basic',hair:HAIRS.includes(v.h)?v.h:ch.hair,hc:okHex(v.hc)?v.hc:ch.hc,home:ch.x}});
 let hearts=saved.hearts||0,eggs=saved.eggs||0,apples=saved.apples??1,food=null;
-let myKid=LS.get('farmKid',null);if(!KN[myKid])myKid=null;
+let myKid=LS.get('farmKid',null);if(myKid==='seoan')myKid='ian';if(!KN[myKid])myKid=null;
 const me=()=>KIDS.find(k=>k.id===myKid)||KIDS[0],kidOf=id=>KIDS.find(k=>k.id===id);
 /* 하트·달걀·사과는 캐릭터마다 따로. 이 기기(farmW)와 공유 저장소(wallet/<캐릭터>)에 같이 저장해요 */
 const okN=v=>Number.isFinite(+v)&&+v>=0&&+v<=99999?Math.floor(+v):0;
@@ -858,38 +816,13 @@ function addAnimal(a,i){const d=document.createElement('div');d.className='thing
 ANIMALS.forEach(addAnimal);
 /* 가게에서 데려오는 동물 친구 */
 const FRIENDS=[
- {id:'dog',name:'강아지',say:'멍멍!',fav:'apple',x:114,y:88,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="34" ry="5"/>
-<g class="tail" style="transform-origin:0 100%"><path d="M86 88q14 -6 12 -22" fill="none" stroke="${ink}" stroke-width="9" stroke-linecap="round"/><path d="M86 88q14 -6 12 -22" fill="none" stroke="#e0a96d" stroke-width="5" stroke-linecap="round"/></g>
-<g fill="#e0a96d" ${S}><rect x="36" y="102" width="11" height="16"/><rect x="73" y="102" width="11" height="16"/></g>
-<g class="breath"><ellipse cx="60" cy="90" rx="29" ry="21" fill="#f2c48d" ${S}/><ellipse cx="66" cy="84" rx="10" ry="8" fill="#fff" opacity=".6"/></g>
-<g fill="#f2c48d" ${S}><rect x="45" y="104" width="12" height="17"/><rect x="63" y="104" width="12" height="17"/></g>
-<path d="M44 68q16 8 32 0" fill="none" stroke="#2f80ed" stroke-width="5"/><circle cx="60" cy="74" r="4.5" fill="#ffd23f" ${S2}/>
-<circle cx="60" cy="40" r="27" fill="#f2c48d" ${S}/>
-<g class="ear" style="transform-origin:100% 0"><path d="M36 22q-14 4 -10 30q8 0 14 -12z" fill="#8a5a3a" ${S}/></g><path d="M84 22q14 4 10 30q-8 0 -14 -12z" fill="#8a5a3a" ${S}/>
-<ellipse cx="60" cy="54" rx="14" ry="10" fill="#fff4e4" ${S2}/><ellipse cx="60" cy="49" rx="5" ry="3.6" fill="${ink}"/>${smile(60,56,3)}<path d="M58 60q2 6 4 0" fill="#ff6b8a" ${S2}/>
-${eye(47,38)}${eye(73,38)}${blush(38,48)}${blush(82,48)}</svg>`},
- {id:'goat',name:'염소',say:'음매에~',fav:'hay',x:46,y:172,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="34" ry="5"/>
-<g class="tail" style="transform-origin:0 100%"><path d="M86 82q8 -8 6 -14q-6 2 -8 10z" fill="#fff" ${S2}/></g>
-<g fill="#d9d3c7" ${S}><rect x="36" y="102" width="10" height="16"/><rect x="74" y="102" width="10" height="16"/></g>
-<g class="breath"><ellipse cx="60" cy="90" rx="28" ry="20" fill="#f4f1ea" ${S}/></g>
-<g fill="#f4f1ea" ${S}><rect x="45" y="104" width="11" height="17"/><rect x="64" y="104" width="11" height="17"/></g>${hooves('#5a463a')}
-<path d="M44 16q-10 -12 -2 -14q4 6 10 12M76 16q10 -12 2 -14q-4 6 -10 12" fill="#c9b48c" ${S2}/>
-<g class="ear" style="transform-origin:100% 50%"><ellipse cx="27" cy="38" rx="12" ry="5.5" fill="#f4f1ea" ${S} transform="rotate(20 27 38)"/></g><ellipse cx="93" cy="38" rx="12" ry="5.5" fill="#f4f1ea" ${S} transform="rotate(-20 93 38)"/>
-<circle cx="60" cy="40" r="26" fill="#f4f1ea" ${S}/><path d="M54 62q6 16 12 0z" fill="#d9d3c7" ${S2}/>
-<ellipse cx="60" cy="54" rx="12" ry="8" fill="#f7d6dc" ${S2}/><ellipse cx="56" cy="53" rx="1.8" ry="2.4" fill="#9e5a6a"/><ellipse cx="64" cy="53" rx="1.8" ry="2.4" fill="#9e5a6a"/>
-${eye(48,38)}${eye(72,38)}${blush(39,48)}${blush(81,48)}</svg>`},
- {id:'bunny',name:'토끼',say:'깡총깡총!',fav:'carrot',x:210,y:190,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="30" ry="5"/>
-<circle class="tail" cx="88" cy="96" r="8" fill="#fff" ${S2}/>
-<g class="breath"><ellipse cx="60" cy="98" rx="26" ry="20" fill="#fff" ${S}/></g>
-<g fill="#fff" ${S2}><ellipse cx="46" cy="118" rx="10" ry="5"/><ellipse cx="74" cy="118" rx="10" ry="5"/></g>
-<g class="ear" style="transform-origin:50% 100%"><path d="M46 30q-10 -34 2 -30q8 4 6 30z" fill="#fff" ${S}/><path d="M48 26q-6 -20 1 -20q4 4 3 20z" fill="#ffc2d1"/></g>
-<path d="M74 30q10 -34 -2 -30q-8 4 -6 30z" fill="#fff" ${S}/><path d="M72 26q6 -20 -1 -20q-4 4 -3 20z" fill="#ffc2d1"/>
-<circle cx="60" cy="50" r="24" fill="#fff" ${S}/><ellipse cx="60" cy="58" rx="3" ry="2.2" fill="#ff8fa3"/><path d="M56 62q4 4 8 0" fill="none" stroke="${ink}" stroke-width="2"/>
-${eye(50,47)}${eye(70,47)}${blush(42,57)}${blush(78,57)}</svg>`}];
+ {id:'dog',name:'강아지',say:'멍멍!',fav:'apple',x:114,y:88,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="32" ry="4.5"/><path d="M26 82q-14 -8 -10 -24" fill="none" stroke="#a88a70" stroke-width="6" stroke-linecap="round"/><path d="M26 82q-14 -8 -10 -24" fill="none" stroke="#f3d2a8" stroke-width="3" stroke-linecap="round"/><g fill="#f3d2a8" ${S}><rect x="32" y="98" width="12" height="22" rx="6"/><rect x="48" y="100" width="12" height="20" rx="6"/><rect x="64" y="100" width="12" height="20" rx="6"/><rect x="78" y="98" width="12" height="22" rx="6"/></g><g class="breath"><ellipse cx="60" cy="90" rx="34" ry="20" fill="#f3d2a8" ${S}/><ellipse cx="50" cy="84" rx="10" ry="7" fill="#e3b98c"/></g><circle cx="88" cy="62" r="22" fill="#f3d2a8" ${S}/><path d="M70 50q-8 6 -6 22q8 2 10 -10z" fill="#c89a72" ${S}/><path d="M104 46q10 6 8 22q-8 2 -10 -10z" fill="#c89a72" ${S}/><ellipse cx="92" cy="74" rx="11" ry="8" fill="#fff4e4" ${S2}/><ellipse cx="92" cy="70" rx="4" ry="3" fill="#6b4f3a"/>${dot(82,60)}${dot(98,60)}${blush(76,70,3.6)}${blush(106,70,3.6)}</svg>`},
+ {id:'goat',name:'염소',say:'음매에~',fav:'hay',x:46,y:172,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="34" ry="4.5"/><g fill="#f4efe6" ${S}><rect x="30" y="98" width="11" height="22" rx="5"/><rect x="46" y="100" width="11" height="20" rx="5"/><rect x="64" y="100" width="11" height="20" rx="5"/><rect x="80" y="98" width="11" height="22" rx="5"/></g><path d="M22 72l-8 -6q2 8 8 10z" fill="#f4efe6" ${S2}/><g class="breath"><rect x="20" y="64" width="78" height="40" rx="20" fill="#f4efe6" ${S}/><ellipse cx="44" cy="80" rx="12" ry="8" fill="#e6dccd"/></g><path d="M88 34q-4 -14 6 -18M100 34q2 -14 12 -14" fill="none" stroke="#d9c09a" stroke-width="5" stroke-linecap="round"/><ellipse cx="78" cy="48" rx="10" ry="5" fill="#f4efe6" ${S} transform="rotate(-10 78 48)"/><ellipse cx="116" cy="48" rx="8" ry="4.6" fill="#f4efe6" ${S} transform="rotate(10 116 48)"/><ellipse cx="96" cy="56" rx="17" ry="20" fill="#f4efe6" ${S}/><path d="M92 74q4 12 8 0" fill="#e6dccd" ${S2}/><ellipse cx="96" cy="66" rx="8" ry="5" fill="#ffd6cc" ${S2}/>${dot(89,52)}${dot(103,52)}</svg>`},
+ {id:'bunny',name:'토끼',say:'깡총깡총!',fav:'carrot',x:210,y:190,svg:`<svg viewBox="0 0 120 130"><ellipse class="sh" cx="60" cy="124" rx="28" ry="4.5"/><circle cx="30" cy="96" r="8" fill="#fffaf2" ${S}/><g class="breath"><ellipse cx="54" cy="98" rx="28" ry="20" fill="#f6f0ea" ${S}/><ellipse cx="62" cy="116" rx="12" ry="5" fill="#f6f0ea" ${S2}/></g><g class="ear"><ellipse cx="74" cy="34" rx="7" ry="20" fill="#f6f0ea" ${S} transform="rotate(-10 74 34)"/><ellipse cx="74" cy="34" rx="3" ry="13" fill="#ffc4d0" transform="rotate(-10 74 34)"/></g><ellipse cx="90" cy="34" rx="7" ry="20" fill="#f6f0ea" ${S} transform="rotate(12 90 34)"/><ellipse cx="90" cy="34" rx="3" ry="13" fill="#ffc4d0" transform="rotate(12 90 34)"/><circle cx="82" cy="68" r="19" fill="#f6f0ea" ${S}/><ellipse cx="88" cy="74" rx="3" ry="2.2" fill="#e69aa8"/>${dot(76,64)}${dot(92,64)}${blush(72,74,3.6)}${blush(96,74,3.6)}</svg>`}];
 let owned=new Set((LS.get('farmOwned',[])||[]).filter(x=>typeof x==='string'));
 const hasFriend=id=>owned.has('a:'+id);
 FRIENDS.forEach((a,i)=>{if(hasFriend(a.id)){ANIMALS.push(a);addAnimal(a,i+6)}});
-KIDS.forEach(k=>{const d=document.createElement('div');d.className='thing kid'+(k.baby?' baby':'');d.style.left=wx(k.x);d.style.top=wy(k.y);d.style.zIndex=Math.round(k.y)+1;d.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`;d.hidden=true;d.setAttribute('role','button');d.setAttribute('aria-label',k.name);k.el=d;world.appendChild(d);
+KIDS.forEach(k=>{const d=document.createElement('div');d.className='thing kid'+(k.baby?' baby':'')+(k.twin?' twin':'');d.style.left=wx(k.x);d.style.top=wy(k.y);d.style.zIndex=Math.round(k.y)+1;d.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`;d.hidden=true;d.setAttribute('role','button');d.setAttribute('aria-label',k.name);k.el=d;world.appendChild(d);
  d.addEventListener('click',e=>{e.stopPropagation();if(food){feedKid(k);return}if(k.id!==myKid&&online.has(k.id)){openKMenu(k);return}hop(d);speak(k.id===myKid?'나는 '+k.name+'!':k.name+' 안녕!')})});
 const redrawKid=k=>{k.el.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`};
 /* 이 기기에서 고른 캐릭터와 지금 접속해 있는 캐릭터만 농장에 보여요 */
@@ -1566,7 +1499,7 @@ function declutter(){const W_=world.getBoundingClientRect();if(!W_.width)return;
 setTimeout(declutter,1500);addEventListener('resize',()=>{clearTimeout(window._dcT);window._dcT=setTimeout(declutter,400)});
 
 /* ===== 하루 놀이 시간 (아이들만, 캐릭터별 하루 합계) ===== */
-const KIDLIM=new Set(['sea','jian','ian','seoan']);
+const KIDLIM=new Set(['sea','jian','ian']);
 let TLIM=+LS.get('farmTLim',30);if(!isFinite(TLIM))TLIM=30;
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
 function playRec(){let r=LS.get('farmPlay',null);if(!r||r.d!==today())r={d:today(),s:{},x:{},w:{}};r.s=r.s||{};r.x=r.x||{};r.w=r.w||{};return r}
@@ -1585,7 +1518,7 @@ const CLOCKI=`<svg viewBox="0 0 60 60" style="width:30px;height:30px"><circle cx
 setInterval(tickPlay,5000);document.addEventListener('visibilitychange',()=>{lastTick=Date.now()});
 $('tmore').addEventListener('click',()=>openGate(()=>{const r=playRec();r.x[myKid]=(+r.x[myKid]||0)+10;[600,300,60].forEach(x=>delete r.w[myKid+x]);LS.set('farmPlay',r);hide('ov-time');tickPlay();sfx('yay',.4)}));
 function renderTimeMom(){const n=$('momtime');if(!n)return;const r=playRec();const used=[...KIDLIM].filter(id=>r.s[id]>30).map(id=>kidOf(id).name+' '+Math.round(r.s[id]/60)+'분').join(', ');
- n.textContent=(TLIM?'세아·찌안·이안·서안은 하루 '+TLIM+'분까지 놀 수 있어요. 20분이 되면 10분 남았다고 알려줘요.':'지금은 시간 제한이 꺼져 있어요.')+' 이 기기 오늘 사용: '+(used||'아직 없음');
+ n.textContent=(TLIM?'세아·찌안·이안서안은 하루 '+TLIM+'분까지 놀 수 있어요. 20분이 되면 10분 남았다고 알려줘요.':'지금은 시간 제한이 꺼져 있어요.')+' 이 기기 오늘 사용: '+(used||'아직 없음');
  document.querySelectorAll('[data-tl]').forEach(b=>b.classList.toggle('primary',+b.dataset.tl===TLIM))}
 document.querySelectorAll('[data-tl]').forEach(b=>b.addEventListener('click',()=>{TLIM=+b.dataset.tl;LS.set('farmTLim',TLIM);renderTimeMom();tickPlay()}));
 $('treset').addEventListener('click',()=>{LS.set('farmPlay',{d:today(),s:{},x:{},w:{}});renderTimeMom();tickPlay()});
@@ -1701,7 +1634,7 @@ const LGAMES=[['math','더하기 빼기'],['sound','소리 맞히기'],['count',
 const ENG=[['cow','cow'],['pig','pig'],['chick','chicken'],['sheep','sheep'],['duck','duck'],['horse','horse'],['dog','dog'],['goat','goat'],['bunny','rabbit'],['f:apple','apple'],['f:carrot','carrot'],['f:corn','corn'],['x:egg','egg'],['x:heart','heart'],['x:flower','flower'],['x:sun','sun'],['x:star','star']];
 let lg='math',lAns=null,lLock=false,lStar=0;
 /* 난이도: 세아(2021년 5월생) 2단계, 찌안(2020년 3월생) 3단계, 아기 0단계, 어른 4단계. 정답 20개마다 한 단계씩 올라가요 */
-const BASELV={sea:2,jian:3,ian:0,seoan:0};
+const BASELV={sea:2,jian:3,ian:0};
 const lvl=()=>Math.min(4,(BASELV[myKid]??4)+Math.floor(lStar/20));
 const nOpts=()=>lvl()>=2?4:3;
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
