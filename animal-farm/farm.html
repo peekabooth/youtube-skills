@@ -866,19 +866,19 @@ function drawMini(){if(document.hidden||!stage.clientWidth)return;const sw=stage
  c.strokeStyle='#fff';c.lineWidth=2;c.strokeRect(camX/ww*mw+1,camY/wh*mh+1,sw/ww*mw-2,sh/wh*mh-2);
  KIDS.forEach(k=>{if(k.el.hidden)return;const x=k.x/(100*W)*mw,y=k.y/(100*H)*mh,r=k.id===myKid?5:4;c.beginPath();c.arc(x,y,r,0,7);c.fillStyle=k.color;c.fill();c.lineWidth=k.id===myKid?2.5:1.5;c.strokeStyle=k.id===myKid?'#fff':'#2b2118';c.stroke()})}
 setInterval(drawMini,500);
-$('mini').addEventListener('click',e=>{e.stopPropagation();const r=minic.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*100*W,y=(e.clientY-r.top)/r.height*100*H;sfx('tap',.5);walk(me(),Math.min(XMAX,Math.max(4,x)),Math.min(YMAX,Math.max(56,y)));note()});
+$('mini').addEventListener('click',e=>{e.stopPropagation();const r=minic.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*100*W,y=(e.clientY-r.top)/r.height*100*H;walk(me(),Math.min(XMAX,Math.max(4,x)),Math.min(YMAX,Math.max(56,y)))});
 function camera(inst,tk){const sw=stage.clientWidth,sh=stage.clientHeight,ww=sw*W,wh=sh*H;if(!sw||!sh)return;const k=tk||me();camX=Math.max(0,Math.min(ww-sw,k.x/100/W*ww-sw/2));camY=Math.max(0,Math.min(wh-sh,k.y/100*sh-sh*.84));if(inst)world.style.transition='none';world.style.transform=`translate(${-camX}px,${-camY}px)`;if(inst){void world.offsetWidth;world.style.transition=''}$('goL').hidden=camX<4;$('goR').hidden=camX>ww-sw-4;$('goU').hidden=camY<4;$('goD').hidden=camY>wh-sh-4;flashArrows()}
 let arrT=0;function flashArrows(){stage.classList.add('arrows');clearTimeout(arrT);arrT=setTimeout(()=>stage.classList.remove('arrows'),3000)}
 stage.addEventListener('pointerdown',flashArrows);
 addEventListener('resize',()=>camera(true));
 $('goL').innerHTML=ICON.goL;$('goR').innerHTML=ICON.goR;$('goU').innerHTML=ICON.goU;$('goD').innerHTML=ICON.goD;
-$('goU').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,k.x,Math.max(56,k.y-30));note()});
-$('goD').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,k.x,Math.min(YMAX,k.y+30));note()});
-$('goL').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,Math.max(4,k.x-(k.baby?20:34)),k.y);note()});
+$('goU').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,k.x,Math.max(56,k.y-30))});
+$('goD').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,k.x,Math.min(YMAX,k.y+30))});
+$('goL').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,Math.max(4,k.x-(k.baby?20:34)),k.y)});
 addEventListener('keydown',e=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];if(!d||!myKid||e.altKey||e.ctrlKey||e.metaKey)return;
  if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]'))return;if(OVS.some(id=>!$(id).hidden)||!$('ov-time').hidden)return;e.preventDefault();
- const k=me(),step=k.baby?6:10;walk(k,Math.min(XMAX,Math.max(4,k.x+d[0]*step)),Math.min(YMAX,Math.max(56,k.y+d[1]*step*.8)));if(!e.repeat)note()});
-$('goR').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,Math.min(XMAX,k.x+(k.baby?20:34)),k.y);note()});
+ const k=me(),step=k.baby?6:10;walk(k,Math.min(XMAX,Math.max(4,k.x+d[0]*step)),Math.min(YMAX,Math.max(56,k.y+d[1]*step*.8)))});
+$('goR').addEventListener('click',e=>{e.stopPropagation();const k=me();walk(k,Math.min(XMAX,k.x+(k.baby?20:34)),k.y)});
 
 /* 숨은 반응들 */
 $('sun').addEventListener('click',e=>{e.stopPropagation();const s=e.currentTarget;s.classList.remove('spin');void s.offsetWidth;s.classList.add('spin');note();setTimeout(note,140);sparkle(s);skySay(skyNow())});
