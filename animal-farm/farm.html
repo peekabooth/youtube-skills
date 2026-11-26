@@ -1414,7 +1414,7 @@ let gCur='ttt',gState={},gUnsub=null,gBusy=false;
 const PC=[`<svg class="pc" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#3a2c22" stroke="#1d1510" stroke-width="2"/><circle cx="14" cy="13" r="4" fill="#fff" opacity=".25"/></svg>`,`<svg class="pc" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#fffdf6" stroke="#2b2118" stroke-width="2.5"/></svg>`];
 const PCT=[`<svg class="pc" viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" fill="none" stroke="#e8453c" stroke-width="6"/></svg>`,`<svg class="pc" viewBox="0 0 40 40"><path d="M9 9l22 22M31 9L9 31" stroke="#2f80ed" stroke-width="6" stroke-linecap="round"/></svg>`];
 const pcOf=(g,v)=>(g==='ttt'?PCT:PC)[v];
-function gFresh(g){const n=GAMES[g].n;let b='.'.repeat(n*n);if(g==='oth'){const a=b.split(''),h=n/2;a[(h-1)*n+h-1]='1';a[h*n+h]='1';a[(h-1)*n+h]='0';a[h*n+h-1]='0';b=a.join('')}return{b,t:0,p:(gState[g]&&gState[g].p)||[null,null],w:-1,last:-1,at:Date.now()}}
+function gFresh(g){const n=GAMES[g].n;let b='.'.repeat(n*n);if(g==='oth'){const a=b.split(''),h=n/2;a[(h-1)*n+h-1]='1';a[h*n+h]='1';a[(h-1)*n+h]='0';a[h*n+h-1]='0';b=a.join('')}return{b,t:0,p:(gState[g]&&gState[g].p)||[null,null],w:-1,last:-1,r:Math.random().toString(36).slice(2,10),at:Date.now()}}
 function gOk(v,g){const n=GAMES[g].n;return v&&typeof v.b==='string'&&v.b.length===n*n&&/^[.01]+$/.test(v.b)&&(v.t===0||v.t===1)&&Array.isArray(v.p)&&v.p.length===2}
 function openGames(g){if(!myKid)return;if(g)gCur=g;OVS.forEach(id=>{if(id!=='ov-games')hide(id)});show('ov-games');renderGames()}
 function gSave(g,v){v.at=Date.now();gState[g]=v;renderGames();if(db)db.doc('games/'+g).set(v).catch(()=>{});else LS.set('farmGame_'+g,v)}
@@ -1424,6 +1424,10 @@ function othFlips(b,n,i,c){if(b[i]!=='.')return[];const r=Math.floor(i/n),q=i%n,
 function othMoves(b,n,c){const m=[];for(let i=0;i<n*n;i++)if(othFlips(b,n,i,c).length)m.push(i);return m}
 function lineWin(b,n,i,need){const c=b[i],r=Math.floor(i/n),q=i%n;for(const[dr,dq]of[[0,1],[1,0],[1,1],[1,-1]]){let k=1;for(const sgn of[1,-1]){let rr=r+dr*sgn,qq=q+dq*sgn;while(rr>=0&&rr<n&&qq>=0&&qq<n&&b[rr*n+qq]===c){k++;rr+=dr*sgn;qq+=dq*sgn}}if(k>=need)return true}return false}
 function seatOf(v){return v.p[0]===myKid?(v.p[1]===myKid?2:0):v.p[1]===myKid?1:-1}
+let gWon=LS.get('farmGWon',{})||{};
+function checkWin(g){const v=gState[g];if(!v||!(v.w===0||v.w===1)||!v.p[0]||!v.p[1]||v.p[0]===v.p[1]||v.p[v.w]!==myKid)return;const key=g+':'+(v.r||v.at);if(gWon[key])return;
+ gWon[key]=1;const ks=Object.keys(gWon);if(ks.length>40)delete gWon[ks[0]];LS.set('farmGWon',gWon);hearts+=1;save();bumpCount('hc',hearts);setTimeout(()=>sfx('heart',.4),500);
+ const m=$('gmsg');if(m)m.textContent+=' 하트 하나!'}
 function renderGames(){const g=gCur,G=GAMES[g];let v=gState[g];if(!gOk(v,g))v=gState[g]=gFresh(g);const n=G.n;
  $('gtabs').innerHTML=Object.entries(GAMES).map(([id,x])=>`<button class="txtbtn ltab${g===id?' primary':''}" data-g="${id}">${x.name}</button>`).join('');
  const se=$('gseats');se.replaceChildren();[0,1].forEach(i=>{const b=document.createElement('button');b.className='gseat'+(v.w<0&&v.t===i?' turn':'');b.dataset.seat=i;const k=v.p[i]&&kidOf(v.p[i]);
@@ -1433,7 +1437,7 @@ function renderGames(){const g=gCur,G=GAMES[g];let v=gState[g];if(!gOk(v,g))v=gS
  else if(v.w===2)msg=g==='oth'?`다 했어요! ${cnt('0')} : ${cnt('1')} 사이좋게 비겼어요!`:'칸이 다 찼어요. 사이좋게 비겼어요!';
  else if(!v.p[0]||!v.p[1])msg='친구랑 자리에 앉으면 시작해요. 혼자서 두 자리에 앉아도 돼요.';
  else{const k=kidOf(v.p[v.t]);msg=(k?k.name:'')+' 차례예요'+(g==='oth'?`  (${cnt('0')} : ${cnt('1')})`:'')}
- $('gmsg').textContent=msg;
+ $('gmsg').textContent=msg;checkWin(g);
  const bd=$('gboard');bd.className='gboard'+(g==='oth'?' oth':'');bd.style.gridTemplateColumns=`repeat(${n},1fr)`;bd.style.gridTemplateRows=`repeat(${n},1fr)`;bd.replaceChildren();
  const myTurn=v.w<0&&v.p[0]&&v.p[1]&&(v.p[v.t]===myKid),hints=g==='oth'&&myTurn?new Set(othMoves(v.b,n,String(v.t))):null;
  for(let i=0;i<n*n;i++){const c=document.createElement('button');c.dataset.i=i;const x=v.b[i];if(x!=='.')c.innerHTML=pcOf(g,+x);if(i===v.last)c.classList.add('last');if(hints&&hints.has(i))c.classList.add('hint');c.setAttribute('aria-label',(Math.floor(i/n)+1)+'줄 '+(i%n+1)+'칸');bd.appendChild(c)}}
@@ -1449,7 +1453,7 @@ $('gboard').addEventListener('click',e=>{const c=e.target.closest('[data-i]');if
   const o=me_==='0'?'1':'0';if(othMoves(v.b,n,o).length)v.t=1-v.t;else if(!othMoves(v.b,n,me_).length){const c0=a.filter(x=>x==='0').length,c1=a.filter(x=>x==='1').length;v.w=c0===c1?2:c0>c1?0:1}}
  else{a[i]=me_;v.b=a.join('');v.last=i;if(lineWin(v.b,n,i,G.win))v.w=v.t;else if(!v.b.includes('.'))v.w=2;else v.t=1-v.t}
  sfx('plop',.45);if(v.w>=0)setTimeout(()=>sfx('yay',.35),300);gSave(g,v)});
-function gotGames(docs){docs.forEach(([id,v])=>{if(!GAMES[id]||!gOk(v,id))return;const cur=gState[id];if(cur&&(+cur.at||0)>(+v.at||0))return;v.p=v.p.map(x=>KN[x]?x:null);gState[id]=v});if(!$('ov-games').hidden)renderGames()}
+function gotGames(docs){docs.forEach(([id,v])=>{if(!GAMES[id]||!gOk(v,id))return;const cur=gState[id];if(cur&&(+cur.at||0)>(+v.at||0))return;v.p=v.p.map(x=>KN[x]?x:null);gState[id]=v;checkWin(id)});if(!$('ov-games').hidden)renderGames()}
 Object.keys(GAMES).forEach(g=>{const v=LS.get('farmGame_'+g,null);if(gOk(v,g))gState[g]=v});
 
 /* ===== 하루 놀이 시간 (아이들만, 캐릭터별 하루 합계) ===== */
