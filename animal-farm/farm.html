@@ -8,7 +8,7 @@ PICTURE: 큰 머리·짧은 몸의 동물 6마리와 아이 2명, 그림판 이�
 COLOUR and TYPE: 하늘색·풀색 바탕, 헛간 빨강과 해 노랑 포인트 / Jua
 LAYOUT: 화면 전체가 농장, 아래 직각 버튼 줄, 직각 패널. 모서리는 어디에도 둥글리지 않음
 */
-:root{color-scheme:light dark;--sky:light-dark(#8fd3f4,#20335a);--sky2:light-dark(#e3f6ff,#3b4c7a);--g1:light-dark(#84d064,#356f3d);--g2:light-dark(#5aae40,#285a30);--ink:#7a5c44;--ink2:#2b2118;--bar:light-dark(#fff8e7,#1c1a16);--paper:light-dark(#fff8e7,#22201a);--fg:light-dark(#2b2118,#f5ecd9);--line:light-dark(#2b2118,#f5ecd9);--scrim:light-dark(rgba(43,33,24,.5),rgba(0,0,0,.65));--muted:light-dark(#7a6a58,#bfb29c);--sea:#ff4f86;--jian:#1fa3e0;--hot:#ffd23f;--red:#e8453c;--ok:#3f9b3a}
+:root{color-scheme:light dark;--sky:light-dark(#bfe2ee,#20335a);--sky2:light-dark(#eef7f2,#3b4c7a);--g1:light-dark(#c7e6a8,#356f3d);--g2:light-dark(#b2da92,#285a30);--ink:#9a7c63;--ink2:#2b2118;--bar:light-dark(#fff8e7,#1c1a16);--paper:light-dark(#fff8e7,#22201a);--fg:light-dark(#2b2118,#f5ecd9);--line:light-dark(#2b2118,#f5ecd9);--scrim:light-dark(rgba(43,33,24,.5),rgba(0,0,0,.65));--muted:light-dark(#7a6a58,#bfb29c);--sea:#ff4f86;--jian:#1fa3e0;--hot:#ffd23f;--red:#ef8f86;--ok:#3f9b3a}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 textarea{user-select:text;-webkit-user-select:text}
@@ -24,15 +24,15 @@ svg{display:block;overflow:visible}
 #hills{position:absolute;left:0;top:24%;width:100%;height:19%;pointer-events:none}
 #fence{position:absolute;left:0;top:41.5%;width:100%;height:8%;pointer-events:none}
 #sun{position:absolute;right:calc(4% + 54px);top:4%;width:clamp(60px,12vmin,104px);cursor:pointer}
-#sun .rays{transform-origin:50px 50px;animation:turn 30s linear infinite}
+#sun .rays{transform-origin:50px 50px}
 #sun.spin{animation:hop .6s}
 @keyframes turn{to{transform:rotate(360deg)}}
 .cloud{position:absolute;width:clamp(80px,17vmin,160px);pointer-events:none;animation:drift 70s linear infinite}
 @keyframes drift{from{transform:translateX(-35vw)}to{transform:translateX(135vw)}}
 .bird{position:absolute;width:26px;pointer-events:none;animation:drift 40s linear infinite}
-.bird path{animation:flap .5s ease-in-out infinite alternate;transform-origin:center;transform-box:fill-box}
+.bird path{animation:flap 1.4s ease-in-out infinite alternate;transform-origin:center;transform-box:fill-box}
 @keyframes flap{to{transform:scaleY(.4)}}
-#blades{transform-origin:60px 52px;animation:turn 9s linear infinite}
+#blades{transform-origin:60px 52px;animation:turn 40s linear infinite}
 #mill.fast #blades{animation-duration:.8s}
 #tree.shake{animation:shake .5s}
 @keyframes shake{25%{transform:translate(-52%,-100%) rotate(-2deg)}75%{transform:translate(-48%,-100%) rotate(2deg)}}
@@ -58,9 +58,9 @@ svg{display:block;overflow:visible}
 @keyframes ear{0%,88%,100%{transform:rotate(0)}93%{transform:rotate(-14deg)}}
 .kid .flip{transform-box:fill-box;transform-origin:center}
 .kid.left .flip{transform:scaleX(-1)}
-.kid.mine::after{content:"";position:absolute;left:50%;top:-16px;width:14px;height:14px;background:var(--hot);transform:translateX(-50%) rotate(45deg);border:2px solid var(--ink);animation:hop 1.2s infinite}
-.kid.walk svg{animation:bob .22s ease-in-out infinite alternate}
-@keyframes bob{to{transform:translateY(-5%)}}
+.kid.mine::after{content:"";position:absolute;left:50%;top:-16px;width:14px;height:14px;background:#ffe9a6;transform:translateX(-50%) rotate(45deg);border:2px solid var(--ink);opacity:.85}
+.kid.walk svg{animation:bob .4s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-2.5%)}}
 .hop>svg{animation:hop .5s ease;transform-origin:bottom}
 @keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-20%) scaleY(1.05)}70%{transform:translateY(0) scaleY(.93)}}
 .munch>svg{animation:munch .16s ease 5 alternate;transform-origin:bottom}
@@ -84,7 +84,7 @@ svg{display:block;overflow:visible}
 @keyframes fall{from{margin-top:calc(-1 * var(--h))}80%{margin-top:0}90%{margin-top:-10px}}
 .got{transition:all .6s ease-in;left:12%!important;top:4%!important;opacity:0}
 .fly{position:absolute;width:34px;cursor:pointer;z-index:110}
-.fly .w{animation:wing .18s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+.fly .w{animation:wing 1.2s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
 @keyframes wing{to{transform:scaleX(.25)}}
 .mbadge{position:absolute;right:-6px;top:-6px;background:var(--red);color:#fff;font-size:16px;min-width:26px;height:26px;line-height:22px;text-align:center;border:2px solid var(--ink);pointer-events:none}
 
@@ -213,7 +213,7 @@ svg{display:block;overflow:visible}
 .kid.mine .nametag{background:var(--hot)}
 /* 아기 */
 .kid.baby{width:clamp(50px,11vmin,96px);transition:left 2.2s ease-in-out,top 2.2s ease-in-out}
-.kid.baby.walk svg{animation:crawl .34s ease-in-out infinite alternate}
+.kid.baby.walk svg{animation:crawl .6s ease-in-out infinite alternate}
 @keyframes crawl{from{transform:rotate(-3deg) translateY(0)}to{transform:rotate(3deg) translateY(-3%)}}
 .kid.baby.mine::after{top:-12px}
 #ov-pick .pickrow{max-height:100%;overflow:auto;padding:8px}
@@ -294,7 +294,13 @@ svg{display:block;overflow:visible}
 .gendbox{pointer-events:auto;background:#fffaf0;border:2.5px solid #c9a67e;border-radius:22px;box-shadow:0 8px 24px rgba(90,60,30,.25);padding:18px 26px;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:88vw;text-align:center}
 .gendbox p{margin:0;font-size:22px;font-weight:800}#gend2{font-size:24px;padding:10px 26px}
 #paths{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1}
-#world{background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.10) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(40,90,30,.10) 0 2px,transparent 3px),linear-gradient(transparent 0,transparent 17.46%,var(--g1) 17.5%,var(--g2) 41.7%,light-dark(#4d9a38,#22502b) 70%,light-dark(#3f8a30,#1d4625) 100%);background-size:46px 38px,58px 52px,100% 100%}
+#world{background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.10) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(40,90,30,.10) 0 2px,transparent 3px),linear-gradient(transparent 0,transparent 17.46%,var(--g1) 17.5%,var(--g2) 41.7%,light-dark(#a6d388,#22502b) 70%,light-dark(#9bcb7e,#1d4625) 100%);background-size:46px 38px,58px 52px,100% 100%}
+#world::before{content:'';position:absolute;left:0;right:0;bottom:0;top:17.5%;background:repeating-linear-gradient(35deg,rgba(90,70,40,.045) 0 2px,transparent 2px 9px);pointer-events:none}
+/* 그림책 크레용: 살짝 떨리는 손그림 선 + 종이 결 */
+.anc>svg,.animal>svg,.kid>svg,.baby>svg{filter:url(#crayon)}
+/* 차분하게: 가만히 있을 때 흔들림·깜빡임 없음 */
+.sway2,.breath,.ear,.eye,.tail,.leaf{animation:none!important}
+#grain{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:.55;mix-blend-mode:multiply;background-size:220px 220px}
 .btn,.ib,.txtbtn,.qbtn,.scard,.box,.count,.gseat,#notice,#invite,#kmenu,.say,.qword,.qitems,.qbig,.stday,.aitem,#tleft,#mini{border-radius:16px}
 .btn{border-width:2.5px}#friends button{border-radius:50%}.say{border-width:2.5px}
 #kmenu{position:fixed;z-index:1090;width:0;height:0;pointer-events:none}
@@ -409,7 +415,7 @@ svg{display:block;overflow:visible}
 <linearGradient id="gDuck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffec94"/><stop offset="1" stop-color="#f6c22c"/></linearGradient>
 <linearGradient id="gHen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf7"/><stop offset="1" stop-color="#ebe3d2"/></linearGradient>
 <radialGradient id="gWool" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e5e0d5"/></radialGradient>
-<linearGradient id="gBarn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8493e"/><stop offset="1" stop-color="#b02a22"/></linearGradient>
+<linearGradient id="gBarn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a48f"/><stop offset="1" stop-color="#df8371"/></linearGradient>
 <radialGradient id="gLeaf" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#8ddc5c"/><stop offset="1" stop-color="#3f9b3a"/></radialGradient>
 <radialGradient id="gLeaf2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#6cc44c"/><stop offset="1" stop-color="#2f7d30"/></radialGradient>
 <radialGradient id="gApple" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ff7b6b"/><stop offset="1" stop-color="#c91f1f"/></radialGradient>
@@ -419,7 +425,8 @@ svg{display:block;overflow:visible}
 <linearGradient id="gBall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9e6"/><stop offset="1" stop-color="#ffa8c6"/></linearGradient>
 </defs></svg>
 
-<div id="stage">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3.2"/></filter></svg>
+<div id="stage"><div id="grain"></div>
   <svg class="cloud" style="top:6%;animation-delay:-12s" viewBox="0 0 120 50"><g fill="#fff"><circle cx="30" cy="30" r="18"/><circle cx="55" cy="22" r="22"/><circle cx="82" cy="30" r="17"/><rect x="28" y="30" width="56" height="18"/></g></svg>
   <svg class="cloud" style="top:15%;animation-delay:-45s;animation-duration:90s" viewBox="0 0 120 50"><g fill="#fff"><circle cx="30" cy="30" r="15"/><circle cx="52" cy="24" r="19"/><circle cx="76" cy="31" r="14"/><rect x="28" y="31" width="50" height="16"/></g></svg>
   <svg class="bird" style="top:11%;animation-delay:-8s" viewBox="0 0 26 10"><path d="M1 8q6 -8 12 0q6 -8 12 0" fill="none" stroke="#6b4f3a" stroke-width="2"/></svg>
@@ -572,7 +579,8 @@ svg{display:block;overflow:visible}
 <script>
 {
 const $=id=>document.getElementById(id),stage=$('stage'),bar=$('bar');
-const ink='#6b4f3a',S=`stroke="${ink}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`,S2=`stroke="${ink}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
+(()=>{try{const c=document.createElement('canvas');c.width=c.height=220;const x=c.getContext('2d'),d=x.createImageData(220,220);for(let i=0;i<d.data.length;i+=4){const v=225+Math.random()*30;d.data[i]=v;d.data[i+1]=v*.97;d.data[i+2]=v*.92;d.data[i+3]=Math.random()<.5?40:0}x.putImageData(d,0,0);document.getElementById('grain').style.backgroundImage=`url(${c.toDataURL()})`}catch(e){}})();
+const ink='#a88a70',S=`stroke="${ink}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`,S2=`stroke="${ink}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const use=n=>{try{return window.claude&&window.claude.use?Promise.resolve(window.claude.use(n)).catch(()=>null):Promise.resolve(null)}catch(e){return Promise.resolve(null)}};
 const CHARS=[
@@ -616,12 +624,12 @@ const treeOf=t=>t==='pine'?TREEV.pine(...TCOL.pine):TREEV.oak(...TCOL[t],t==='bl
 
 /* 헛간 */
 const barn=place(`<svg viewBox="0 0 220 200"><ellipse class="sh" cx="110" cy="196" rx="104" ry="7"/>
-<path d="M18 86L110 26L202 86V192H18Z" fill="url(#gBarn)" ${S}/>${Array.from({length:9},(_,i)=>`<path d="M${38+i*20} ${i<4?86-i*9:i>4?86-(8-i)*9:52}V192" stroke="#9b221b" stroke-width="2"/>`).join('')}
-<path d="M4 92L58 40L110 14L162 40L216 92" fill="none" stroke="#6b2a20" stroke-width="16" stroke-linejoin="round"/><path d="M4 92L58 40L110 14L162 40L216 92" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+<path d="M18 86L110 26L202 86V192H18Z" fill="url(#gBarn)" ${S}/>${Array.from({length:9},(_,i)=>`<path d="M${38+i*20} ${i<4?86-i*9:i>4?86-(8-i)*9:52}V192" stroke="#c97a68" stroke-width="2"/>`).join('')}
+<path d="M4 92L58 40L110 14L162 40L216 92" fill="none" stroke="#a8604f" stroke-width="16" stroke-linejoin="round"/><path d="M4 92L58 40L110 14L162 40L216 92" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
 <rect x="88" y="54" width="44" height="34" fill="#ffe9a8" ${S}/><path d="M90 88q20 -18 40 0" fill="#e6b84a"/><path d="M110 54v34M88 71h44" stroke="#fff" stroke-width="3"/>
-<rect x="68" y="112" width="84" height="80" fill="#3a1a12"/><g id="cat"><circle cx="110" cy="166" r="20" fill="#ffa94d" ${S}/><path d="M93 156l0 -18l12 10zM127 156l0 -18l-12 10z" fill="#ffa94d" ${S}/>${eye(102,166,.7)}${eye(118,166,.7)}${blush(96,174,3.5)}${blush(124,174,3.5)}<path d="M107 174q3 3 6 0" fill="none" stroke="${ink}" stroke-width="2"/><path d="M92 172h-10M92 176h-10M128 172h10M128 176h10" stroke="${ink}" stroke-width="1.5"/><rect x="94" y="184" width="32" height="10" fill="#ffa94d"/></g>
-<g class="dl" style="transform-origin:68px 150px"><rect x="68" y="112" width="42" height="80" fill="#8c1f19" ${S}/><path d="M70 114l38 76M108 114l-38 76" stroke="#fff" stroke-width="5"/><rect x="70" y="114" width="38" height="76" fill="none" stroke="#fff" stroke-width="4"/></g>
-<g class="dr" style="transform-origin:152px 150px"><rect x="110" y="112" width="42" height="80" fill="#8c1f19" ${S}/><path d="M112 114l38 76M150 114l-38 76" stroke="#fff" stroke-width="5"/><rect x="112" y="114" width="38" height="76" fill="none" stroke="#fff" stroke-width="4"/></g>
+<rect x="68" y="112" width="84" height="80" fill="#7a4a3c"/><g id="cat"><circle cx="110" cy="166" r="20" fill="#ffa94d" ${S}/><path d="M93 156l0 -18l12 10zM127 156l0 -18l-12 10z" fill="#ffa94d" ${S}/>${eye(102,166,.7)}${eye(118,166,.7)}${blush(96,174,3.5)}${blush(124,174,3.5)}<path d="M107 174q3 3 6 0" fill="none" stroke="${ink}" stroke-width="2"/><path d="M92 172h-10M92 176h-10M128 172h10M128 176h10" stroke="${ink}" stroke-width="1.5"/><rect x="94" y="184" width="32" height="10" fill="#ffa94d"/></g>
+<g class="dl" style="transform-origin:68px 150px"><rect x="68" y="112" width="42" height="80" fill="#c06a5a" ${S}/><path d="M70 114l38 76M108 114l-38 76" stroke="#fff" stroke-width="5"/><rect x="70" y="114" width="38" height="76" fill="none" stroke="#fff" stroke-width="4"/></g>
+<g class="dr" style="transform-origin:152px 150px"><rect x="110" y="112" width="42" height="80" fill="#c06a5a" ${S}/><path d="M112 114l38 76M150 114l-38 76" stroke="#fff" stroke-width="5"/><rect x="112" y="114" width="38" height="76" fill="none" stroke="#fff" stroke-width="4"/></g>
 <path d="M18 192h184" stroke="${ink}" stroke-width="3"/></svg>`,14,53,'clamp(124px,25vmin,240px)','tap',40);
 barn.id='barn';
 
@@ -891,7 +899,7 @@ function showKids(){KIDS.forEach(k=>{k.el.hidden=!(k.id===myKid||online.has(k.id
 function renderBar(){const k=me(),n=myMail().filter(isNew).length,tk=!$('talk').hidden;
  bar.innerHTML=`<button class="btn on" data-act="me" aria-label="캐릭터 바꾸기">${faceSvg(k)}</button><span class="sep"></span>`
  +FOODS.map(f=>`<button class="btn${food===f.id?' on':''}${f.id==='apple'&&!apples?' off':''}" data-food="${f.id}" aria-label="먹이">${f.svg}${f.id==='apple'?`<span class="badge">${apples}</span>`:''}</button>`).join('')
- +`<span class="sep"></span><button class="btn${tk?' on':''}" data-act="chat" aria-label="말하기">${ICON.chat}</button><button class="btn" data-act="learn" aria-label="배움 놀이">${ICON.learn}</button><button class="btn" data-act="wardrobe" aria-label="옷장">${ICON.shirt}</button><button class="btn" data-act="easel" aria-label="그림판">${ICON.easel}</button><button class="btn" data-act="games" aria-label="같이 놀이">${ICON.games}</button><button class="btn" data-act="mail" aria-label="우체통">${ICON.mail}${n?`<span class="badge">${n}</span>`:''}</button><button class="btn" data-act="shop" aria-label="가게">${ICON.shop}</button><button class="btn" data-act="album" aria-label="우리 앨범">${ICON.album}</button><span class="sep"></span><button class="btn" data-act="music" aria-label="음악">${musicIcon(musicLv)}</button>`;
+ +`<span class="sep"></span><button class="btn${tk?' on':''}" data-act="chat" aria-label="말하기">${ICON.chat}</button><button class="btn" data-act="wardrobe" aria-label="옷장">${ICON.shirt}</button><button class="btn" data-act="album" aria-label="우리 앨범">${ICON.album}</button><span class="sep"></span><button class="btn" data-act="music" aria-label="음악">${musicIcon(musicLv)}</button>`;
  $('counts').innerHTML=`<span class="count" id="hc">${HEART}<b>${hearts}</b></span><span class="count" id="ec">${BASKET}<b>${eggs}</b></span>`;
 }
 bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sfx('tap',.5);const act=b.dataset.act;
@@ -1012,10 +1020,10 @@ setInterval(()=>{if(eggOn||document.hidden||Date.now()-lastEgg<EGG_GAP)return;la
 
 /* 나비 */
 const BFLY=c=>`<svg viewBox="0 0 34 26"><g class="w"><path d="M17 13q-14 -16 -15 -4q0 8 15 4zM17 13q14 -16 15 -4q0 8 -15 4zM17 13q-10 10 -12 4q0 -4 12 -4zM17 13q10 10 12 4q0 -4 -12 -4z" fill="${c}" stroke="${ink}" stroke-width="1.5"/></g><path d="M17 6v14" stroke="${ink}" stroke-width="2.5" stroke-linecap="round"/><path d="M17 6l-3 -5M17 6l3 -5" stroke="${ink}" stroke-width="1"/></svg>`;
-const flies=['#ff8fab','#4cc9f0'].map((c,i)=>{const d=document.createElement('div');d.className='fly';d.innerHTML=BFLY(c);world.appendChild(d);const o={el:d,t:i*3,sp:1};d.addEventListener('click',e=>{e.stopPropagation();o.sp=4;sparkle(d);note();setTimeout(()=>o.sp=1,1500)});return o});
+const flies=['#ff8fab','#4cc9f0'].map((c,i)=>{const d=document.createElement('div');d.className='fly';d.innerHTML=BFLY(c);world.appendChild(d);const o={el:d,t:i*3,sp:1};d.addEventListener('click',e=>{e.stopPropagation();o.sp=1.6;sparkle(d);note();setTimeout(()=>o.sp=1,1500)});return o});
 let last=performance.now(),flyC=50;
 (function loop(now){const dt=Math.min(50,now-last)/1000;last=now;const sw=stage.clientWidth||1,tc=(camX+sw/2)/(sw*W)*100*W;flyC+=(tc-flyC)*Math.min(1,dt*.8);
- flies.forEach((f,i)=>{f.t+=dt*.35*f.sp;const x=flyC+40*Math.sin(f.t*(i?.8:1.1)+i),y=(i?66:58)+12*Math.sin(f.t*(i?1.7:2.1));f.el.style.left=wx(x);f.el.style.top=wy(y)});requestAnimationFrame(loop)})(last);
+ flies.forEach((f,i)=>{f.t+=dt*.1*f.sp;const x=flyC+30*Math.sin(f.t*(i?.8:1.1)+i),y=(i?66:58)+5*Math.sin(f.t*(i?1.3:1.6));f.el.style.left=wx(x);f.el.style.top=wy(y)});requestAnimationFrame(loop)})(last);
 
 /* 소리 */
 let ac=null;function ctx(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}return ac}
