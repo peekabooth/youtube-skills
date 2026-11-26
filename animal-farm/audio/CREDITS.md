@@ -16,10 +16,33 @@
 | rabbit.mp3 | 토끼 | Freesound "A rabbit is eating a cucumber" by davi-sh — https://freesound.org/people/davi-sh/sounds/482732/ | CC0 |
 | chicken.mp3 | 닭 | Wikimedia Commons "Chickens demanding food" — https://commons.wikimedia.org/wiki/File:Chickens_demanding_food.ogg | 퍼블릭 도메인 |
 
-## 배경음악
+## 배경음악 (음악 버튼으로 1 → 2 → 3 → 끄기)
 
 | 파일 | 곡 | 출처 | 라이선스 |
 |---|---|---|---|
-| bgm.mp3 | "Laundry On The Wire" — HoliznaCC0 | [Alvana Audio](https://github.com/seyedpouramir/alvana-audio) `music/lofi/laundry-on-the-wire.mp3` (원곡: https://opengameart.org/users/holizna) | CC0 1.0 |
+| bgm1.mp3 | "Sunny Afternoon" — HoliznaCC0 | [Alvana Audio](https://github.com/seyedpouramir/alvana-audio) `music/chiptune/sunny-afternoon.mp3` | CC0 1.0 |
+| bgm2.mp3 | "Adventure Begins Loop" — HoliznaCC0 | Alvana Audio `music/chiptune/adventure-begins-loop.mp3` | CC0 1.0 |
+| bgm3.mp3 | "Bouncing" — HoliznaCC0 | Alvana Audio `music/upbeat/bouncing.mp3` | CC0 1.0 |
 
-배경음악은 아이들 귀에 편하도록 고음을 살짝 깎고(4kHz 로우패스) 96kbps로 다시 인코딩했어요.
+원곡 작가: HoliznaCC0 (https://opengameart.org/users/holizna). 아이들 귀에 편하도록 고음을 살짝 깎고(6~7kHz 로우패스) 소리 크기를 맞춘 뒤 모노 64kbps로 다시 인코딩했어요.
+
+## 효과음
+
+모두 [Alvana Audio](https://github.com/seyedpouramir/alvana-audio)의 CC0 1.0 효과음이에요. 소리 크기만 맞추고 모노 64kbps MP3로 바꿨어요.
+
+| 파일 | 원본 | 쓰는 곳 |
+|---|---|---|
+| sfx-tap.mp3 | `sfx/ui/click-soft.wav` | 버튼 누르기 |
+| sfx-pop.mp3 | `sfx/pop/bubble-1.wav` | 꽃, 해, 말풍선, 잡초 뽑기 |
+| sfx-pop2.mp3 | `sfx/pop/pop-2.wav` | 닫기, 되돌리기 |
+| sfx-plop.mp3 | `sfx/pop/plop-01.wav` | 냠냠, 씨앗 심기 |
+| sfx-pluck.mp3 | `sfx/pop/classic-pop.wav` | 예비 |
+| sfx-heart.mp3 | `sfx/jingle/pizzicato-02.wav` | 하트 받기 |
+| sfx-egg.mp3 | `sfx/notification/success-soft.wav` | 달걀 낳기 |
+| sfx-sparkle.mp3 | `sfx/magic/sparkle.wav` | 달걀 줍기 |
+| sfx-yay.mp3 | `sfx/notification/success-arpeggio.wav` | 정답, 저장, 수확 |
+| sfx-oops.mp3 | `sfx/notification/question-002.wav` | 틀렸을 때 |
+| sfx-ding.mp3 | `sfx/notification/notify-soft.wav` | 말풍선 도착, 놀러왔어요 |
+| sfx-bell.mp3 | `sfx/foley/bell-02.wav` | 우체통, 기차, 학교 |
+| sfx-splash.mp3 | `sfx/water/splash-09.wav` | 연못, 물 주기 |
+| sfx-bubble.mp3 | `sfx/water/bubble-01.wav` | 물고기 |
