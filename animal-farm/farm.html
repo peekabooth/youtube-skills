@@ -830,7 +830,7 @@ let owned=new Set((LS.get('farmOwned',[])||[]).filter(x=>typeof x==='string'));
 const hasFriend=id=>owned.has('a:'+id);
 FRIENDS.forEach((a,i)=>{if(hasFriend(a.id)){ANIMALS.push(a);addAnimal(a,i+6)}});
 KIDS.forEach(k=>{const d=document.createElement('div');d.className='thing kid'+(k.baby?' baby':'');d.style.left=wx(k.x);d.style.top=wy(k.y);d.style.zIndex=Math.round(k.y)+1;d.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`;d.hidden=true;d.setAttribute('role','button');d.setAttribute('aria-label',k.name);k.el=d;world.appendChild(d);
- d.addEventListener('click',e=>{e.stopPropagation();if(food){feedKid(k);return}hop(d);speak(k.id===myKid?'나는 '+k.name+'!':k.name+' 안녕!')})});
+ d.addEventListener('click',e=>{e.stopPropagation();if(food){feedKid(k);return}if(k.id!==myKid&&online.has(k.id)){giftHeart(k);return}hop(d);speak(k.id===myKid?'나는 '+k.name+'!':k.name+' 안녕!')})});
 const redrawKid=k=>{k.el.innerHTML=kidSvg(k)+`<span class="nametag">${k.name}</span>`};
 /* 이 기기에서 고른 캐릭터와 지금 접속해 있는 캐릭터만 농장에 보여요 */
 let online=new Set();
@@ -922,11 +922,16 @@ function feedKid(k){const f=food;if(!f)return;
   if(f==='apple'&&!apples){food=null;renderBar()}},k.id===myKid?50:900)}
 /* 먹이 주기를 다른 화면에도 보여주기 (db acts) */
 const actBoot=Date.now(),actSeen=new Set();
+let giftAt=0;function giftHeart(k){const m=me();hop(k.el);if(Date.now()-giftAt<4000)return;
+ if(hearts<1){sayAt(m.el,'하트를 모으면 '+k.name+'에게 선물할 수 있어요');return}giftAt=Date.now();hearts-=1;save();bumpCount('hc',hearts);
+ fxOn(m.el,HEART,'heart');setTimeout(()=>fxOn(k.el,HEART,'heart'),400);sfx('heart',.35);sayAt(m.el,k.name+'에게 하트 선물!');shareAct('gift',k.id,'h')}
 let invT=0;function showInvite(k){if(!k||!myKid||!$('ov-easel').hidden&&!solo)return;$('ivf').innerHTML=faceSvg(k);$('ivt').textContent=iga(k.name)+' 같이 그림 그리자고 해요. 같이 그릴래?';$('invite').hidden=false;sfx('ding',.3);clearTimeout(invT);invT=setTimeout(()=>{$('invite').hidden=true},45000)}
 $('ivyes').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;if($('ov-easel').hidden)openEasel();setSolo(false)});
 $('ivno').addEventListener('click',e=>{e.stopPropagation();$('invite').hidden=true;sfx('pop2',.4)});
 function shareAct(t,id,f){if(!db||!myKid)return;db.collection('acts').add({by:myKid,t,id,f,at:Date.now()}).catch(()=>{})}
-function gotActs(list){const now=Date.now();list.forEach(a=>{if(actSeen.has(a.id))return;actSeen.add(a.id);const v=a.v;if(v&&v.t==='draw'&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<60000)showInvite(kidOf(v.by));return}
+function gotActs(list){const now=Date.now();list.forEach(a=>{if(actSeen.has(a.id))return;actSeen.add(a.id);const v=a.v;if(v&&v.t==='gift'&&v.by!==myKid&&KN[v.by]&&KN[v.id]){const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const to=kidOf(v.id),fr=kidOf(v.by);fxOn(fr.el,HEART,'heart');setTimeout(()=>fxOn(to.el,HEART,'heart'),400);
+   if(v.id===myKid){hearts+=1;save();bumpCount('hc',hearts);sfx('heart',.35);sayAt(to.el,iga(fr.name)+' 하트를 선물했어요!')}return}
+  if(v&&v.t==='draw'&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<60000)showInvite(kidOf(v.by));return}
   if(!v||v.by===myKid||!KN[v.by]||!['kid','ani'].includes(v.t)||!['carrot','corn','apple','hay'].includes(v.f))return;
   const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const giver=kidOf(v.by);
   if(v.t==='kid'){const k=kidOf(v.id);if(!k)return;k.el.classList.remove('munch');void k.el.offsetWidth;k.el.classList.add('munch');chomp();fxOn(k.el,HEART,'heart');sayAt(k.el,KID_EAT[v.f]||'냠냠!');
@@ -1065,8 +1070,14 @@ const paper=$('paper'),pw=$('pw'),et=$('etools'),layers={};
 function layer(id){if(layers[id])return layers[id];if(!KN[id])return null;const c=document.createElement('canvas');c.width=EW;c.height=EH;const col=kidOf(id).color;c.style.filter=`drop-shadow(0 0 1.3px ${col}) drop-shadow(0 0 1.3px ${col})`;if(id===myKid)c.classList.add('mine');paper.appendChild(c);const x=c.getContext('2d');layers[id]={c,x,base:null,st:[]};return layers[id]}
 CHARS.forEach(ch=>{try{const d=localStorage.getItem('easel_'+ch.id);if(d&&okImg(d)){const L=layer(ch.id),im=new Image();im.onload=()=>{L.base=im;redrawLayer(ch.id)};im.src=d}}catch(e){}});
 let solo=false,pen={c:ECOL[1],w:1,erase:false},cur=null,pend=[],flushT=0,armed=false,armT=0,partner=null;
-const saveT={};function saveLayer(id){clearTimeout(saveT[id]);saveT[id]=setTimeout(()=>{try{localStorage.setItem('easel_'+id,layers[id].c.toDataURL('image/png'))}catch(e){}},700)}
-function drawSeg(kid,c,w,p,n=-1){const L=layer(kid);if(!L)return;paintSeg(L.x,c,w,p);let s=L.st[L.st.length-1];if(!s||s.n!==n){s={n,c,w,segs:[]};L.st.push(s);if(L.st.length>30)flatten(L)}s.segs.push(p)}
+/* 같이 그리기 종이를 저장소에도 올려서 늦게 들어온 친구도 같은 그림을 봐요 */
+let boardT=0;const boardAt={};
+function pushBoard(){if(!db||!myKid||solo)return;clearTimeout(boardT);boardT=setTimeout(()=>{const L=layers[myKid];if(!L)return;const c=document.createElement('canvas');c.width=600;c.height=450;c.getContext('2d').drawImage(L.c,0,0,600,450);
+ const u=c.toDataURL('image/png');if(u.length>240000)return;const at=Date.now();boardAt[myKid]=at;db.doc('board/'+myKid).set({u,at}).catch(()=>{})},2500)}
+function gotBoard(docs){docs.forEach(([id,v])=>{if(id===myKid||!KN[id]||!v||typeof v.u!=='string'||!v.u.startsWith('data:image/png;base64,'))return;const at=+v.at||0;if(at<=(boardAt[id]||0))return;boardAt[id]=at;
+ const im=new Image();im.onload=()=>{const L=layer(id);if(!L)return;if(L.st.length&&L.st[L.st.length-1].t>at)return;const bc=document.createElement('canvas');bc.width=EW;bc.height=EH;bc.getContext('2d').drawImage(im,0,0,EW,EH);L.base=bc;L.st=[];redrawLayer(id);saveLayer(id)};im.src=v.u})}
+const saveT={};function saveLayer(id){if(id===myKid)pushBoard();clearTimeout(saveT[id]);saveT[id]=setTimeout(()=>{try{localStorage.setItem('easel_'+id,layers[id].c.toDataURL('image/png'))}catch(e){}},700)}
+function drawSeg(kid,c,w,p,n=-1){const L=layer(kid);if(!L)return;paintSeg(L.x,c,w,p);let s=L.st[L.st.length-1];if(!s||s.n!==n){s={n,c,w,segs:[],t:Date.now()};L.st.push(s);if(L.st.length>30)flatten(L)}s.segs.push(p)}
 function flatten(L){const o=L.st.shift();if(!(L.base instanceof HTMLCanvasElement)){const bc=document.createElement('canvas');bc.width=EW;bc.height=EH;if(L.base)bc.getContext('2d').drawImage(L.base,0,0,EW,EH);L.base=bc}const bx=L.base.getContext('2d');o.segs.forEach(p=>paintSeg(bx,o.c,o.w,p))}
 function redrawLayer(id){const L=layers[id];if(!L)return;L.x.clearRect(0,0,EW,EH);if(L.base)L.x.drawImage(L.base,0,0,EW,EH);L.st.forEach(s=>s.segs.forEach(p=>paintSeg(L.x,s.c,s.w,p)))}
 function undoLayer(id){const L=layers[id];if(!L||!L.st.length)return false;L.st.pop();redrawLayer(id);saveLayer(id);return true}
@@ -1088,7 +1099,7 @@ function hasInk(){return shownIds().map(id=>layers[id]).some(L=>{try{const d=L.x
 async function newCanvas(){const b=et.querySelector('[data-e=new]');if(b)b.disabled=true;
  try{if(hasInk())await addDoc('drawings',{kid:myKid,img:composite(480),at:Date.now()})}catch(e){}
  clearLayers();!solo&&eRoom&&eRoom.emit('clr',{k:myKid}).catch(()=>{});beep(523,.12,'triangle',784);speak('새 종이!');if(b){b.disabled=false;hop(b)}}
-function clearLayers(){shownIds().forEach(id=>{layers[id].x.clearRect(0,0,EW,EH);layers[id].base=null;layers[id].st=[];try{localStorage.removeItem('easel_'+id)}catch(e){}})}
+function clearLayers(){setTimeout(pushBoard,0);shownIds().forEach(id=>{layers[id].x.clearRect(0,0,EW,EH);layers[id].base=null;layers[id].st=[];try{localStorage.removeItem('easel_'+id)}catch(e){}})}
 function fitPaper(){const r=pw.getBoundingClientRect();let w=r.width-24,h=r.height-24;if(w<=0||h<=0)return;if(w/h>4/3)w=h*4/3;else h=w*.75;paper.style.width=Math.floor(w)+'px';paper.style.height=Math.floor(h)+'px'}
 addEventListener('resize',()=>{if(!$('ov-easel').hidden)fitPaper()});
 function presenceEasel(open){if(eRoom&&myKid)eRoom.presence({kid:myKid,open:!!open&&!solo}).catch(()=>{})}
@@ -1138,6 +1149,7 @@ use('db').then(d=>{if(!d){netSt.db='이 기기에서는 안 됨';loadLocal();ret
  d.collection('here').onSnapshot(s=>{const m={};s.docs.forEach(x=>{if(KN[x.id])m[x.id]=x.data()});HERE=m;gotHere()},e=>{netSt.db='읽기 안 됨 ('+((e&&e.code)||'오류')+')'});
  d.collection('pins').onSnapshot(s=>{const m={};s.docs.forEach(x=>{const v=x.data();if(KN[x.id]&&v&&typeof v.h==='string'&&/^[0-9a-f]{1,8}$/.test(v.h))m[x.id]=v.h});PINS=m;LS.set('farmPins',PINS);if(!$('ov-mom').hidden)renderMom()},()=>{});
  d.collection('letters').orderBy('at','desc').limit(40).onSnapshot(s=>{letters=s.docs.map(x=>clean(x.id,x.data())).filter(Boolean);refreshAll()},()=>{});
+ d.collection('board').onSnapshot(s=>{gotBoard(s.docs.map(x=>[x.id,x.data()]))},()=>{});
  d.collection('acts').orderBy('at','desc').limit(12).onSnapshot(s=>{gotActs(s.docs.map(x=>({id:x.id,v:x.data()})).reverse())},()=>{});
  d.collection('chat').orderBy('at','desc').limit(60).onSnapshot(s=>{gotChats(s.docs.map(x=>cleanChat(x.id,x.data())).filter(Boolean).reverse())},()=>{});
  d.collection('drawings').orderBy('at','desc').limit(30).onSnapshot(s=>{drawings=s.docs.map(x=>clean(x.id,x.data())).filter(Boolean);if(!$('ov-gallery').hidden)renderGallery()},()=>{})});
@@ -1347,7 +1359,7 @@ const SHOP=[
  {id:'h:pony',h:10,e:0},{id:'h:curly',h:10,e:0},{id:'h:spiky',h:10,e:0},
  {id:'hc:#ff8fab',h:6,e:0},{id:'hc:#7b61ff',h:6,e:0}];
 const SHOPIDS=new Set(SHOP.map(x=>x.id));
-function canUse(id,k){if(!SHOPIDS.has(id)||owned.has(id))return true;const ch=CHARS.find(c=>c.id===k.id);return !!ch&&(id==='h:'+ch.hair||id==='hc:'+ch.hc)}
+function canUse(id,k){return true;if(!SHOPIDS.has(id)||owned.has(id))return true;const ch=CHARS.find(c=>c.id===k.id);return !!ch&&(id==='h:'+ch.hair||id==='hc:'+ch.hc)}
 function shopPreview(it){const [kind,v]=it.id.split(':'),k=me();
  if(kind==='a'){const a=FRIENDS.find(f=>f.id===v);return a.svg.replace('<svg ','<svg class="pv" ')}
  if(kind==='o')return kidSvg({...k,outfit:v}).replace('<svg ','<svg class="pv" ');
@@ -1357,13 +1369,12 @@ const priceHtml=(h,e)=>`<span>${HEART}${h}</span>${e?`<span>${BASKET}${e}</span>
 function openShop(){if(!myKid)return;OVS.forEach(id=>{if(id!=='ov-shop'&&id!=='ov-pick')hide(id)});renderShop();show('ov-shop');speak('가게에 왔어요!')}
 const SHOPCAT=[['a','동물 친구'],['o','옷'],['h','머리'],['hc','머리색']];let shopCat='a';
 $('shoptabs').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;shopCat=b.dataset.cat;sfx('tap',.5);renderShop()});
-function renderShop(){$('shoptabs').innerHTML=SHOPCAT.map(([c,t])=>`<button class="txtbtn ltab${shopCat===c?' primary':''}" data-cat="${c}">${t}</button>`).join('');$('shopwallet').innerHTML=`<span>${HEART}${hearts}</span><span>${BASKET}${eggs}</span>`;
- const g=$('shopgrid');g.replaceChildren();SHOP.filter(it=>it.id.split(':')[0]===shopCat).forEach(it=>{const b=document.createElement('button');const have=owned.has(it.id),ok=hearts>=it.h&&eggs>=it.e;b.className='scard'+(have?' owned':ok?'':' cant');b.dataset.buy=it.id;
-  b.innerHTML=shopPreview(it)+(have?`<span class="own">${ICON.sent}</span>`:`<span class="price">${priceHtml(it.h,it.e)}</span>`);b.setAttribute('aria-label','사기');g.appendChild(b)})}
+function renderShop(){$('shoptabs').innerHTML=SHOPCAT.map(([c,t])=>`<button class="txtbtn ltab${shopCat===c?' primary':''}" data-cat="${c}">${t}</button>`).join('');$('shopwallet').innerHTML='모두 무료예요!';
+ const g=$('shopgrid');g.replaceChildren();SHOP.filter(it=>it.id.split(':')[0]===shopCat).forEach(it=>{const b=document.createElement('button');const have=owned.has(it.id);b.className='scard'+(have?' owned':'');b.dataset.buy=it.id;
+  b.innerHTML=shopPreview(it)+(have?`<span class="own">${ICON.sent}</span>`:`<span class="price" style="font-size:18px;font-weight:900">가져가기</span>`);b.setAttribute('aria-label','가져가기');g.appendChild(b)})}
 $('shopgrid').addEventListener('click',e=>{const b=e.target.closest('[data-buy]');if(!b)return;const it=SHOP.find(x=>x.id===b.dataset.buy);if(!it)return;
  if(owned.has(it.id)){hop(b);note();return}
- if(hearts<it.h||eggs<it.e){b.classList.remove('shakex');void b.offsetWidth;b.classList.add('shakex');beep(200,.3,'square');speak(hearts<it.h?'하트가 더 필요해요':'달걀이 더 필요해요');return}
- hearts-=it.h;eggs-=it.e;owned.add(it.id);LS.set('farmOwned',[...owned]);save();renderBar();tune();sparkle(b);
+ owned.add(it.id);LS.set('farmOwned',[...owned]);save();renderBar();tune();sparkle(b);
  const [kind,v]=it.id.split(':');
  if(kind==='a'){const a=FRIENDS.find(f=>f.id===v);if(a&&!a.el){ANIMALS.push(a);addAnimal(a,ANIMALS.length);speak(a.name+' 친구가 왔어요!')}}
  else{const k=me();if(kind==='o')k.outfit=v;else if(kind==='h')k.hair=v;else k.hc=v;redrawKid(k);save();pushPresence();speak('짠! 새로 생겼어요')}
