@@ -301,6 +301,12 @@ svg{display:block;overflow:visible}
 #world::before{content:'';position:absolute;left:0;right:0;bottom:0;top:17.5%;background:repeating-linear-gradient(35deg,rgba(90,70,40,.045) 0 2px,transparent 2px 9px);pointer-events:none}
 /* 그림책 크레용: 살짝 떨리는 손그림 선 + 종이 결 */
 .anc>svg,.animal>svg,.kid>svg,.baby>svg{filter:url(#crayon)}
+/* v39 크레용 결: 문지른 색칠 + 하얀 종이 틈 (무늬는 아래 스크립트가 직접 그림) */
+.cr .anc>svg,.cr .animal>svg,.cr .kid>svg,.cr .baby>svg,.cr .thing>svg,.cr .pick>svg,.cr .weed>svg,.cr .chickp>svg,.cr #hills,.cr #fence,.cr #sun,.cr #moon,.cr .cloud,.cr #paths{filter:url(#crayon2)}
+.cr #stage:not(.dawn):not(.dusk):not(.night){--sky:#d9eef5;--sky2:#f6fbf6}
+.cr #stage{background:var(--crSky) 0 0/200px 200px,linear-gradient(var(--sky) 0,var(--sky2) 40%,var(--g1) 42%,var(--g2) 100%)}
+.cr #world::before{background:var(--crDark) 0 0/180px 180px,var(--crSky) 0 0/180px 180px}
+.cr #stage.night{background:linear-gradient(var(--sky) 0,var(--sky2) 40%,var(--g1) 42%,var(--g2) 100%)}.cr #stage.night #world::before{opacity:.25}
 /* 차분하게: 가만히 있을 때 흔들림·깜빡임 없음 */
 .sway2,.breath,.ear,.eye,.tail,.leaf{animation:none!important}
 #grain{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:.55;mix-blend-mode:multiply;background-size:220px 220px}
@@ -430,6 +436,7 @@ svg{display:block;overflow:visible}
 </defs></svg>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.4"/><feColorMatrix type="saturate" values=".72"/></filter></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="crayon2" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" result="d"/><feImage id="crTex" x="0" y="0" width="44" height="44" preserveAspectRatio="none" result="t"/><feTile in="t" result="tt"/><feColorMatrix in="d" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.3 2.5 .5 0 -2.6" result="lite"/><feComposite in="lite" in2="d" operator="in" result="lite2"/><feComposite in="tt" in2="lite2" operator="in" result="tm"/><feMerge result="m"><feMergeNode in="d"/><feMergeNode in="tm"/></feMerge><feColorMatrix in="m" type="saturate" values="1.25"/></filter></svg>
 <div id="stage"><div id="grain"></div>
   <svg class="cloud" style="top:6%;animation-delay:-12s" viewBox="0 0 120 50"><g fill="#fff"><circle cx="30" cy="30" r="18"/><circle cx="55" cy="22" r="22"/><circle cx="82" cy="30" r="17"/><rect x="28" y="30" width="56" height="18"/></g></svg>
   <svg class="cloud" style="top:15%;animation-delay:-80s;animation-duration:240s" viewBox="0 0 120 50"><g fill="#fff"><circle cx="30" cy="30" r="15"/><circle cx="52" cy="24" r="19"/><circle cx="76" cy="31" r="14"/><rect x="28" y="31" width="50" height="16"/></g></svg>
@@ -585,6 +592,14 @@ svg{display:block;overflow:visible}
 {
 const $=id=>document.getElementById(id),stage=$('stage'),bar=$('bar');
 (()=>{try{const c=document.createElement('canvas');c.width=c.height=220;const x=c.getContext('2d'),d=x.createImageData(220,220);for(let i=0;i<d.data.length;i+=4){const v=225+Math.random()*30;d.data[i]=v;d.data[i+1]=v*.97;d.data[i+2]=v*.92;d.data[i+3]=Math.random()<.5?40:0}x.putImageData(d,0,0);document.getElementById('grain').style.backgroundImage=`url(${c.toDataURL()})`}catch(e){}})();
+/* 크레용 결 무늬: 짧은 사선을 캔버스에 직접 그려 씀 (외부 그림 없음) */
+(()=>{try{const mk=(size,n,ang,alpha,w0,w1,col)=>{const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');let sd=7;const r=()=>(sd=(sd*16807)%2147483647)/2147483647;x.lineCap='round';
+ for(let i=0;i<n;i++){const px=r()*size,py=r()*size,l=size*(.05+r()*.12),a=ang+(r()-.5)*.9;x.strokeStyle=col.replace('A',(alpha*(.4+r()*.6)).toFixed(2));x.lineWidth=w0+r()*(w1-w0);
+  for(const ox of [-size,0,size])for(const oy of [-size,0,size]){x.beginPath();x.moveTo(px+ox,py+oy);x.lineTo(px+ox+Math.cos(a)*l,py+oy+Math.sin(a)*l);x.stroke();}}
+ return c.toDataURL();};
+ const t1=mk(96,260,-.95,.75,.6,1.6,'rgba(255,253,246,A)'),t2=mk(180,420,-.7,.42,.7,1.8,'rgba(255,253,246,A)'),t3=mk(180,300,-.5,.13,.7,1.8,'rgba(70,110,40,A)');
+ document.getElementById('crTex').setAttribute('href',t1);const R=document.documentElement.style;R.setProperty('--crSky',`url(${t2})`);R.setProperty('--crDark',`url(${t3})`);document.documentElement.classList.add('cr');
+}catch(e){}})();
 const ink='#5e4433',S=`stroke="${ink}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`,S2=`stroke="${ink}" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"`;
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const use=n=>{try{return window.claude&&window.claude.use?Promise.resolve(window.claude.use(n)).catch(()=>null):Promise.resolve(null)}catch(e){return Promise.resolve(null)}};
