@@ -689,7 +689,7 @@ place(`<svg viewBox="0 -24 120 110"><rect x="26" y="-22" width="68" height="20" 
 <rect x="100" y="54" width="18" height="8" rx="4" fill="#bfe3b4" ${S2}/><path d="M104 62v18M114 62v18" stroke="#c9966c" stroke-width="3" stroke-linecap="round"/>
 <path d="M34 50v30M86 50v30" stroke="#c9966c" stroke-width="5" stroke-linecap="round"/><path d="M22 44h76l-4 8H26z" fill="#e3c39e" ${S}/>
 <path d="M32 10h56l8 34h-72z" fill="#f7e2b8" ${S2}/><path d="M50.7 10l-4 34M69.3 10l4 34M29.3 21.3h61.4M26.7 32.7h66.6" stroke="#b08a66" stroke-width="1.4"/>
-<path d="M39 13.5l6 5M45 13.5l-6 5" stroke="#e8786a" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="16" r="3.6" fill="none" stroke="#5a9ad0" stroke-width="2"/><circle cx="62" cy="27" r="3.8" fill="#6b4f3a"/><circle cx="80" cy="38" r="4" fill="#fffaf2" ${S2}/><circle cx="41" cy="38" r="4" fill="#6b4f3a"/><circle cx="79" cy="27" r="3.8" fill="#fffaf2" ${S2}/></svg>`,126,112,'clamp(92px,17vmin,150px)','tap',112).addEventListener('click',e=>{e.stopPropagation();openGames()});
+<path d="M39 13.5l6 5M45 13.5l-6 5" stroke="#e8786a" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="16" r="3.6" fill="none" stroke="#5a9ad0" stroke-width="2"/><circle cx="62" cy="27" r="3.8" fill="#6b4f3a"/><circle cx="80" cy="38" r="4" fill="#fffaf2" ${S2}/><circle cx="41" cy="38" r="4" fill="#6b4f3a"/><circle cx="79" cy="27" r="3.8" fill="#fffaf2" ${S2}/></svg>`,126,112,'clamp(92px,17vmin,150px)','tap',112);(el=>{el.id='gameTable';el.setAttribute('aria-label','같이 놀이');el.addEventListener('click',e=>{e.stopPropagation();openGames()})})(document.querySelector('#world>.anc:last-child'));
 const easel=place(EASEL,104,106,'clamp(54px,10.5vmin,98px)','tap',106);easel.id='easelObj';
 
 /* 꽃과 풀 */
@@ -888,16 +888,17 @@ stage.addEventListener('click',e=>{if(e.target.closest('#counts,#momzone,.edge,#
 let camX=0,camY=0;
 /* ===== 미니맵 ===== */
 const minic=$('minic'),mctx=minic.getContext('2d');let miniW=0,miniH=0;
+const MINI_L=['옷가게','미용실','보호소','케이크 오븐','가족 하트 항아리','달걀 둥지','배움 놀이','동물 집 짓기'],MINI_ID=['mailbox','easelObj','gameTable'];let miniCache=null;
+function miniSpots(){if(miniCache)return miniCache;const els=[...MINI_L.map(l=>world.querySelector(':scope>.anc[aria-label="'+l+'"]')),...MINI_ID.map(i=>document.getElementById(i))].filter(Boolean);if(els.length<6)return[];
+ miniCache=els.map(el=>{const sv=el.querySelector('svg');const img=new Image();if(sv){let h=sv.outerHTML.replace(/<ellipse class="sh"[^>]*\/>/g,'').replace(/<text[\s\S]*?<\/text>/g,'').replace(/ class="[^"]*"/g,'');if(!/xmlns=/.test(h))h=h.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(h)}return[el,img]});return miniCache}
 function drawMini(){if(document.hidden||!stage.clientWidth)return;const sw=stage.clientWidth,sh=stage.clientHeight,ww=sw*W,wh=sh*H;
  const mw=sw<600?104:150,mh=Math.round(mw*wh/ww),dpr=Math.min(2,window.devicePixelRatio||1);
  if(mw!==miniW||mh!==miniH){miniW=mw;miniH=mh;minic.width=mw*dpr;minic.height=mh*dpr;minic.style.width=mw+'px';minic.style.height=mh+'px'}
  const c=mctx;c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,mw,mh);
  const night=stage.classList.contains('night');c.fillStyle=night?'#22305a':'#9fd8ff';c.fillRect(0,0,mw,mh*.262);c.fillStyle=night?'#2f5a34':'#7cc95a';c.fillRect(0,mh*.262,mw,mh);
- /* 지도에는 동물 대신 건물·놀이 장소만 작은 집 모양으로 */
- const SKIPL=new Set(['꽃밭','옥수수 밭']);c.lineWidth=1;c.strokeStyle='#6b4f3a';
- world.querySelectorAll(':scope>.anc.tap').forEach(el=>{if(el.hidden||el.classList.contains('flw')||el.classList.contains('tree')||el.id==='tree'||el.id==='mush'||SKIPL.has(el.getAttribute('aria-label')))return;
-  const x=parseFloat(el.style.left)/100*mw,y=parseFloat(el.style.top)/100*mh;if(!isFinite(x)||!isFinite(y))return;const w=mw<120?4:5;
-  c.fillStyle='#fff6e6';c.fillRect(x-w,y-w*1.4,w*2,w*1.4);c.strokeRect(x-w,y-w*1.4,w*2,w*1.4);c.beginPath();c.moveTo(x-w-1.5,y-w*1.4);c.lineTo(x,y-w*2.6);c.lineTo(x+w+1.5,y-w*1.4);c.closePath();c.fillStyle='#e8806e';c.fill();c.stroke()})
+ /* 지도에는 세아가 눌러서 할 수 있는 곳만, 그 장소의 작은 그림으로 */
+ miniSpots().forEach(([el,img])=>{if(el.hidden||!img.complete||!img.naturalWidth)return;const x=parseFloat(el.style.left)/100*mw,y=parseFloat(el.style.top)/100*mh;if(!isFinite(x)||!isFinite(y))return;
+  const w=mw<120?13:17,h=w*img.naturalHeight/img.naturalWidth;c.drawImage(img,x-w/2,y-h,w,h)})
  c.strokeStyle='#fff';c.lineWidth=2;c.strokeRect(camX/ww*mw+1,camY/wh*mh+1,sw/ww*mw-2,sh/wh*mh-2);
  KIDS.forEach(k=>{if(k.el.hidden)return;const x=k.x/(100*W)*mw,y=k.y/(100*H)*mh,r=k.id===myKid?5:4;c.beginPath();c.arc(x,y,r,0,7);c.fillStyle=k.color;c.fill();c.lineWidth=k.id===myKid?2.5:1.5;c.strokeStyle=k.id===myKid?'#fff':'#2b2118';c.stroke()})}
 setInterval(drawMini,500);
