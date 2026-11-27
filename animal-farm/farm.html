@@ -225,7 +225,7 @@ svg{display:block;overflow:visible}
 .scard svg.pv{height:clamp(90px,20vmin,150px);width:auto}
 .scard.owned{background:#e6f7df}
 .scard.cant{opacity:.55}
-.stname{font-family:Jua,sans-serif;font-size:22px;margin-right:6px}#eggx{display:flex;align-items:center;gap:2px;font-size:18px;padding:4px 10px}#eggx svg{width:24px;height:24px}
+.stname{font-family:Jua,sans-serif;font-size:22px;margin-right:6px}
 .price{display:flex;gap:8px;font-size:22px;align-items:center}
 .price span{display:flex;align-items:center;gap:2px}.price svg{width:26px;height:26px}
 .scard .own{position:absolute;right:-8px;top:-10px;width:36px;height:36px;background:var(--ok);border:3px solid var(--ink)}
@@ -753,7 +753,7 @@ const musicIcon=l=>`<svg viewBox="0 0 60 60"><path d="M20 44V14l24 -6v30" fill="
 
 /* ===== 아이: 머리 반지름 20 + 몸 = 약 2.3등신, 옷 5벌 + 기본옷 ===== */
 const SKIN='#ffdcbc';
-const OUTFITS=['basic','tkd','ice','ball','dino','fire','pirate','hanbok','pajama','chef','rain','farmer'];
+const OUTFITS=['basic','tkd','ice','ball','dino','fire','pirate','hanbok','pajama','chef','rain','farmer','ballet','doctor','bee'];
 const arm=(sleeve,len=7)=>`<path d="M17 60l-6 13M43 60l6 13" stroke="${ink}" stroke-width="8" stroke-linecap="round"/><path d="M17 60l-6 13M43 60l6 13" stroke="${SKIN}" stroke-width="5" stroke-linecap="round"/><path d="M17.5 58l-${len*.42} ${len}M42.5 58l${len*.42} ${len}" stroke="${ink}" stroke-width="10" stroke-linecap="butt"/><path d="M17.5 58l-${len*.42} ${len}M42.5 58l${len*.42} ${len}" stroke="${sleeve}" stroke-width="7" stroke-linecap="butt"/>`;
 const legs=c=>`<rect x="19" y="80" width="9" height="15" fill="${c}" ${S2}/><rect x="32" y="80" width="9" height="15" fill="${c}" ${S2}/>`;
 const shoes=c=>`<rect x="17" y="93" width="12" height="7" fill="${c}" ${S2}/><rect x="31" y="93" width="12" height="7" fill="${c}" ${S2}/>`;
@@ -771,6 +771,9 @@ function outfitParts(k){const c=soft(k.color);switch(k.outfit){
  case 'chef':return{body:legs('#d9cfc2')+shoes('#fff')+arm('#fffaf2',9)+torso('#fffaf2')+`<path d="M21 63h18l2 19h-22z" fill="#ffd6e0" ${S2}/><path d="M21 63q9 -5 18 0" fill="none" ${S2}/><circle cx="26" cy="58" r="1.4" fill="${ink}"/><circle cx="34" cy="58" r="1.4" fill="${ink}"/><path d="M27 72q3 3 6 0" fill="none" stroke="#ff9fb2" stroke-width="1.6"/>`,hat:`<path d="M16 22q-7 -12 4 -15q4 -8 10 -4q7 -6 12 2q11 0 6 17z" fill="#fff" ${S2}/><rect x="16" y="18" width="28" height="7" rx="2" fill="#fff" ${S2}/>`};
  case 'rain':return{body:legs('#ffe27a')+`<rect x="17" y="88" width="12" height="12" rx="3" fill="#9fd0ec" ${S2}/><rect x="31" y="88" width="12" height="12" rx="3" fill="#9fd0ec" ${S2}/>`+arm('#ffe27a',12)+`<path d="M16 55h28l5 32h-38z" fill="#ffe27a" ${S2}/><path d="M30 56v30" stroke="${ink}" stroke-width="1.4"/><circle cx="27" cy="64" r="1.6" fill="#fff" ${S2}/><circle cx="27" cy="73" r="1.6" fill="#fff" ${S2}/>`,hat:`<path d="M13 21q1 -14 17 -14q16 0 17 14z" fill="#ffe27a" ${S2}/><path d="M6 22q24 -6 48 0q-3 5 -9 5h-30q-6 0 -9 -5z" fill="#ffe27a" ${S2}/>`};
  case 'farmer':return{body:legs('#8fb4dc')+shoes('#a87650')+arm('#ffb3a6',8)+torso('#ffb3a6')+`<path d="M19 82v-18h22v18" fill="#8fb4dc" ${S2}/><path d="M20 64l-2 -9M40 64l2 -9" stroke="#8fb4dc" stroke-width="3"/><circle cx="22" cy="66" r="1.4" fill="#ffe39a"/><circle cx="38" cy="66" r="1.4" fill="#ffe39a"/><rect x="26" y="68" width="8" height="6" rx="1" fill="none" stroke="${ink}" stroke-width="1.2"/>`,hat:`<ellipse cx="30" cy="19" rx="25" ry="5" fill="#f3d998" ${S2}/><path d="M18 19q0 -13 12 -13q12 0 12 13z" fill="#f3d998" ${S2}/><path d="M18 16h24" stroke="#ff9f95" stroke-width="2.6"/>`};
+ case 'ballet':return{body:legs('#ffd6e0')+shoes('#ffb3c6')+arm('#ffc4d4',4)+torso('#ffc4d4')+`<path d="M10 80q20 -10 40 0q-2 6 -8 5q-6 4 -12 0q-6 4 -12 0q-6 1 -8 -5z" fill="#ffe3ec" ${S2}/><path d="M14 80q16 -6 32 0" fill="none" stroke="#ffb3c6" stroke-width="1.4"/><circle cx="30" cy="60" r="2" fill="#fff" ${S2}/>`,hat:`<path d="M24 9l6 4l6 -4l-1 6h-10z" fill="#ffb3c6" ${S2}/>`};
+ case 'doctor':return{body:legs('#8fb4dc')+shoes('#fff')+arm('#fffaf2',9)+torso('#9fd0ec')+`<path d="M16 55h10l4 30h-17zM34 55h10l3 30h-17z" fill="#fffaf2" ${S2}/><path d="M24 57q0 12 6 12q6 0 6 -12" fill="none" stroke="#7a8fa0" stroke-width="1.6"/><circle cx="30" cy="71" r="2.4" fill="#c9d6e0" ${S2}/><rect x="36" y="74" width="6" height="5" rx="1" fill="none" stroke="${ink}" stroke-width="1.2"/>`,hat:`<rect x="21" y="9" width="18" height="9" rx="3" fill="#fff" ${S2}/><path d="M30 11v5M27.5 13.5h5" stroke="#ff9f95" stroke-width="1.8"/>`};
+ case 'bee':return{body:legs('#ffd84d')+shoes('#6b4f3a')+arm('#ffd84d',12)+`<path d="M15 55h30l4 33h-38z" fill="#ffd84d" ${S2}/><path d="M13 66h34M12 76h36" stroke="#6b4f3a" stroke-width="4"/><path d="M15 58q-12 -8 -10 4q2 8 10 4zM45 58q12 -8 10 4q-2 8 -10 4z" fill="#eaf6ff" ${S2}/>`,hat:`<path d="M22 12q-4 -8 -8 -9M38 12q4 -8 8 -9" fill="none" stroke="#6b4f3a" stroke-width="1.8"/><circle cx="14" cy="3" r="2.6" fill="#6b4f3a"/><circle cx="46" cy="3" r="2.6" fill="#6b4f3a"/>`};
  default:return{body:legs('#3a5ba0')+shoes('#fff')+`<path d="M17 96h12M31 96h12" stroke="${c}" stroke-width="2"/>`+arm(c,6)+torso(c)+`<path d="M24 55l6 6l6 -6" fill="#fff" ${S2}/><rect x="34" y="64" width="6" height="6" fill="none" stroke="${ink}" stroke-width="1.5"/>`};
 }}
 const HAIRS=['buns','short','long','pony','bob','curly','spiky','tuft'];
@@ -795,7 +798,7 @@ function hp(k,p){return hairParts(HAIRS.includes(k.hair)?k.hair:'short',soft(okH
 /* 색을 살짝 연하게(파스텔) */
 function soft(c,t=.32,m='#ffffff'){if(!okHex(c))return c;const a=parseInt(c.slice(1),16),b=parseInt(m.slice(1),16),f=(x,y)=>Math.round(x+(y-x)*t);return'#'+[16,8,0].map(sh=>f(a>>sh&255,b>>sh&255).toString(16).padStart(2,'0')).join('')}
 function headInner(k,withBack=true){const p=outfitParts(k),h=hp(k,p);return`${p.hood?(withBack?p.back:''):h.back}${HEADFACE}${h.fringe}${p.hat||''}`}
-const ONESIE={pirate:'#e8453c',tkd:'#fbfbf7',ice:'#cfeefe',ball:'#ffb3cc',dino:'#7ccf6a',fire:'#2f4a7a',hanbok:'#ffd23f',pajama:'#9bb7ff',chef:'#fffaf2',rain:'#ffe27a',farmer:'#8fb4dc'};
+const ONESIE={ballet:'#ffc4d4',doctor:'#fffaf2',bee:'#ffd84d',pirate:'#e8453c',tkd:'#fbfbf7',ice:'#cfeefe',ball:'#ffb3cc',dino:'#7ccf6a',fire:'#2f4a7a',hanbok:'#ffd23f',pajama:'#9bb7ff',chef:'#fffaf2',rain:'#ffe27a',farmer:'#8fb4dc'};
 /* 쌍둥이 이안·서안: 한 캐릭터로 둘이 나란히 */
 const twinOf=k=>({...k,color:k.twin.color,hc:k.twin.hc,twin:null});
 const inner=h=>h.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
@@ -1430,9 +1433,9 @@ const train=place(`<svg viewBox="0 0 220 84"><path d="M0 80h220" stroke="#7a5a3a
 ${[24,52,90,122,162,194].map(x=>`<circle cx="${x}" cy="70" r="8" fill="#444" ${S2}/><circle cx="${x}" cy="70" r="2.5" fill="#ddd"/>`).join('')}</g></svg>`,222,80,'clamp(130px,28vmin,250px)','tap',80);train.id='train';
 train.addEventListener('click',e=>{e.stopPropagation();if(train.classList.contains('go'))return;train.classList.add('go');sfx('bell',.5);setTimeout(()=>sfx('bell',.5,.84),420);sayAt(train,'칙칙폭폭!',.1);setTimeout(()=>train.classList.remove('go'),3000)});
 
-/* ===== 가게 세 곳: 옷가게·미용실·동물가게. 값은 하트. 처음엔 일반옷·태권도복·신데렐라 드레스만 ===== */
+/* ===== 가게 세 곳: 옷가게·미용실·보호소. 값은 하트. 처음엔 일반옷·태권도복·신데렐라 드레스만 ===== */
 const FREE_O=new Set(['basic','tkd','ball']);
-const OPRICE={ice:12,dino:12,fire:12,pirate:12,hanbok:15,pajama:8,chef:10,rain:8,farmer:8};
+const OPRICE={ice:12,dino:12,fire:12,pirate:12,hanbok:15,pajama:8,chef:10,rain:8,farmer:8,ballet:10,doctor:10,bee:12};
 const HPRICE={buns:6,short:5,long:6,pony:6,bob:6,curly:8,spiky:8,tuft:5};
 const SHOP=[
  {id:'a:dog',h:30},{id:'a:goat',h:30},{id:'a:bunny',h:25},
@@ -1446,22 +1449,20 @@ function shopPreview(it){const [kind,v]=it.id.split(':'),k=me();
  if(kind==='o')return kidSvg({...k,outfit:v}).replace('<svg ','<svg class="pv" ');
  if(kind==='h')return headSvg({...k,hair:v,outfit:'basic'},'-6 -6 72 72').replace('<svg ','<svg class="pv" ');
  return headSvg({...k,hc:v,hair:k.hair==='tuft'?'short':k.hair,outfit:'basic'},'-6 -6 72 72').replace('<svg ','<svg class="pv" ')}
-const STORES={o:{name:'옷가게',cats:[['o','옷']],hi:'어서 오세요, 옷가게예요'},h:{name:'미용실',cats:[['h','머리 모양'],['hc','머리색']],hi:'어서 오세요, 미용실이에요'},a:{name:'동물가게',cats:[['a','동물 친구']],hi:'어서 오세요, 동물가게예요'}};
+const STORES={o:{name:'옷가게',cats:[['o','옷']],hi:'어서 오세요, 옷가게예요'},h:{name:'미용실',cats:[['h','머리 모양'],['hc','머리색']],hi:'어서 오세요, 미용실이에요'},a:{name:'보호소',cats:[['a','새 가족 찾는 친구들']],hi:'어서 와요, 동물 보호소예요. 친구를 데려가 줄래?'}};
 let store='o',shopCat='o';
 function openShop(st){if(!myKid)return;store=STORES[st]?st:'o';shopCat=STORES[store].cats[0][0];OVS.forEach(id=>{if(id!=='ov-shop'&&id!=='ov-pick')hide(id)});renderShop();show('ov-shop');sayAt(me().el,STORES[store].hi,.1)}
 $('shoptabs').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;shopCat=b.dataset.cat;sfx('tap',.5);renderShop()});
-$('shopwallet').addEventListener('click',e=>{if(!e.target.closest('#eggx'))return;if(eggs<1){hop(e.target.closest('#eggx'));return}
- eggs--;hearts+=2;bumpCount('ec',eggs);bumpCount('hc',hearts);save();renderBar();sparkle(e.target.closest('#eggx'));sfx('tap',.5);renderShop()});
 function renderShop(){const S_=STORES[store];
  $('shoptabs').innerHTML=`<b class="stname">${S_.name}</b>`+(S_.cats.length>1?S_.cats.map(([c,t])=>`<button class="txtbtn ltab${shopCat===c?' primary':''}" data-cat="${c}">${t}</button>`).join(''):'');
- $('shopwallet').innerHTML=`<span>${HEART}${hearts}</span><button class="txtbtn" id="eggx" aria-label="달걀을 하트로 바꾸기"${eggs<1?' style="opacity:.45"':''}>${BASKET}1 → ${HEART}2</button>`;
+ $('shopwallet').innerHTML=`<span>${HEART}${hearts}</span>`;
  const k=me(),g=$('shopgrid');g.replaceChildren();SHOP.filter(it=>it.id.split(':')[0]===shopCat).forEach(it=>{const b=document.createElement('button');const have=canUse(it.id,k);b.className='scard'+(have?' owned':hearts<it.h?' cant':'');b.dataset.buy=it.id;
   b.innerHTML=shopPreview(it)+(have?`<span class="own">${ICON.sent}</span>`:`<span class="price"><span>${HEART}${it.h}</span></span>`);b.setAttribute('aria-label',have?'있어요':'하트 '+it.h+'개');g.appendChild(b)})}
 $('shopgrid').addEventListener('click',e=>{const b=e.target.closest('[data-buy]');if(!b)return;const it=SHOP.find(x=>x.id===b.dataset.buy);if(!it)return;const [kind,v]=it.id.split(':'),k=me();
  if(canUse(it.id,k)){if(kind!=='a'){if(kind==='o')k.outfit=v;else if(kind==='h')k.hair=v;else k.hc=v;redrawKid(k);save();pushPresence();renderShop()}hop(b);note();return}
- if(hearts<it.h){hop(b);sayAt(k.el,'하트가 '+(it.h-hearts)+'개 더 있으면 살 수 있어',.1);return}
+ if(hearts<it.h){hop(b);sayAt(k.el,'하트가 '+(it.h-hearts)+'개 더 있으면 '+(kind==='a'?'데려갈':'살')+' 수 있어',.1);return}
  hearts-=it.h;bumpCount('hc',hearts);owned.add(it.id);LS.set('farmOwned',[...owned]);if(db)db.doc('inv/family').set({o:[...owned],at:Date.now()}).catch(()=>{});save();renderBar();tune();sparkle(b);
- if(kind==='a'){const a=FRIENDS.find(f=>f.id===v);if(a&&!a.el){ANIMALS.push(a);addAnimal(a,ANIMALS.length);sayAt(k.el,a.name+' 친구가 왔어요!',.1)}}
+ if(kind==='a'){const a=FRIENDS.find(f=>f.id===v);if(a&&!a.el){ANIMALS.push(a);addAnimal(a,ANIMALS.length);sayAt(k.el,a.name+' 친구가 우리 가족이 됐어요!',.1)}}
  else{if(kind==='o')k.outfit=v;else if(kind==='h')k.hair=v;else k.hc=v;redrawKid(k);save();pushPresence();sayAt(k.el,'짠! 새로 생겼어요',.1)}
  renderShop()});
 const storeSvg=(label,aw,win)=>`<svg viewBox="0 -24 110 124"><ellipse class="sh" cx="55" cy="97" rx="46" ry="4"/><path d="M34 0v14M76 0v14" stroke="#c9966c" stroke-width="3"/><rect x="14" y="-22" width="82" height="24" rx="8" fill="#fff3d9" ${S}/><text x="55" y="-4" font-size="17" text-anchor="middle" fill="#8a6450" font-family="Jua,sans-serif">${label}</text><rect x="12" y="44" width="86" height="52" rx="6" fill="#fff8ec" ${S}/><rect x="20" y="56" width="30" height="22" rx="4" fill="#cfe7f4" ${S2}/>${win}<path d="M60 96V66q0 -8 13 -8q13 0 13 8v30z" fill="#e3b48e" ${S2}/><path d="M4 44l10 -28h82l10 28z" fill="#fffaf2" ${S}/><path d="M24 16l-8 28h16l4 -28zM56 16v28h16l-4 -28zM88 16l6 28h10l-8 -28z" fill="${aw}"/><path d="M4 44l10 -28h82l10 28z" fill="none" ${S}/></svg>`;
