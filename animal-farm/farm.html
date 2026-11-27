@@ -226,6 +226,16 @@ svg{display:block;overflow:visible}
 .scard svg.pv{height:clamp(90px,20vmin,150px);width:auto}
 .scard.owned{background:#e6f7df}
 .scard.cant{opacity:.55}
+#snowfall{position:absolute;inset:0;pointer-events:none;z-index:240;overflow:hidden}#snowfall i{position:absolute;top:-10px;width:7px;height:7px;border-radius:50%;background:#fff;opacity:.85;animation:snowf 26s linear infinite}
+@keyframes snowf{to{transform:translateY(105vh) translateX(20px)}}
+.camflash{position:absolute;inset:0;background:#fff;z-index:300;pointer-events:none;animation:camf 1.2s ease-out forwards}@keyframes camf{0%{opacity:.85}100%{opacity:0}}
+.qa{border:3px solid var(--ink);border-radius:16px;background:#fff8e6;padding:10px 12px;margin-bottom:14px}.qaq{font-size:22px;font-weight:900;margin-bottom:8px}
+.qao{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.qab{display:flex;flex-direction:column;align-items:center;gap:2px;border:3px solid var(--ink);border-radius:14px;background:#fff;padding:6px 4px;font:inherit;color:var(--ink);cursor:pointer}
+.qab.on{background:#ffe9a8}.qai svg{width:clamp(40px,9vmin,64px);height:clamp(40px,9vmin,64px)}.qab b{font-size:16px}.qaf{display:flex;min-height:28px}.qaf svg{width:28px;height:28px}
+.xybody{display:flex;flex-direction:column;align-items:center;gap:10px}.xymsg{font-size:20px;font-weight:900;margin:4px 0;text-align:center}.xyhint{font-size:15px;opacity:.75;text-align:center}
+.xybars{display:flex;align-items:center;gap:8px;height:min(52vh,320px);width:min(96vw,640px)}.xybars button{flex:1;border:3px solid var(--ink);border-radius:12px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font:inherit;font-size:18px;font-weight:900;color:#5e4433;cursor:pointer}
+.xybars button.next{outline:5px solid #fff3b0;box-shadow:0 0 0 8px rgba(255,214,90,.55)}.xybars button.hit{animation:xyhit .35s ease}@keyframes xyhit{50%{transform:translateY(5px)}}
+
 .wmore{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8a6450;font-family:Jua,sans-serif}.wmore b{font-size:44px;line-height:1}.wmore span{font-size:18px}
 .scard .have{font-size:17px;font-weight:900;color:#7a8a5a;background:#eef4e2;border-radius:999px;padding:2px 12px}
 .stname{font-family:Jua,sans-serif;font-size:22px;margin-right:6px}
@@ -512,7 +522,7 @@ svg{display:block;overflow:visible}
 <!-- 우체통 (아이용) -->
 <div id="ov-mail" class="ov" hidden>
   <div class="ovtop"><button class="ib" data-close aria-label="농장으로"></button><span style="flex:1"></span><button class="txtbtn mbtn" id="mwrite"></button><button class="txtbtn mbtn" id="mclean"></button></div>
-  <div class="ovbody"><div class="grid" id="mgrid"></div></div>
+  <div class="ovbody"><div id="qabox"></div><div class="grid" id="mgrid"></div></div>
 </div>
 
 <!-- 배움 놀이 -->
@@ -893,8 +903,8 @@ stage.addEventListener('click',e=>{if(e.target.closest('#counts,#momzone,.edge,#
 let camX=0,camY=0;
 /* ===== 미니맵 ===== */
 const minic=$('minic'),mctx=minic.getContext('2d');let miniW=0,miniH=0;
-const MINI_L=['옷가게','미용실','보호소','케이크 오븐','가족 하트 항아리','달걀 둥지','배움 놀이','동물 집 짓기'],MINI_ID=['mailbox','easelObj','gameTable'];let miniCache=null;
-function miniSpots(){if(miniCache)return miniCache;const els=[...MINI_L.map(l=>world.querySelector(':scope>.anc[aria-label="'+l+'"]')),...MINI_ID.map(i=>document.getElementById(i))].filter(Boolean);if(els.length<6)return[];
+const MINI_L=['옷가게','미용실','보호소','케이크 오븐','가족 하트 항아리','달걀 둥지','배움 놀이','동물 집 짓기','소풍 돗자리','실로폰','눈사람 만들기'],MINI_ID=['mailbox','easelObj','gameTable'];let miniCache=null;
+function miniSpots(){if(miniCache)return miniCache;const els=[...MINI_L.map(l=>world.querySelector(':scope>.anc[aria-label="'+l+'"]')),...MINI_ID.map(i=>document.getElementById(i))].filter(Boolean);if(els.length<10)return[];
  miniCache=els.map(el=>{const sv=el.querySelector('svg');const img=new Image();if(sv){let h=sv.outerHTML.replace(/<ellipse class="sh"[^>]*\/>/g,'').replace(/<text[\s\S]*?<\/text>/g,'').replace(/ class="[^"]*"/g,'');if(!/xmlns=/.test(h))h=h.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(h)}return[el,img]});return miniCache}
 function drawMini(){if(document.hidden||!stage.clientWidth)return;const sw=stage.clientWidth,sh=stage.clientHeight,ww=sw*W,wh=sh*H;
  const mw=sw<600?104:150,mh=Math.round(mw*wh/ww),dpr=Math.min(2,window.devicePixelRatio||1);
@@ -947,7 +957,7 @@ function tapAnimal(a){
    for(let i=0;i<n;i++)setTimeout(()=>fxOn(a.el,HEART,'heart'),i*160);hearts+=n;save();bumpCount('hc',hearts);sayAt(a.el,f===a.fav?'냠냠 최고!':'냠냠!');chomp();shareAct('ani',a.id,f);setTimeout(()=>sfx('heart',.45),350);
    if((food==='apple'&&!apples)||(food==='carrot'&&!carrots)){food=null;renderBar()}},900)}
  else{hop(a.el);const real=animalSound(a.id);sndAt(a.el,a.say,0);const nm=myKid?me().name:'';const W=['사랑해!','보고 싶었어!','오늘도 고마워!','같이 놀자!','너는 최고야!','쓰담쓰담 좋아~','네가 와서 기뻐!'];
-  setTimeout(()=>sayAt(a.el,(nm?nmP(nm,'아','야')+', ':'')+W[Math.floor(Math.random()*W.length)],0,false),1300)}
+  setTimeout(()=>sayAt(a.el,(nm?nmP(nm,'아','야')+', ':'')+W[Math.floor(Math.random()*W.length)],0,false),1300);if(myKid)openAMenu(a)}
 }
 /* 사람도 냠냠 */
 const KID_EAT={carrot:'아삭아삭!',corn:'옥수수 맛있다!',apple:'사과 달콤해!'};
@@ -982,6 +992,7 @@ function gotActs(list){const now=Date.now();list.forEach(a=>{if(actSeen.has(a.id
    if(v.id===myKid){sfx('heart',.35);sayAt(to.el,iga(fr.name)+' 하트를 선물했어요!')}return}
   if(v&&v.t==='bread'&&v.by!==myKid&&KN[v.by]&&KN[v.id]){const at=+v.at||0;if(at<actBoot-5000||now-at>30000)return;const to=kidOf(v.id),fr=kidOf(v.by);setTimeout(()=>{fxOn(to.el,BREAD,'heart');setTimeout(()=>{fxOn(to.el,HEART,'heart');fxOn(fr.el,HEART,'heart')},900)},1200);
    if(v.id===myKid){sfx('heart',.35);sayAt(to.el,iga(fr.name)+' 달걀빵을 구워 줬어요!')}return}
+  if(v&&v.t==='found'&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<30000){const fr=kidOf(v.by);sayAt(fr.el,iga(fr.name)+' 숨은 '+nmP(String(v.id||'친구').slice(0,8),'을','를')+' 찾았어요!',0,false);sfx('ding',.3)}return}
   if(v&&v.t==='ride'&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<15000){const k=kidOf(v.by);ctlAt[k.id]=Date.now()+9000;if(v.id==='swing')rideSwing(k,false);else if(v.id==='slide')rideSlide(k,false)}return}
   if(v&&v.t==='hand'&&v.by!==myKid&&KN[v.by]&&v.id===myKid){const at=+v.at||0;if(at>actBoot-5000&&now-at<30000)gotHand(kidOf(v.by),v.f);return}
   if(v&&(v.t==='draw'||v.t==='play')&&v.by!==myKid&&KN[v.by]){const at=+v.at||0;if(at>actBoot-5000&&now-at<60000)showInvite(kidOf(v.by),v.t==='play'&&GAMES[v.id]?v.id:null);return}
@@ -1215,6 +1226,7 @@ use('db').then(d=>{if(!d){netSt.db='이 기기에서는 안 됨';loadLocal();ret
  d.doc('corn/carrots').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotCarrots(v)},()=>{});
  d.collection('garden').onSnapshot(s=>{s.docs.forEach(x=>{if(/^p[0-5]$/.test(x.id)){const v=x.data();if(v&&(!v.by||KN[v.by])&&(!v.w||KN[v.w])&&(+v.at||0)>=(+(garden[x.id]||{}).at||0)-1){garden[x.id]=v}}});LS.set('farmGarden',garden);drawGarden()},()=>{});
  d.doc('house/h').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotHouse(v)},()=>{});
+ [['snow/s',v=>gotSnow(v)],['qa/q',v=>gotQA(v)],['hide/h',v=>gotHide(v)],['xylo/x',v=>gotXylo(v)]].forEach(([pth,fn])=>d.doc(pth).onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)fn(v)},()=>{}));
  d.doc('jar/j').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotJar(v)},()=>{});
  d.doc('nest/n').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotNest(v)},()=>{});
  d.doc('nest/c').onSnapshot(sn=>{const v=sn&&sn.exists&&sn.data();if(v)gotChicks(v)},()=>{});
@@ -1326,7 +1338,7 @@ $('lpost').addEventListener('click',async()=>{const b=$('lpost');if(b.disabled)r
 /* 우체통 (아이) */
 const EMPTY_MAIL=`<svg viewBox="0 0 60 60">${ICON.letter.replace(/<svg[^>]*>|<\/svg>/g,'')}</svg>`;
 function openMail(){mcleanReset();renderMail();show('ov-mail')}
-function renderMail(){renderGrid($('mgrid'),myMail(),true,EMPTY_MAIL);$('mclean').disabled=!myMail().some(L=>!isNew(L))}
+function renderMail(){renderQA();renderGrid($('mgrid'),myMail(),true,EMPTY_MAIL);$('mclean').disabled=!myMail().some(L=>!isNew(L))}
 $('mwrite').innerHTML=ICON.letter+'<span>편지 쓰기</span>';
 $('mwrite').addEventListener('click',()=>{sfx('tap',.5);hide('ov-mail');openLetter('text')});
 let mArm=0;function mcleanReset(){clearTimeout(mArm);mArm=0;const b=$('mclean');b.classList.remove('warn');b.innerHTML=ICON.trash+'<span>읽은 편지 지우기</span>'}
@@ -1609,13 +1621,13 @@ const isNight=()=>{const d=new Date(),m=d.getHours()*60+d.getMinutes();return m>
 const HANDI=`<svg viewBox="0 0 60 60"><path d="M10 34q0-10 10-10h8l6 6h12q6 0 6 6t-6 6H20q-10 0-10-8z" fill="#ffd9b8" stroke="#6b4f3a" stroke-width="3"/><path d="M28 30h10M30 36h12" stroke="#6b4f3a" stroke-width="2"/></svg>`;
 const MOONI=`<svg viewBox="0 0 60 60"><path d="M38 6a24 24 0 1 0 16 36a20 20 0 1 1 -16 -36z" fill="#fff4c2" stroke="#e6c95a" stroke-width="3"/></svg>`;
 /* 친구 메뉴 */
-let kmFor=null;
-function openKMenu(k){const m=$('kmenu'),r=k.el.getBoundingClientRect();kmFor=k.id;$('kmf').innerHTML=faceSvg(k);
+let kmFor=null,kmAni=null;
+function openKMenu(k){const m=$('kmenu'),r=k.el.getBoundingClientRect();kmFor=k.id;kmAni=null;$('kmf').innerHTML=faceSvg(k);
  const opts=[['gift',HEART,'하트 선물'],['bread',BREAD,'달걀빵 주기'],['hand',HANDI,holdWith===k.id?'손 놓기':'손잡기'],['draw',ICON.easel,'같이 그리기'],['play',ICON.games,'같이 놀이']];if(isNight())opts.push(['night',MOONI,'잘 자']);
  const R=Math.max(78,r.height*.62),n=opts.length,a0=-Math.PI/2-(n-1)*0.5*(Math.PI*1.25/(n-1||1)),step=Math.PI*1.25/(n-1||1);
  $('kmb').innerHTML=opts.map(([a,ic,t],i)=>{const ang=n===1?-Math.PI/2:a0+i*step;return`<button data-km="${a}" style="--dx:${(Math.cos(ang)*R).toFixed(0)}px;--dy:${(Math.sin(ang)*R).toFixed(0)}px;transition-delay:${i*35}ms">${ic}<span>${t}</span></button>`}).join('');
  const cx=Math.min(innerWidth-R-40,Math.max(R+40,r.left+r.width/2)),cy=Math.min(innerHeight-60,Math.max(R+50,r.top+r.height*.45));m.style.left=cx+'px';m.style.top=cy+'px';m.classList.remove('open');m.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add('open')));sfx('pop',.3)}
-$('kmb').addEventListener('click',e=>{const b=e.target.closest('[data-km]');if(!b)return;e.stopPropagation();const k=kidOf(kmFor);$('kmenu').hidden=true;if(!k)return;const a=b.dataset.km;
+$('kmb').addEventListener('click',e=>{const b=e.target.closest('[data-km]');if(!b)return;e.stopPropagation();if(b.dataset.km.startsWith('c_')){$('kmenu').hidden=true;careAni(kmAni,b.dataset.km.slice(2));return}const k=kidOf(kmFor);$('kmenu').hidden=true;if(!k)return;const a=b.dataset.km;
  if(a==='gift')giftHeart(k);else if(a==='bread')giveBread(k);else if(a==='hand')toggleHand(k);else if(a==='draw'){openEasel();setSolo(false);window._invAt=Date.now();shareAct('draw','all','x')}
  else if(a==='play')openGames();else if(a==='night')sayNight(k)});
 /* 인사 도장: 하루 처음 친구 곁에 가면 서로 안녕 */
@@ -1676,6 +1688,116 @@ function houseDaily(){const t=+house.at||0;if(!t||!house.n)return;if(new Date(t)
 setTimeout(houseDaily,4000);setInterval(houseDaily,60000);
 function saveHouse(h){house=h;LS.set('farmHouse',h);houseEl.innerHTML=houseSvg(h);if(db)db.doc('house/h').set(h).catch(()=>{})}
 function gotHouse(v){if(!v||typeof v.n!=='number'||!Array.isArray(v.by))return;if((+v.at||0)<(+house.at||0))return;house={n:Math.max(0,Math.min(HN,v.n|0)),last:KN[v.last]?v.last:null,by:v.by.filter(x=>KN[x]),a:v.a|0,at:+v.at||0};LS.set('farmHouse',house);houseEl.innerHTML=houseSvg(house)}
+/* ===== 새 놀이 6가지: 눈사람 · 소풍 돗자리 · 오늘의 질문 · 동물 돌봐 주기 · 숨은 친구 · 같이 연주 ===== */
+const dayNo=()=>{const d=new Date();return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))/864e5)};
+const namesOf=ids=>ids.map(id=>kidOf(id)).filter(Boolean).map(k=>k.name);
+
+/* 1. 같이 눈사람 만들기 (12월에만): 한 명이 몸통, 다른 사람이 머리 */
+const isDec=()=>new Date().getMonth()===11;
+let snow=LS.get('farmSnow',null)||{d:'',body:null,head:null,at:0};
+function snowSvg(s){const cur=s.d===today(),body=cur&&s.body,head=body&&s.head;
+ return`<svg viewBox="0 0 80 92"><ellipse cx="40" cy="84" rx="36" ry="7" fill="#f4f8ff" ${S2}/>${body?`<circle cx="40" cy="64" r="20" fill="#fbfdff" ${S}/><circle cx="40" cy="58" r="1.8" fill="${ink}"/><circle cx="40" cy="67" r="1.8" fill="${ink}"/>`:`<path d="M16 84q6 -14 24 -14q18 0 24 14z" fill="#fbfdff" ${S2}/><circle cx="26" cy="76" r="5" fill="#fbfdff" ${S2}/>`}
+${head?`<circle cx="40" cy="33" r="13" fill="#fbfdff" ${S}/><circle cx="35" cy="31" r="1.7" fill="${ink}"/><circle cx="45" cy="31" r="1.7" fill="${ink}"/><path d="M40 35l8 2l-8 2z" fill="#ff9f1c"/><path d="M28 22h24l-3 -11h-18z" fill="#e8786a" ${S2}/><path d="M27 45q13 6 26 0" stroke="#e8786a" stroke-width="4" fill="none" stroke-linecap="round"/>`:''}</svg>`}
+const snowEl=place(snowSvg(snow),40,166,'clamp(58px,11vmin,100px)','tap',166);snowEl.setAttribute('role','button');snowEl.setAttribute('aria-label','눈사람 만들기');
+function snowOn(){const on=isDec();snowEl.hidden=!on;let f=document.getElementById('snowfall');
+ if(on&&!f){f=document.createElement('div');f.id='snowfall';for(let i=0;i<14;i++){const s=document.createElement('i');s.style.left=(Math.random()*100)+'%';s.style.animationDelay=(-Math.random()*26)+'s';s.style.animationDuration=(22+Math.random()*10)+'s';f.appendChild(s)}stage.appendChild(f)}
+ if(!on&&f)f.remove()}
+snowOn();setInterval(snowOn,600000);
+snowEl.addEventListener('click',e=>{e.stopPropagation();hop(snowEl);if(!myKid)return;let s={...snow};if(s.d!==today())s={d:today(),body:null,head:null,at:0};
+ if(s.head){const n=namesOf([s.body,s.head]);sayAt(snowEl,n.join(', ')+'가 같이 만든 눈사람!',.1);return}
+ if(!s.body){s.body=myKid;sfx('plop',.4);sayAt(snowEl,'영차영차, 몸통 완성! 친구가 머리를 굴려 줄래?',.1)}
+ else if(s.body===myKid){sayAt(snowEl,'머리는 친구가 굴려 줘야 해요',.1);return}
+ else{s.head=myKid;sparkle(snowEl);setTimeout(()=>sfx('yay',.3),300);sayAt(snowEl,'눈사람 완성! 같이 만들었어요',.1);albumAdd('snow_'+today(),{t:'snow',kids:[s.body,s.head]})}
+ s.at=Date.now();saveSnow(s)});
+function saveSnow(s){snow=s;LS.set('farmSnow',s);snowEl.innerHTML=snowSvg(s);if(db)db.doc('snow/s').set(s).catch(()=>{})}
+function gotSnow(v){if(!v||typeof v.d!=='string'||(+v.at||0)<(+snow.at||0))return;snow={d:v.d.slice(0,12),body:KN[v.body]?v.body:null,head:KN[v.head]?v.head:null,at:+v.at||0};LS.set('farmSnow',snow);snowEl.innerHTML=snowSvg(snow)}
+
+/* 2. 가족 소풍 돗자리: 두 명 이상 앉으면 찰칵, 가족사진 */
+const MAT=`<svg viewBox="0 0 140 60"><path d="M10 44l22 -30h76l22 30z" fill="#fff6f2" ${S}/>${[0,1,2,3].map(i=>`<path d="M${27+i*22} 14l${-5-i*1.5} 30" stroke="#ffb3a6" stroke-width="7"/>`).join('')}<path d="M18 33h104" stroke="#ffb3a6" stroke-width="6"/><path d="M10 44l22 -30h76l22 30z" fill="none" ${S}/>
+<path d="M96 10h24l-3 14h-18z" fill="#e3b48e" ${S2}/><path d="M100 10q8 -10 16 0" fill="none" stroke="#a8743e" stroke-width="2.5"/><circle cx="104" cy="8" r="3" fill="#ff9f95" ${S2}/></svg>`;
+const MATX=115,MATY=188;const matEl=place(MAT,MATX,MATY+2,'clamp(110px,22vmin,200px)','tap',140);matEl.setAttribute('role','button');matEl.setAttribute('aria-label','소풍 돗자리');
+let picDone=LS.get('farmPic','');
+matEl.addEventListener('click',e=>{e.stopPropagation();if(!myKid)return;const m=me();walk(m,MATX-14+Math.random()*28,MATY-3+Math.random()*4);
+ if(picDone===today())setTimeout(()=>sayAt(matEl,'오늘 가족사진은 앨범에 있어요',.1),600);else setTimeout(()=>sayAt(matEl,'가족이랑 같이 앉으면 찰칵!',.1),600)});
+setInterval(()=>{if(!myKid||picDone===today())return;const on=KIDS.filter(k=>(k.id===myKid||online.has(k.id))&&!k.el.hidden&&Math.abs(k.x-MATX)<16&&Math.abs(k.y-MATY)<8);
+ if(on.length<2||!on.some(k=>k.id===myKid))return;picDone=today();LS.set('farmPic',picDone);
+ const f=document.createElement('div');f.className='camflash';stage.appendChild(f);setTimeout(()=>f.remove(),1200);sfx('ding',.35);
+ sayAt(matEl,'찰칵! 가족사진 찍었어요',.1);albumAdd('picnic_'+today(),{t:'picnic',kids:on.map(k=>k.id)})},2000);
+
+/* 3. 오늘의 질문 (우편함): 하루 한 질문, 그림으로 골라요 */
+const MOOD=(m)=>`<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="#ffe596" ${S2}/>${m==='sleep'?`<path d="M12 17q3 2 6 0M22 17q3 2 6 0" stroke="${ink}" stroke-width="1.8" fill="none"/>`:`<circle cx="15" cy="17" r="2" fill="${ink}"/><circle cx="25" cy="17" r="2" fill="${ink}"/>`}${m==='happy'?`<path d="M13 24q7 7 14 0" stroke="${ink}" stroke-width="2" fill="none"/>`:m==='wow'?`<ellipse cx="20" cy="27" rx="4" ry="5" fill="#e8786a" ${S2}/>`:m==='so'?`<path d="M14 26h12" stroke="${ink}" stroke-width="2"/>`:`<path d="M15 27q5 3 10 0" stroke="${ink}" stroke-width="1.8" fill="none"/>`}<circle cx="11" cy="23" r="2.4" fill="#ffb3a6" opacity=".7"/><circle cx="29" cy="23" r="2.4" fill="#ffb3a6" opacity=".7"/></svg>`;
+const WX=(w)=>`<svg viewBox="0 0 40 40">${w==='sun'?`<circle cx="20" cy="20" r="9" fill="#ffd23f" ${S2}/>${[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return`<path d="M${20+Math.cos(a)*12} ${20+Math.sin(a)*12}L${20+Math.cos(a)*16} ${20+Math.sin(a)*16}" stroke="#ffb703" stroke-width="2.5" stroke-linecap="round"/>`}).join('')}`:`<path d="M10 26q-5 0 -5 -5q0 -5 6 -5q2 -6 9 -6q8 0 9 7q6 0 6 5q0 4 -5 4z" fill="#fffaf2" ${S2}/>${w==='rain'?`<path d="M14 31l-2 5M21 31l-2 5M28 31l-2 5" stroke="#5aa0e8" stroke-width="2.4" stroke-linecap="round"/>`:w==='snow'?`<circle cx="13" cy="34" r="2" fill="#cfe7f4" ${S2}/><circle cx="21" cy="35" r="2" fill="#cfe7f4" ${S2}/><circle cx="29" cy="34" r="2" fill="#cfe7f4" ${S2}/>`:''}`}</svg>`;
+const SWATCH=c=>`<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="${c}" ${S2}/></svg>`;
+function qaList(){const ani=ANIMALS.filter(a=>!FRIENDS.includes(a)).slice(0,4);return[
+ {q:'오늘 기분은 어때?',o:[[MOOD('happy'),'좋아요'],[MOOD('wow'),'신나요'],[MOOD('so'),'그냥 그래요'],[MOOD('sleep'),'졸려요']]},
+ {q:'제일 좋아하는 동물은?',o:ani.map(a=>[a.svg,a.name])},
+ {q:'지금 먹고 싶은 건?',o:FOODS.slice(0,4).map(f=>[f.svg,{carrot:'당근',corn:'옥수수',hay:'풀',apple:'사과'}[f.id]||''])},
+ {q:'좋아하는 색은?',o:[[SWATCH('#ff8fab'),'분홍'],[SWATCH('#5aa0e8'),'파랑'],[SWATCH('#ffd23f'),'노랑'],[SWATCH('#7cc95a'),'초록']]},
+ {q:'오늘 같이 하고 싶은 건?',o:[[ICON.easel,'그림'],[ICON.games,'놀이'],[ICON.letter,'편지'],[ICON.album,'사진']]},
+ {q:'오늘 날씨는 어때?',o:[[WX('sun'),'해'],[WX('cloud'),'구름'],[WX('rain'),'비'],[WX('snow'),'눈']]}]}
+let qa=LS.get('farmQA',null)||{d:'',a:{},at:0};
+function qaToday(){return qa.d===today()?qa:{d:today(),a:{},at:0}}
+function renderQA(){const box=$('qabox');if(!box||!myKid)return;const L=qaList(),Q=L[dayNo()%L.length],cur=qaToday();
+ box.innerHTML=`<div class="qa"><div class="qaq">오늘의 질문: ${Q.q}</div><div class="qao">${Q.o.map(([svg,t],i)=>{const who=Object.keys(cur.a).filter(k=>KN[k]&&cur.a[k]===i);return`<button class="qab${cur.a[myKid]===i?' on':''}" data-qa="${i}"><span class="qai">${svg}</span><b>${t}</b><span class="qaf">${who.map(k=>faceSvg(kidOf(k))).join('')}</span></button>`}).join('')}</div></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-qa]');if(!b||!myKid)return;e.stopPropagation();const cur=qaToday(),i=+b.dataset.qa;const n={d:today(),a:{...cur.a,[myKid]:i},at:Date.now()};
+ qa=n;LS.set('farmQA',n);if(db)db.doc('qa/q').set(n).catch(()=>{});sfx('pop',.4);renderQA()});
+function gotQA(v){if(!v||typeof v.d!=='string'||typeof v.a!=='object'||!v.a)return;if(v.d===qa.d&&(+v.at||0)<(+qa.at||0))return;const a={};Object.keys(v.a).forEach(k=>{if(KN[k]&&Number.isInteger(v.a[k])&&v.a[k]>=0&&v.a[k]<4)a[k]=v.a[k]});
+ qa={d:v.d.slice(0,12),a,at:+v.at||0};LS.set('farmQA',qa);if(!$('ov-mail').hidden)renderQA()}
+
+/* 4. 동물 돌봐 주기: 빗질 · 목욕 (동물마다 하루 한 번씩) */
+const BRUSH=`<svg viewBox="0 0 40 40"><rect x="6" y="14" width="22" height="10" rx="4" fill="#e3b48e" ${S2}/><path d="M9 24v6M13 24v6M17 24v6M21 24v6M25 24v6" stroke="${ink}" stroke-width="1.6"/><path d="M28 19h8" stroke="#c9966c" stroke-width="4" stroke-linecap="round"/></svg>`;
+const BATH=`<svg viewBox="0 0 40 40"><circle cx="14" cy="22" r="8" fill="#e6f6ff" ${S2}/><circle cx="26" cy="16" r="6" fill="#e6f6ff" ${S2}/><circle cx="27" cy="29" r="5" fill="#e6f6ff" ${S2}/><circle cx="12" cy="19" r="2" fill="#fff"/></svg>`;
+let care=LS.get('farmCare',null)||{d:'',m:{}};
+function openAMenu(a){const m=$('kmenu'),r=a.el.getBoundingClientRect();kmFor=null;kmAni=a;$('kmf').innerHTML='';
+ const opts=[['c_brush',BRUSH,'빗질'],['c_bath',BATH,'목욕']],R=Math.max(70,r.height*.6),n=opts.length,step=Math.PI*.55,a0=-Math.PI/2-step/2;
+ $('kmb').innerHTML=opts.map(([k,ic,t],i)=>{const ang=a0+i*step;return`<button data-km="${k}" style="--dx:${(Math.cos(ang)*R).toFixed(0)}px;--dy:${(Math.sin(ang)*R).toFixed(0)}px;transition-delay:${i*35}ms">${ic}<span>${t}</span></button>`}).join('');
+ const cx=Math.min(innerWidth-R-40,Math.max(R+40,r.left+r.width/2)),cy=Math.min(innerHeight-60,Math.max(R+50,r.top+r.height*.45));m.style.left=cx+'px';m.style.top=cy+'px';m.classList.remove('open');m.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add('open')))}
+function careAni(a,what){if(!a||!a.el||!myKid)return;if(care.d!==today())care={d:today(),m:{}};const c=care.m[a.id]||{};
+ if(c[what]){sayAt(a.el,what==='brush'?'오늘은 벌써 빗질했어. 내일 또 해 줘!':'오늘은 벌써 씻었어. 내일 또 해 줘!',0,false);return}
+ const k=me();walk(k,Math.min(XMAX,Math.max(4,a.x+(a.x>k.x?-10:10))),Math.min(YMAX,a.y+2));
+ setTimeout(()=>{c[what]=1;care.m[a.id]=c;LS.set('farmCare',care);
+  if(what==='brush'){for(let i=0;i<3;i++)setTimeout(()=>fxOn(a.el,BRUSH,'spark'),i*260);sfx('pluck',.3,1.3);setTimeout(()=>sayAt(a.el,'보들보들, 기분 좋아!',0,false),700)}
+  else{for(let i=0;i<4;i++)setTimeout(()=>fxOn(a.el,BATH,'heart'),i*220);sfx('bubble',.35);setTimeout(()=>sayAt(a.el,'아~ 시원하다!',0,false),800)}
+  a.el.classList.remove('munch');void a.el.offsetWidth;a.el.classList.add('munch');
+  if(c.brush&&c.bath){setTimeout(()=>{hearts+=1;save();bumpCount('hc',hearts);fxOn(a.el,HEART,'heart');sfx('heart',.35)},1500)}
+  shareAct('care',a.id,what)},900)}
+
+/* 5. 숨은 친구 찾기: 매일 아기 동물 하나가 나무 뒤에 숨어요 */
+const BUNNYB=`<svg viewBox="0 0 40 40"><ellipse class="sh" cx="20" cy="38" rx="11" ry="2"/><path d="M14 18q-4 -14 1 -15q4 2 3 15zM26 18q4 -14 -1 -15q-4 2 -3 15z" fill="#fff" ${S2}/><circle cx="20" cy="26" r="11" fill="#fff" ${S2}/><circle cx="16" cy="25" r="1.6" fill="${ink}"/><circle cx="24" cy="25" r="1.6" fill="${ink}"/><ellipse cx="20" cy="29" rx="1.6" ry="1.2" fill="#ff8fa3"/></svg>`;
+const DUCKB=`<svg viewBox="0 0 40 40"><ellipse class="sh" cx="20" cy="38" rx="11" ry="2"/><ellipse cx="22" cy="28" rx="12" ry="9" fill="#ffe27a" ${S2}/><circle cx="14" cy="18" r="8" fill="#ffe27a" ${S2}/><circle cx="12" cy="17" r="1.6" fill="${ink}"/><path d="M5 20q-4 1 0 3l4 -1z" fill="#ff9f1c" ${S2}/></svg>`;
+const HIDE_AT=[[8,168],[78,186],[140,184],[228,160],[66,152],[176,148],[228,120],[212,156],[7,118],[140,114]];
+const BABIES=[['병아리',()=>CHICK],['아기 토끼',()=>BUNNYB],['아기 오리',()=>DUCKB]];
+let hideSt=LS.get('farmHide',null)||{d:'',by:null,at:0};
+let hideEl=null;function drawHide(){const n=dayNo(),[x,y]=HIDE_AT[n%HIDE_AT.length],B=BABIES[n%BABIES.length];const found=hideSt.d===today()&&hideSt.by;
+ if(!hideEl){hideEl=place('',0,0,'clamp(20px,4vmin,36px)','tap',0);hideEl.setAttribute('role','button');hideEl.addEventListener('click',findHide)}
+ hideEl.innerHTML=B[1]();hideEl.style.left=wx(Math.min(XMAX,x+7));hideEl.style.top=wy(y-1);hideEl.style.zIndex=Math.round(y)-1;hideEl.setAttribute('aria-label','숨은 '+B[0]);hideEl.hidden=!!found}
+function findHide(e){e.stopPropagation();if(!myKid||(hideSt.d===today()&&hideSt.by))return;const B=BABIES[dayNo()%BABIES.length];hideSt={d:today(),by:myKid,at:Date.now()};LS.set('farmHide',hideSt);if(db)db.doc('hideSt/h').set(hideSt).catch(()=>{});
+ sparkle(hideEl);sfx('yay',.3);sayAt(hideEl,'찾았다! '+B[0]+'야 안녕!',0,false);hearts+=1;save();bumpCount('hc',hearts);fxOn(hideEl,HEART,'heart');shareAct('found',B[0],'h');setTimeout(drawHide,1800)}
+function gotHide(v){if(!v||typeof v.d!=='string'||(+v.at||0)<(+hideSt.at||0))return;hideSt={d:v.d.slice(0,12),by:KN[v.by]?v.by:null,at:+v.at||0};LS.set('farmHide',hideSt);drawHide()}
+setTimeout(drawHide,0);setInterval(drawHide,600000);
+
+/* 6. 같이 연주하기: 실로폰으로 "나비야"를 둘이 번갈아 치면 노래가 돼요 */
+const XC=['#ff9f95','#ffc078','#ffe27a','#a6d488','#8fd6f7','#9bb7ff','#c39bff','#ffb3cc'],XR=[1,1.122,1.26,1.335,1.498,1.682,1.888,2],XN=['도','레','미','파','솔','라','시','도'];
+const SONG=[4,2,2,3,1,1,0,1,2,3,4,4,4];
+const XYLO=`<svg viewBox="0 0 120 70"><ellipse class="sh" cx="60" cy="66" rx="52" ry="4"/><path d="M8 20l104 6M8 52l104 -6" stroke="#c9966c" stroke-width="5" stroke-linecap="round"/>${XC.map((c,i)=>`<rect x="${12+i*12.5}" y="${14+i*1.2}" width="10" height="${42-i*2.4}" rx="3" fill="${c}" ${S2}/>`).join('')}<path d="M100 8l12 -6M104 12l12 -6" stroke="#a8743e" stroke-width="2.5" stroke-linecap="round"/><circle cx="113" cy="2" r="3" fill="#ff9f95" ${S2}/><circle cx="117" cy="6" r="3" fill="#ff9f95" ${S2}/></svg>`;
+const xyEl=place(XYLO,205,198,'clamp(80px,15vmin,130px)','tap',198);xyEl.setAttribute('role','button');xyEl.setAttribute('aria-label','실로폰');
+let xy=LS.get('farmXylo',null)||{i:0,by:[],at:0};
+const xov=document.createElement('div');xov.id='ov-xylo';xov.className='ov';xov.hidden=true;
+xov.innerHTML=`<div class="ovtop"><button class="ib" id="xyclose" aria-label="농장으로"></button><h2 style="flex:1;margin:0 8px">같이 연주하기</h2></div><div class="ovbody xybody"><p class="xymsg" id="xymsg"></p><div class="xybars" id="xybars">${XC.map((c,i)=>`<button data-xb="${i}" style="background:${c};height:${100-i*7}%" aria-label="${XN[i]}"><span>${XN[i]}</span></button>`).join('')}</div><p class="xyhint">반짝이는 막대를 눌러 봐요. 둘이 번갈아 치면 "나비야" 노래가 돼요.</p></div>`;
+document.body.appendChild(xov);OVS.push('ov-xylo');$('xyclose').innerHTML=ICON.home;$('xyclose').addEventListener('click',()=>{sfx('pop2',.4);hide('ov-xylo')});
+function openXylo(){if(!myKid)return;OVS.forEach(id=>{if(id!=='ov-xylo')hide(id)});renderXylo();show('ov-xylo')}
+xyEl.addEventListener('click',e=>{e.stopPropagation();hop(xyEl);openXylo()});
+function renderXylo(){const nx=SONG[xy.i%SONG.length];document.querySelectorAll('#xybars [data-xb]').forEach(b=>b.classList.toggle('next',+b.dataset.xb===nx));
+ const who=namesOf(xy.by||[]);$('xymsg').textContent=xy.i>0?(who.join(', ')+' 같이 치는 중 ('+xy.i+'/'+SONG.length+')'):'나비야 나비야 ~ 첫 음부터 시작해요'}
+function xyNote(i){sfx('pluck',.4,XR[i]);const b=document.querySelector('#xybars [data-xb="'+i+'"]');if(b){b.classList.remove('hit');void b.offsetWidth;b.classList.add('hit')}}
+$('xybars').addEventListener('click',e=>{const b=e.target.closest('[data-xb]');if(!b||!myKid)return;const i=+b.dataset.xb;xyNote(i);
+ if(i!==SONG[xy.i%SONG.length])return;const n={i:xy.i+1,by:xy.by.includes(myKid)?xy.by:[...xy.by,myKid],at:Date.now()};
+ if(n.i>=SONG.length){const by=n.by;setTimeout(()=>{sfx('yay',.25);$('xymsg').textContent=by.length>1?namesOf(by).join(', ')+' 같이 연주 완성!':'잘 쳤어요! 다음엔 친구랑 같이 쳐 봐요';if(by.length>1)albumAdd('xylo_'+Date.now(),{t:'xylo',kids:by.slice(0,6)})},400);saveXylo({i:0,by:[],at:Date.now()},true);return}
+ saveXylo(n)});
+function saveXylo(v,keepMsg){xy=v;LS.set('farmXylo',v);if(db)db.doc('xylo/x').set(v).catch(()=>{});if(!keepMsg)renderXylo();else document.querySelectorAll('#xybars [data-xb]').forEach(b=>b.classList.toggle('next',+b.dataset.xb===SONG[0]))}
+function gotXylo(v){if(!v||!Number.isInteger(v.i)||!Array.isArray(v.by)||(+v.at||0)<=(+xy.at||0))return;const prev=xy.i;xy={i:Math.max(0,Math.min(SONG.length-1,v.i)),by:v.by.filter(x=>KN[x]).slice(0,8),at:+v.at||0};LS.set('farmXylo',xy);
+ if(!$('ov-xylo').hidden){if(xy.i===prev+1)xyNote(SONG[prev]);renderXylo()}}
+
 /* ===== 하트·달걀 쓰는 곳: 가족 하트 항아리 · 달걀 부화 · 같이 케이크 굽기 ===== */
 const nameList=ids=>ids.map(id=>kidOf(id)).filter(Boolean).map(k=>k.name).join(', ');
 const friendOn=()=>KIDS.some(k=>k.id!==myKid&&online.has(k.id));
@@ -1784,7 +1906,7 @@ function renderAlbum(){const d0=new Date();d0.setHours(0,0,0,0);const days=[];fo
   return`<div class="stday${k===today()?' now':''}"><b>${WD[d.getDay()]}</b><div class="fc">${[...met].map(x=>faceSvg(kidOf(x))).join('')}</div></div>`}).join('');
  const mine=albumList.filter(a=>a.t!=='meet'&&a.kids.includes(myKid)).sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,24);
  const item=a=>{const others=a.kids.filter(x=>x!==myKid&&KN[x]).map(x=>faceSvg(kidOf(x))).join('');const dt=new Date(a.at||0);const when=(dt.getMonth()+1)+'/'+dt.getDate();
-  const what=a.t==='flower'?flowerPot(2,{c:a.c}).replace('<svg','<svg style="width:30px;height:40px"')+'같이 키운 꽃':a.t==='house'?'🏠 같이 지은 집':a.t==='jar'?HEART.replace('<svg','<svg style="width:28px;height:26px"')+'하트 항아리를 가득 채웠어요':a.t==='chick'?CHICK.replace('<svg','<svg style="width:30px;height:30px"')+'병아리가 태어났어요':a.t==='cake'?'🎂 같이 구운 케이크'+(KN[a.to]?' ('+KN[a.to]+'에게)':''):a.t==='game'?ICON.games+(GAMES[a.g]?GAMES[a.g].name:'놀이')+' 같이 했어요':'';return`<div class="aitem">${what} ${others} <small>${when}</small></div>`};
+  const what=a.t==='flower'?flowerPot(2,{c:a.c}).replace('<svg','<svg style="width:30px;height:40px"')+'같이 키운 꽃':a.t==='house'?'🏠 같이 지은 집':a.t==='jar'?HEART.replace('<svg','<svg style="width:28px;height:26px"')+'하트 항아리를 가득 채웠어요':a.t==='chick'?CHICK.replace('<svg','<svg style="width:30px;height:30px"')+'병아리가 태어났어요':a.t==='cake'?'🎂 같이 구운 케이크'+(KN[a.to]?' ('+KN[a.to]+'에게)':''):a.t==='snow'?'⛄ 같이 만든 눈사람':a.t==='picnic'?'📷 소풍 가족사진':a.t==='xylo'?'🎵 같이 연주한 나비야':a.t==='game'?ICON.games+(GAMES[a.g]?GAMES[a.g].name:'놀이')+' 같이 했어요':'';return`<div class="aitem">${what} ${others} <small>${when}</small></div>`};
  $('albody').innerHTML=`<div class="alsec"><h3>이번 주에 만난 친구</h3><div class="stamps">${stamps}</div></div>
   <div class="alsec"><h3>같이 한 일</h3><div class="alist">${mine.length?mine.map(item).join(''):'<p>친구랑 꽃을 키우거나, 집을 짓거나, 놀이를 하면 여기에 모여요.</p>'}</div></div>
   <div class="alsec"><h3>그림</h3><button class="txtbtn" id="algal">저장한 그림 보기</button></div>`;
