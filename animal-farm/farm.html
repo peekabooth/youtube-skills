@@ -225,6 +225,7 @@ svg{display:block;overflow:visible}
 .scard svg.pv{height:clamp(90px,20vmin,150px);width:auto}
 .scard.owned{background:#e6f7df}
 .scard.cant{opacity:.55}
+.scard .have{font-size:17px;font-weight:900;color:#7a8a5a;background:#eef4e2;border-radius:999px;padding:2px 12px}
 .stname{font-family:Jua,sans-serif;font-size:22px;margin-right:6px}
 .price{display:flex;gap:8px;font-size:22px;align-items:center}
 .price span{display:flex;align-items:center;gap:2px}.price svg{width:26px;height:26px}
@@ -1457,7 +1458,7 @@ function renderShop(){const S_=STORES[store];
  $('shoptabs').innerHTML=`<b class="stname">${S_.name}</b>`+(S_.cats.length>1?S_.cats.map(([c,t])=>`<button class="txtbtn ltab${shopCat===c?' primary':''}" data-cat="${c}">${t}</button>`).join(''):'');
  $('shopwallet').innerHTML=`<span>${HEART}${hearts}</span>`;
  const k=me(),g=$('shopgrid');g.replaceChildren();SHOP.filter(it=>it.id.split(':')[0]===shopCat).forEach(it=>{const b=document.createElement('button');const have=canUse(it.id,k);b.className='scard'+(have?' owned':hearts<it.h?' cant':'');b.dataset.buy=it.id;
-  b.innerHTML=shopPreview(it)+(have?`<span class="own">${ICON.sent}</span>`:`<span class="price"><span>${HEART}${it.h}</span></span>`);b.setAttribute('aria-label',have?'있어요':'하트 '+it.h+'개');g.appendChild(b)})}
+  const [kd,vv]=it.id.split(':'),wear=kd==='o'?k.outfit===vv:kd==='h'?k.hair===vv:kd==='hc'?k.hc===vv:false;b.innerHTML=shopPreview(it)+(wear?`<span class="own">${ICON.sent}</span>`:'')+(have?`<span class="have">${kd==='a'?'우리 가족':'있어요'}</span>`:`<span class="price"><span>${HEART}${it.h}</span></span>`);b.setAttribute('aria-label',have?(wear?'입고 있어요':'있어요'):'하트 '+it.h+'개');g.appendChild(b)})}
 $('shopgrid').addEventListener('click',e=>{const b=e.target.closest('[data-buy]');if(!b)return;const it=SHOP.find(x=>x.id===b.dataset.buy);if(!it)return;const [kind,v]=it.id.split(':'),k=me();
  if(canUse(it.id,k)){if(kind!=='a'){if(kind==='o')k.outfit=v;else if(kind==='h')k.hair=v;else k.hc=v;redrawKid(k);save();pushPresence();renderShop()}hop(b);note();return}
  if(hearts<it.h){hop(b);sayAt(k.el,'하트가 '+(it.h-hearts)+'개 더 있으면 '+(kind==='a'?'데려갈':'살')+' 수 있어',.1);return}
