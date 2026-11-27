@@ -226,6 +226,7 @@ svg{display:block;overflow:visible}
 .scard svg.pv{height:clamp(90px,20vmin,150px);width:auto}
 .scard.owned{background:#e6f7df}
 .scard.cant{opacity:.55}
+.wmore{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8a6450;font-family:Jua,sans-serif}.wmore b{font-size:44px;line-height:1}.wmore span{font-size:18px}
 .scard .have{font-size:17px;font-weight:900;color:#7a8a5a;background:#eef4e2;border-radius:999px;padding:2px 12px}
 .stname{font-family:Jua,sans-serif;font-size:22px;margin-right:6px}
 .price{display:flex;gap:8px;font-size:22px;align-items:center}
@@ -1075,13 +1076,13 @@ let wTab='o';$('tabO').innerHTML=ICON.shirt;$('tabH').innerHTML=ICON.comb;
 function openWardrobe(){wTab='o';renderWardrobe();show('ov-wardrobe');speak('무슨 옷 입을까?')}
 function renderWardrobe(){const k=me();$('tabO').classList.toggle('on',wTab==='o');$('tabH').classList.toggle('on',wTab==='h');
  const lk=id=>canUse(id,k)?'':`<span class="lock">${ICON.lock}</span>`,lc=id=>canUse(id,k)?'':' locked';
- if(wTab==='o'){$('wgrid').innerHTML=OUTFITS.map(o=>`<button class="wcard${k.outfit===o?' on':''}${lc('o:'+o)}" data-o="${o}" aria-label="옷">${kidSvg({...k,outfit:o})}${lk('o:'+o)}</button>`).join('');
+ if(wTab==='o'){$('wgrid').innerHTML=OUTFITS.filter(o=>canUse('o:'+o,k)).map(o=>`<button class="wcard${k.outfit===o?' on':''}${lc('o:'+o)}" data-o="${o}" aria-label="옷">${kidSvg({...k,outfit:o})}${lk('o:'+o)}</button>`).join('')+`<button class="wcard wmore" data-shop="o" aria-label="옷가게 가기"><b>+</b><span>옷가게</span></button>`;
   $('wsw').innerHTML=COLORS.map(c=>`<button aria-label="색" data-c="${c}" style="background:${c}" class="${k.color===c?'on':''}"></button>`).join('');return}
- $('wgrid').innerHTML=HAIRS.map(h=>`<button class="wcard hair${k.hair===h?' on':''}${lc('hs:'+h)}" data-h="${h}" aria-label="머리">${headSvg({...k,hair:h,outfit:'basic'},'-6 -6 72 72')}${lk('hs:'+h)}</button>`).join('');
- $('wsw').innerHTML=HAIRC.map(c=>`<button aria-label="머리색" data-hc="${c}" style="background:${c}${canUse('hk:'+c,k)?'':';opacity:.35'}" class="${k.hc===c?'on':''}"></button>`).join('')}
+ $('wgrid').innerHTML=HAIRS.filter(h=>canUse('hs:'+h,k)).map(h=>`<button class="wcard hair${k.hair===h?' on':''}${lc('hs:'+h)}" data-h="${h}" aria-label="머리">${headSvg({...k,hair:h,outfit:'basic'},'-6 -6 72 72')}${lk('hs:'+h)}</button>`).join('')+`<button class="wcard hair wmore" data-shop="h" aria-label="미용실 가기"><b>+</b><span>미용실</span></button>`;
+ $('wsw').innerHTML=HAIRC.filter(c=>canUse('hk:'+c,k)).map(c=>`<button aria-label="머리색" data-hc="${c}" style="background:${c}${canUse('hk:'+c,k)?'':';opacity:.35'}" class="${k.hc===c?'on':''}"></button>`).join('')}
 $('tabO').addEventListener('click',()=>{wTab='o';renderWardrobe();beep(660,.08);speak('무슨 옷 입을까?')});
 $('tabH').addEventListener('click',()=>{wTab='h';renderWardrobe();beep(660,.08);speak('어떤 머리 할까?')});
-$('wgrid').addEventListener('click',e=>{const b=e.target.closest('[data-o],[data-h]');if(!b)return;const k=me();if(!canUse(b.dataset.o?'o:'+b.dataset.o:'hs:'+b.dataset.h,k)){hop(b);sayAt(k.el,'옷가게·미용실에서 살 수 있어요',.1);openShop(b.dataset.o?'o':'h');return}if(b.dataset.o)k.outfit=b.dataset.o;else k.hair=b.dataset.h;redrawKid(k);save();renderWardrobe();renderBar();tune();hop(k.el);pushPresence()});
+$('wgrid').addEventListener('click',e=>{const sh=e.target.closest('[data-shop]');if(sh){hide('ov-wardrobe');walk(me(),...(sh.dataset.shop==='o'?[200,132]:[222,132]));return}const b=e.target.closest('[data-o],[data-h]');if(!b)return;const k=me();if(!canUse(b.dataset.o?'o:'+b.dataset.o:'hs:'+b.dataset.h,k)){hop(b);sayAt(k.el,'옷가게·미용실에서 살 수 있어요',.1);openShop(b.dataset.o?'o':'h');return}if(b.dataset.o)k.outfit=b.dataset.o;else k.hair=b.dataset.h;redrawKid(k);save();renderWardrobe();renderBar();tune();hop(k.el);pushPresence()});
 $('wsw').addEventListener('click',e=>{const b=e.target.closest('[data-c],[data-hc]');if(!b)return;const k=me();if(b.dataset.hc&&!canUse('hk:'+b.dataset.hc,k)){hop(b);sayAt(k.el,'미용실에서 살 수 있어요',.1);openShop('h');return}if(b.dataset.c)k.color=b.dataset.c;else k.hc=b.dataset.hc;redrawKid(k);save();renderWardrobe();renderBar();note();pushPresence()});
 
 /* ===== 같이 놀기 (room): 농장 위치 + 그림판 ===== */
